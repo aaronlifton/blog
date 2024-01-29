@@ -1,0 +1,22 @@
+---
+title: "Optimizing React is Easy"
+description: "Follow one simple rule to know where to apply memoization, the single most important performance utility in React."
+pubDate: "Dec 19 2023"
+image:
+  src: "/blog-placeholder-2.jpg"
+  alt: "Neovim macros vs normal mode"
+tags: ["react", "performance", "optimization"]
+---
+
+Generate a blog post about react shallow prop comparison and how it is easy to understand and how essential it is to react performance. The dependency arrays used as the 2nd argument in useMemo, useCallback, etc. are compared with their previous versions as follows:
+
+```ts
+function propHasChanged(prev, next) {
+  return Object.is(prev, next);
+  //       ^?
+}
+```
+
+React compares old and new props by shallow equality: that is, it considers whether each new prop is reference-equal to the old prop. If you create a new object or array each time the parent is re-rendered, even if the individual elements are each the same, React will still consider it to be changed. Similarly, if you create a new function when rendering the parent component, React will consider it to have changed even if the function has the same definition. To avoid this, [simplify props or memoize props in the parent component](https://react.dev/reference/react/memo#minimizing-props-changes).
+
+When you use memo, your component re-renders whenever any prop is not shallowly equal to what it was previously. This means that React compares every prop in your component with its previous value using the Object.is comparison. Just remember that Object.is(3, 3) is true, but Object.is({}, {}) is false.

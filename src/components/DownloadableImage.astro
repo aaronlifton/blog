@@ -1,0 +1,23 @@
+---
+import { Image } from "astro:assets";
+
+interface Props {
+  src: string;
+  alt: string;
+  marginBottom?: boolean;
+}
+const { src, alt, marginBottom } = Astro.props;
+let path = `/${Astro.url.pathname}/${src.replace("screenshots", "images")}`;
+---
+
+<a href={path}>
+  <Image
+    {src}
+    {alt}
+    width="512"
+    height="512"
+    class:list={{ marginBottom }}
+    loading="lazy"
+    decoding="async"
+  />
+</a>

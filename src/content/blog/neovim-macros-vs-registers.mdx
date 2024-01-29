@@ -1,0 +1,116 @@
+---
+title: "Neovim macros vs normal mode"
+description: "Lorem ipsum dolor sit amet"
+pubDate: "Dec 19 2023"
+image:
+  src: "/blog-placeholder-2.jpg"
+  alt: "Neovim macros vs normal mode"
+---
+
+import { Code } from "astro:components";
+
+In neovim, which is better, **macros** or **normal** mode? You may be suprised
+at the power of normal mode and the **execute** command, compared to
+managing macros with plugins.
+
+1. If normal mode can perform the same job as macros, then where would you use
+   macros? Probably when you have to do the same edit in multiple places, but these
+   places don't follow any pattern, and the same could be accomplished by
+   assigning the search register and using execute to trigger `n` in normal mode.
+
+1. You get to write normal commands live, while looking at the code, rather than
+   try to decipher a dense string of characters that doesn't make sense in an
+   editable list format, without the original context. I would say its better to get good at vim motions and be
+   prepared to write them at-will rather than spend time writing and organazing
+   macros.
+
+1. It's better to use `fFtT` and `hjkl` than `wb`, since targeting the beginning
+   of a word is recognizable in command form than contextual word navigation.
+
+1. Recording macros often requires multiple tries, which distracts you from whatever youre working on.
+   You won't be able to immediately use the macro, since you will have to go back and edit it.
+   It's better to just write the normal mode command and use it immediately.
+   Then type `let @q='<C-R>q'` and then edit the macro inside the quotes. I think it's better than polluting your buffers.
+
+1. You made 4 good macros, but you forgot what they do and decyphering letters
+   takes more time than to just not use the macro? Here is a neet little trick.
+   Just before you are about to finish the macro, add a comment in command line
+   like so: `qqiHello World<C-\[>:" Print Hello World to the buffer<CR>q`. This
+   will show in the `:reg` output, so it's very handy. Just make sure you DON'T
+   make a mistake when typing the message or you will have to redo the point 3
+   (with double slaps).
+
+For example, in my [Wezterm] config, I wanted to see if I could replace
+all instead of `a.[Wezterm method]` with `act.[Wezterm method]`, where a Wezterm
+method is a command available in the wezterm action API, like
+`wezterm.action.SendKey` or `wezterm.action.SplitHorizontal`. I could have used
+find and replace with a regex string, like `%s/act.[A-Z+]/a.[A-Z+]/g`, but to
+help solve the normal mode debate, I tried doing this with a normal mode
+command.
+
+1. First, I set the "find" register (`@\`) to my search string:
+
+   <Code lang="regex" code={`\ a.[A-Z*]`} />
+
+1. Then I ran this command:
+
+   <Code lang="vim" code={`:171,$norm nlact^["`} />
+
+1. Result: `a.AdjustPanelSize` and `a.ActivePaneDirection` have been
+   updated to have a prefix of `act.` instead of `a.`, as well as any other
+   methods that started with `act.`. Now, the variable `a` can be deleted.
+
+However, it is not easy to deal with the escape characters, and the command is
+not very readable. A better solution is to use the `execute` command:
+
+<Code lang="vim" code={`execute "159,165norm 0fc2dw"`} />
+
+This command means, if the cursor was directly below the `*` character below, running `:execute "2,4norm
+fc2dw"` would move the cursor to the `c` in `config` on line 2, and delete the word
+`config` on lines 2, 3, and 4.
+
+<Code
+  lang="lua"
+  code={`{
+  * config.a = 1,
+    config.b = 2,
+    config.c = 3
+  }`}
+/>
+
+_**into**_
+
+<Code lang="lua" code={`{a = 1,b = 2,c = 3}`} />
+
+In Neovim, macros are stored as their actual commands, and in order to add a
+description to them, a plugin is needed. This turned out to be more tricky than
+I had expected, as this is a case when the most popular plugins on github are
+actually not to be recommended. The first result, [NeoComposer](https://github.com/ecthelionvi/NeoComposer.nvim),
+made little sense to use unless you always kept your macro list to at most 7 macros and you are able to easily decipher all of them.
+(macros are displayed as virtual text and you can "scroll" through the macros
+via `<C-n>` and `<C-p>`.
+
+I considered forking the project but I knew my macro collection would be big
+enough to require searching. The next most popular plugin was [Macrobatics](https://github.com/svermeulen/vim-macrobatics),
+which looked to be exactly what I wanted, but I had this need for everything to be
+using the neovim lua api, and not direct vim commands, and actually the plugin
+just did not work on my machine, so I searched github until i found one that
+actually worked well &mdash [telescope-macros](https://github.com). Adding a
+telescope finder is a clever and simple solution and I applaud the author &mdash
+an editable list is the only thing needed to manage a macro library.
+
+If I have a macro assigned to the `@l` register, using `telescope-macros`, I
+can apply it repeatedly via `<leader>ml<cr>`: `<leader>m` opens the telescope
+macros list, `l` finds the macro under the `@l` register, and `<cr>` closes the
+window and applies the macro.
+
+I felt some modifications were essential to make - for instance, adding a key
+binding to [[☆ Telescope keymap]] that would close the modal and navigate to
+the previewed file. Why isn't that part of telescope by default? I searched for
+examples and found none other than [[ThePrimeagen]]'s telescope
+modifications, and I took his `get_preview` function, which would open the
+buffer from the preview window in the editor.
+
+However, his function didn't work and I punted on the idea after trying and
+failing to get AI to help. Later on, I actually found Google Duet to be the most
+proficient as writing neovim functions.

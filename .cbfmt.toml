@@ -1,0 +1,6 @@
+[languages]
+rust = ["rustfmt"]
+vim = ["prettier"]
+go = ["gofmt"]
+lua = ["stylua -s -"]
+python = ["black --fast -"]
