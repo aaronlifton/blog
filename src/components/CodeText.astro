@@ -1,0 +1,16 @@
+---
+interface Props {
+  text: string;
+}
+const { text }: Props = Astro.props;
+
+function parseText(text) {
+  const regex = /`([^`]+)`/g;
+  let result = text.replace(regex, "<code>$1</code>");
+  return result.replace(/`/g, "");
+}
+
+const parsedText = parseText(text);
+---
+
+<Fragment set:html={parsedText} />

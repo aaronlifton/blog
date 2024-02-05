@@ -1,0 +1,22 @@
+---
+import { getCollection } from "astro:content";
+import { PAGE_SIZE } from "$/consts";
+export const prerender = true;
+
+export async function getStaticPaths() {
+  const allPosts = await getCollection("blog");
+  const filteredPosts = allPosts.filter((post) => !post.data.draft);
+  const allTags = new Set<string>();
+  filteredPosts.map((post) => {
+    post.data.tags && post.data.tags.map((tag) => allTags.add(tag));
+  });
+
+  return Array.from(allTags).map((tag) => ({
+    params: { page: 1, tag: tag },
+    pageSize: PAGE_SIZE,
+  }));
+}
+
+const tagName = Astro.params["tag"];
+return Astro.redirect(`${tagName}/1`);
+---

@@ -1,0 +1,34 @@
+---
+import BaseHead from "../components/BaseHead.astro";
+import Header from "../components/Header.astro";
+import Footer from "../components/Footer.astro";
+import { SITE_TITLE, SITE_DESCRIPTION } from "../consts";
+export const prerender = true;
+---
+
+<!doctype html>
+<html
+  lang="en"
+  class:list={[
+    "selection:bg-primary selection:text-on-primary h-full min-h-0 text-base sm:text-lg",
+    "scroll-pt-nav-height scroll-smooth sm:scroll-pt-0",
+  ]}
+>
+  <head>
+    <slot name="head">
+      <BaseHead title={SITE_TITLE} description={SITE_DESCRIPTION} />
+    </slot>
+  </head>
+  <body>
+    <slot name="header">
+      <Header title={SITE_TITLE} />
+    </slot>
+    <main>
+      <div class="px-0 sm:col-[content]">
+        <slot />
+      </div>
+    </main>
+    <Footer />
+  </body>
+</html>
+<style></style>

@@ -1,0 +1,18 @@
+---
+import { default as InnerZoomImage } from "./ZoomImage.svelte";
+import { Icon } from "astro-icon/components";
+
+const html = await Astro.slots.render("default");
+
+interface Props {
+  src: string;
+  alt: string;
+  caption: string;
+}
+const props: Props = Astro.props;
+console.log({ props });
+---
+
+<InnerZoomImage {...props} src={props.src.src} client:load>
+  <Fragment slot="icon"><Icon name="zoom-scan" /></Fragment>
+</InnerZoomImage>

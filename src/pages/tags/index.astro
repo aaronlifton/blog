@@ -1,0 +1,22 @@
+---
+import Layout from "$/layouts/Layout.astro";
+import { Icon } from "astro-icon/components";
+import { getCollection, CollectionEntry } from "astro:content";
+import { unique } from "$/util/array";
+import TagList from "$/components/TagList.astro";
+
+const blogPosts: CollectionEntry<"blog">[] = await getCollection("blog");
+const filteredPosts = blogPosts.filter((post) => !post.data.draft);
+const data = filteredPosts.map((post) => post.data.tags);
+const allTags = unique(data.flat());
+---
+
+<Layout>
+  <TagList tags={allTags}>
+    <Fragment slot="header">
+      <h5>
+        <Icon name="tabler/tags" class="inline relative top-[-0.1ch]" />Tags
+      </h5>
+    </Fragment>
+  </TagList>
+</Layout>

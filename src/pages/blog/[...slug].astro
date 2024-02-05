@@ -1,21 +1,37 @@
 ---
-import { type CollectionEntry, getCollection } from 'astro:content';
-import BlogPost from '../../layouts/BlogPost.astro';
+import { Image } from "astro:assets";
+import { getCollection, type CollectionEntry } from "astro:content";
+import PostStats from "../../components/PostStats.svelte";
+import ZoomImage from "../../components/ZoomImage.svelte";
+import BlogPost from "../../layouts/BlogPost.astro";
+import { Icon } from "astro-icon/components";
 
-export const prerender = true
+export const prerender = true;
 export async function getStaticPaths() {
-	const posts = await getCollection('blog');
-	return posts.map((post) => ({
-		params: { slug: post.slug },
-		props: post,
-	}));
+  const posts = await getCollection("blog");
+  return posts
+    .filter((post) => !post.data.draft)
+    .map((post) => ({
+      params: { slug: post.slug },
+      props: post,
+    }));
 }
-type Props = CollectionEntry<'blog'>;
+type Props = CollectionEntry<"blog">;
 
 const post = Astro.props;
-const { Content } = await post.render();
+const { Content, headings, remarkPluginFrontmatter } = await post.render();
 ---
 
-<BlogPost {...post.data}>
-	<Content />
+<BlogPost {...post.data} {headings}>
+  <div class="flex flex-col md:flex-row gap-8 w-full transition-all pb-4">
+    <ZoomImage src={post.data.cover.src} alt={post.data.coverAlt} client:load>
+      <Image
+        src={post.data.cover}
+        widths={[240, 540, 720, post.data.cover.width]}
+        sizes={`(max-width: 360px) 240px, (max-width: 720px) 540px, (max-width: 1600px) 720px, ${post.data.cover.width}px`}
+        alt={post.data.coverAlt}
+      />
+    </ZoomImage>
+  </div>
+  <Content />
 </BlogPost>

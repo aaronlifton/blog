@@ -1,0 +1,44 @@
+---
+import type { CollectionEntry } from "astro:content";
+import PostPreview from "./PostPreview.astro";
+
+interface Props {
+  posts: CollectionEntry<"blog">;
+  heading?: string;
+  mode?: "row" | "col";
+  asCard?: boolean;
+}
+
+const { posts, heading, mode = "col", asCard = false } = Astro.props;
+const sortedPosts = posts.sort(
+  (a, b) => new Date(b.date).valueOf() - new Date(a.date).valueOf(),
+);
+---
+
+{
+  heading ? (
+    <h2 class={`post-preview__heading post-preview__heading--${mode} `}>
+      {heading}
+    </h2>
+  ) : (
+    ""
+  )
+}
+<hr />
+<section class={`post-preview__list post-preview__list--${mode}`}>
+  {sortedPosts.map((post) => <PostPreview post={post} asCard={asCard} />)}
+</section>
+<style>
+  .post-preview__heading {
+    @apply my-vert-padding text-2xl;
+  }
+  .post-preview__list {
+    @apply flex flex-col gap-6 sm:gap-12;
+    @apply flex-row flex-wrap gap-12 sm:gap-10 md:gap-8 lg:gap-12 lg:px-0;
+  }
+  .post-preview__heading--row {
+  }
+  .post-preview__list--row {
+    /* @apply md:px-6; */
+  }
+</style>

@@ -1,0 +1,43 @@
+---
+import { Icon } from "astro-icon/components";
+import { iconForTag } from "$/util";
+
+interface Props {
+  tags: string[];
+}
+
+let { tags }: Props = Astro.props;
+---
+
+<div class="tags w-full max-w-xl mx-auto flex center justify-center">
+  {
+    tags &&
+      tags.map((tag, idx) => (
+        <span class="tag mr-1">
+          <a href={`/tags/${tag}`}>
+            {iconForTag(tag) && (
+              <Icon
+                name={iconForTag(tag)}
+                class="stroke-theme-primary fill-theme-primary"
+              />
+            )}
+            {tag}
+          </a>
+          {idx !== tags.length - 1 && ", "}
+        </span>
+      ))
+  }
+</div>
+<style>
+  .tags {
+    @apply mt-4 mb-0;
+    a svg {
+      @apply text-theme-primary stroke-theme-primary fill-theme-primary;
+      display: inline;
+      width: 16px;
+      height: 16px;
+      vertical-align: middle;
+      transform: translate(0, -0.1ch);
+    }
+  }
+</style>

@@ -3,7 +3,7 @@ import fs from "fs/promises";
 import path from "path";
 
 export async function getStaticPaths() {
-  const files: string[] = await fs.readdir("public/screenshots/");
+  const files: string[] = await fs.readdir("src/content/blog/assets/");
 
   return files.map((fileName) => {
     return {
@@ -19,7 +19,7 @@ export const GET: APIRoute = async ({ props, params }) => {
   // Define the path to your image file
   const imagePath = path.join(
     process.cwd(),
-    "/public/screenshots/nvim-no-unused-vars.png",
+    "/src/content/blog/assets/screenshots/nvim-no-unused-vars.png",
   );
 
   // Read the image file

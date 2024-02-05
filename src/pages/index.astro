@@ -1,94 +1,35 @@
 ---
+import Layout from "../layouts/Layout.astro";
 import BaseHead from "../components/BaseHead.astro";
 import Header from "../components/Header.astro";
 import Footer from "../components/Footer.astro";
 import { SITE_TITLE, SITE_DESCRIPTION } from "../consts";
 import FormattedDate from "../components/FormattedDate.astro";
-import HomepageImage from "../components/HomepageImage.astro";
+import HomeImage from "../components/HomeImage.astro";
 import { getCollection } from "astro:content";
 import { Image } from "astro:assets";
-{
-  /*
-import { type CollectionEntry } from 'astro:content';
-interface Props {
-	posts: CollectionEntry<'post'>[]
-}
-<!-- const posts = await getEntries('posts'); -->
-const { posts } = Astro.props
-*/
-}
+import Prose from "../components/Prose.astro";
+import PostPreview from "../components/PostPreview.astro";
+import PostPreviewList from "../components/PostPreviewList.astro";
+import PostPreviewListFooter from "../components/PostPreviewListFooter.astro";
 
 export const prerender = true;
 
-const posts = (await getCollection("blog")).sort(
-  (a, b) => a.data.pubDate.valueOf() - b.data.pubDate.valueOf(),
-);
+const posts = (await getCollection("blog"))
+  .filter((post) => !post.data.draft)
+  .sort((a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf());
 ---
 
-<!doctype html>
-<html lang="en">
-  <head>
-    <BaseHead title={SITE_TITLE} description={SITE_DESCRIPTION} />
-  </head>
-  <body>
-    <Header title={SITE_TITLE} />
-    <main>
-      <h1>Aaron's Dev Blog</h1>
-      <p>Welcome to my blog</p>
-      <h3>Recent Posts</h3>
-      <div class="grid grid-cols-2 gap-4">
-        {
-          posts.map((post) => (
-            <div>
-              <a href={`/blog/${post.slug}/`}>
-                <Image
-                  class="w-full"
-                  width={720}
-                  height={360}
-                  src={post.data.image.src}
-                  alt={post.data.image.alt}
-                  loading="lazy"
-                  decoding="async"
-                />
-                {/* <MyCustomImageComponent
-									mobileImgUrl={mobileImage}
-									desktopImgUrl={desktopImage}
-									alt="user profile picture"
-							*/}
-                <div class="flex">
-                  <div class="grow">
-                    <a href={`/blog/${post.slug}`}>{post.data.title}</a>
-                  </div>
-                  <div>
-                    <p class="date">
-                      <FormattedDate date={post.data.pubDate} />
-                    </p>
-                  </div>
-                </div>
-              </a>
-            </div>
-          ))
-        }
-      </div>
-      <ul>
-        <li>Edit this page in <code>src/pages/index.astro</code></li>
-        <li>
-          Edit the site header items in <code>src/components/Header.astro</code>
-        </li>
-        <li>
-          Add your name to the footer in <code>src/components/Footer.astro</code
-          >
-        </li>
-        <li>
-          Check out the included blog posts in <code>src/pages/blog/</code>
-        </li>
-        <li>
-          Customize the blog post page layout in <code
-            >src/layouts/BlogPost.astro</code
-          >
-        </li>
-      </ul>
-    </main>
-    <Footer />
-  </body>
-</html>
+<Layout>
+  <div class="hero flex justify-center pb-vert-padding">
+    <div class="hero__tagline flex justify-center">
+      <Prose className="prose prose-base mb-3 dark:prose-invert lg:prose-base">
+        A developer blog focusing on Ruby on Rails, React, AstroJS, and Neovim
+        development.
+      </Prose>
+    </div>
+  </div>
+  <!-- <PostPreviewList posts={posts} heading="Recent posts" asCard /> -->
+  <PostPreviewList posts={posts} heading="Recent posts" />
+  <PostPreviewListFooter />
+</Layout>

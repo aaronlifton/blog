@@ -1,0 +1,107 @@
+---
+import type { CollectionEntry } from "astro:content";
+import { getMonthName, iconForTag } from "$/util";
+import CodeText from "$/components/CodeText.astro";
+import HomeImage from "$/components/HomeImage.astro";
+
+interface Props {
+  post: CollectionEntry<"blog">;
+  asCard?: boolean;
+}
+
+const {
+  post: { data: post, slug },
+  asCard = false,
+} = Astro.props;
+---
+
+<div class:list={["post-preview", { "post-preview--card": asCard }]}>
+  <div class="post-preview__date-box">
+    <div class="post-preview__date">
+      <span class="post-preview__date__day"
+        >{new Date(post.pubDate).getDate()}</span
+      >
+      <span class="post-preview__date__month-n-year"
+        >{
+          `${getMonthName(post.pubDate)} ${new Date(post.pubDate).getFullYear()}`
+        }</span
+      >
+    </div>
+  </div>
+  <div>
+    <HomeImage
+      src={post.cover}
+      alt={post.coverAlt}
+      link={`/posts/${post.slug}`}
+      postTitle={post.title}
+      postLink={`/blog/${slug}`}
+      width={asCard ? 400 : 100}
+      data-home-image
+    />
+  </div>
+  <div class="flex-1">
+    <div
+      class="post-preview__title dark:text-theme-dark-primary flex
+      space-apart"
+    >
+      <a
+        href={`/blog/${slug}`}
+        title={post.title}
+        class="font-normal text-md
+        grow"
+      >
+        <CodeText text={post.title} />
+      </a>
+    </div>
+    <p class="post-preview__desc">
+      <CodeText text={post.description} />
+    </p>
+  </div>
+</div>
+<style>
+  .post-preview {
+    @apply flex gap-6;
+  }
+  .post-preview__desc :global(code) {
+    @apply text-sm;
+  }
+  .post-preview--card {
+    @apply border border-gray-200 dark:border-slate-300 border rounded-lg p-4;
+    .post-preview__date-box {
+      @apply flex  border border-slate-800;
+    }
+    .post-preview__date {
+      @apply text-left flex flex-row gap-1;
+    }
+    .post-preview__date__day {
+      @apply text-4xl;
+    }
+  }
+  [data-home-image] {
+    @apply h-fit flex flex-row-reverse;
+  }
+  .post-preview__date-box {
+    /*@apply sm:w-20 md:w-32;*/
+  }
+  .post-preview__date {
+    @apply flex flex-col w-full text-center;
+  }
+  .post-preview__date__day {
+    @apply text-6xl font-semibold text-gray-500 dark:text-gray-300;
+  }
+  .post-preview__date__month-n-year {
+    @apply text-gray-400;
+  }
+  .post-preview__title {
+    @apply text-2xl font-semibold  mb-2;
+    a {
+      @apply text-theme-primary dark:text-theme-dark-primary;
+    }
+  }
+  .post-preview__title :global(code) {
+    @apply text-lg;
+  }
+  .post-preview__desc {
+    @apply text-lg leading-6 line-clamp-2 dark:text-white hyphens-auto;
+  }
+</style>

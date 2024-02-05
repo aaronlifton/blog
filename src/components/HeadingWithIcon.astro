@@ -1,0 +1,23 @@
+---
+import { Icon } from "astro-icon/components";
+import { iconForTag } from "$/util";
+
+interface Props {
+  text: string;
+  tag: string;
+  className?: string;
+}
+const { text, tag, className }: Props = Astro.props;
+const icon = iconForTag(tag);
+---
+
+<h5>
+  {
+    icon && (
+      <Icon
+        name={icon}
+        class:list={["inline relative top-[-0.1ch]", className]}
+      />
+    )
+  }{text}
+</h5>

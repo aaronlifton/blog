@@ -1,0 +1,90 @@
+---
+title: Ruby now produces machine code on-the-fly
+description: A primer on how YJIT Ruby's new JIT compiler works, as well as a deep dive into improvements to the Ruby GC and memory layout.
+pubDate: Feb 5, 2024
+cover: ../assets/wezterm.png
+coverAlt: An example of very popular sites switching their app entirely over to the new YJIT Ruby.
+tags: [ruby, rails, performance, compilers]
+draft: false 
+slug: ruby-now-produces-machine-code-on-the-fly
+---
+
+import yjitDiscourse from "./yjit.png"
+
+Generate a blog post discussing how YJIT ruby works, what BBV (Basic block versioning) is, and how it relates to YJIT. Also discuss how shopify has contributed object shapes to ruby's internal object representation. Finally, discuss how shopify has contributed to Ruby's garbage compiler. All of these contributions have greatly increased the robustness of Ruby. The audience of the blog post is other Ruby on Rails developers that aren't familiar with how JIT compilers work.
+
+# Ruby now produces machine code on-the-fly 
+This is also known as a JIT compiler.
+
+In the spectrum of software technologies, Just-In-Time (JIT) compilers have emerged as invaluable tools that effectively optimize runtime performance. Ruby, a dynamic, interpretative language, has certainly benefited from JIT architectures. Notably, YJIT, an optimizing JIT compiler built inside CRuby (now built with Rust), has been pivotal in enhancing Ruby's robustness and performance. If you're a Ruby on Rails developer interested in JIT compilers but unfamiliar with their workings, you've come to the right place.
+
+## Understanding YJIT in Ruby
+
+Incorporated officially as part of Ruby 3.1 and 3.2, YJIT has immeasurably improved Ruby's speed, making it 57% faster ([source](https://shopify.engineering/ruby-yjit-is-production-ready)). Its lightweight nature and minimalistic design provide a great deal of value with less memory usage (although that is its biggest weakness [3]), increasing the language’s overall efficiency.
+
+YJIT operates on a Basic Block Versioning (BBV) approach, a JIT architecture that lazily compiles code ([source](https://docs.ruby-lang.org/en/master/yjit/yjit_md.html)). But, what does lazy compilation or BBV mean? Let's delve into that.
+
+Basic Block Versioning (BBV) is a strategy used in Just-In-Time (JIT) compilers, including those for Ruby, to achieve high-performance machine code generation. BBV takes advantage of dynamic programming language features by generating type-specialized machine code on-the-fly, without undergoing separate type analysis or speculative optimization phases. This capability avoids both the precision limitations of traditional type analysis and the complexity associated with speculative optimization techniques [source](https://arxiv.org/pdf/1507.02437.pdf).
+
+Lazy Basic Block Versioning (LBBV), an application of BBV, allows the execution of the program itself to dictate the generation of type-specialized code [source](https://arxiv.org/pdf/1411.0352v1).
+
+To illustrate, consider a code block in Ruby where a variable 'num' might be an integer or a floating-point number:
+
+```ruby
+
+def calculate(num)
+
+    return num * 2
+
+end
+
+```
+
+During execution, the JIT compiler would create two versions of this basic code block. First, if 'num' is an integer during a particular execution, the compiler generates and caches a version optimized for handling integers. Second, if 'num' is a floating-point number in another execution, the compiler produces a separate version optimized for floating-point computations. Therefore, depending on the type of 'num', the JIT compiler selects the matching optimized block for execution.
+
+This way, BBV delivers optimized performance since the JIT compiler generates and uses machine code customized for specific data types based on actual execution patterns, rather than making assumptions or using overly generalized code [source](https://www-labs.iro.umontreal.ca/~feeley/papers/SaleilFeeleyVMIL18.pdf).
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+---
+## Basic Block Versioning (BBV) and YJIT
+
+BBV in YJIT plays a crucial role in enhancing Ruby's performance. In essence, a basic block is a sequence of instructions with a single entry and exit points. "Versioning" of these blocks allows YJIT to accumulate and propagate type information, which is vital for optimizing dynamically-typed languages like Ruby. The versions of a basic block accommodate different execution paths and scenarios, resulting in highly flexible and efficient code execution.
+
+## Shopify's Influential Contributions
+
+Shopify, a major player in the Ruby community, has been influential in augmenting Ruby's internal object representation. Shopify's contributions to "object shapes", which capture the layout of an object's attributes and types, have been pertinent in enhancing Ruby’s efficiency. Shopify's insights into leveraging object shapes have provided a framework for improving the performance of object-oriented programming in Ruby ([source](https://rubykaigi.org/2021-takeout/data/slides/Maxime-YJIT-RubyKaigi-2021-slides.pdf)).
+
+Furthermore, Shopify has significantly contributed to Ruby's garbage compiler. Although the granular specifics of these modifications aren't readily available, the collective endeavor of these contributions has been shown to enhance Ruby's robustness, making YJIT even more viable for real-world production deployments ([source](https://rubykaigi.org/2023/presentations/maximecb.html)).
+
+## Embracing the Future with YJIT
+
+In a nutshell, YJIT and the underlying BBV concept, combined with Shopify's pivotal contributions, have played vital roles in improving Ruby's robustness and performance. This intricate interplay of architectures, techniques, and contributions, although technical in nature, holds practical implications for us, the developers. As we continue to improve our code and optimize our applications, understanding these underlying principles better equips us for the journey. With firms like Shopify actively pushing boundaries, we can look forward to further exciting enhancements in Ruby's future.
+
+References:
+
+- [Shopify Engineering](https://shopify.engineering/ruby-yjit-is-production-ready)
+
+- [Ruby Official Documentation](https://docs.ruby-lang.org/en/master/yjit/yjit_md.html)
+
+- [Shopify YJIT GitHub Repo](https://github.com/Shopify/yjit)
+
+- [RubyKaigi 2021](https://rubykaigi.org/2021-takeout/data/slides/Maxime-YJIT-RubyKaigi-2021-slides.pdf)
+
+- [RubyKaigi 2023](https://rubykaigi.org/2023/presentations/maximecb.html)

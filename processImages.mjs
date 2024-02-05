@@ -3,12 +3,16 @@ import sharp from "sharp";
 import path from "path";
 import { fileURLToPath } from "url";
 
+const size = {
+  width: 300,
+  height: 300,
+} 
 const processImages = () => {
   const __filename = fileURLToPath(import.meta.url);
   const __dirname = path.dirname(__filename);
 
-  const directoryPath = path.join(__dirname, "public");
-  const relativeOutputDirectory = "public/homepage-images";
+  const directoryPath = path.join(__dirname, "src/content/blog/assets");
+  const relativeOutputDirectory = "src/content/blog/assets/homepage-images";
   const outputDirectory = path.join(__dirname, relativeOutputDirectory);
 
   const dirExists = existsSync(relativeOutputDirectory);
@@ -21,10 +25,9 @@ const processImages = () => {
     }
 
     for (const file of files) {
-      console.log({ file });
       if (path.extname(file) === ".jpg" || path.extname(file) === ".png") {
         sharp(`${directoryPath}/${file}`)
-          .resize(300, 300, {
+          .resize(size.width, size.height, {
             fit: "cover",
             position: "center",
           })
@@ -32,7 +35,7 @@ const processImages = () => {
             if (err) {
               console.log(err);
             } else {
-              console.log(`Image ${file} has been resized.`);
+              console.log(`Image ${file} ->\t ${size.width}x${size.height}.`);
             }
           });
       }

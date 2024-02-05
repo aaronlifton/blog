@@ -1,0 +1,39 @@
+---
+import { type CollectionEntry, getCollection } from "astro:content";
+import Layout from "../../layouts/Layout.astro";
+import PostPreviewList from "../../components/PostPreviewList.astro";
+import PostPreviewListFooter from "../../components/PostPreviewListFooter.astro";
+import Pages from "../../components/Pages.svelte";
+import { PAGE_SIZE } from "../../consts.ts";
+
+export async function getStaticPaths({ paginate }) {
+  let posts: CollectionEntry<"blog">[] = await getCollection("blog");
+  posts = posts
+    .filter((post) => !post.data.draft)
+    .sort((a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf());
+
+  return paginate(posts, { pageSize: PAGE_SIZE });
+}
+// All paginated data is passed on the "page" prop
+const { page } = Astro.props;
+---
+
+<Layout>
+  <div class="mb-vert-padding flex items-center justify-center">
+    <p class="full not-prose mb-0 translate-x-2/4 text-center text-base italic">
+      Page {page.currentPage}
+    </p>
+  </div>
+  <PostPreviewList posts={page.data} heading="Posts" />
+  <PostPreviewListFooter />
+  <Pages
+    baseUrl={Astro.url.pathname.slice(0, -2)}
+    currentPage={page.currentPage}
+    perPage={page.size}
+    totalPages={page.lastPage}
+  />
+</Layout>
+
+<script define:vars={{ page }}>
+  console.log({ page });
+</script>

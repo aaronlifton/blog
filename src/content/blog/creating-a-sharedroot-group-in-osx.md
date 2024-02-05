@@ -1,20 +1,11 @@
 ---
-title: Creating a sharedroot group in osx to manage /usr/local and /usr/bin
-description: Share ownership of a folder with root in order to install LaTeX packages via tlmgr, or to install fnt, among other things
+title: Creating a sharedroot group in OSX to manage `/usr/local` and `/usr/bin`
+description: How to share ownership of a folder with root, in order to install LaTeX packages via `tlmgr` or `fnt`, among other things.
 pubDate: Jan 19 2024
-image:
-  src: /screenshots/nvim-no-unused-vars.png
-  alt: Neovim screenshot showing eslint unused vars error
-tags: [eslint, neovim, react, typescript, javascript]
+cover: ./assets/screenshots/nvim-dscl.png
+coverAlt: Neovim screenshot showing fish dscl function
+tags: ["osx"]
 ---
-
-import Code from "../../components/Code.astro"; import DownloadableImage from
-"../../components/DownloadableImage.astro";
-
-<DownloadableImage
-src="/images/nvim-dscl.png"
-alt="Neovim screenshot showing my personal fish config with a dscl function"
-/>
 
 Have you ever wanted to give yourself root permissions for certain folders in
 \[OSX\], while not disrupting the default group settings of system folders? One
@@ -28,11 +19,13 @@ someone reading this may find this useful! If you've had to elevate yourself via
 `su`, rather than `sudo`, when installing something I haven't yet mentioned,
 drop a comment!
 
-Here are the steps:
+## Show me the code
 
-```sh
+```sh annotate
 sudo dscl . create /Groups/sharedroot PrimaryGroupID 101
 sudo dscl . append /Groups/sharedroot GroupMembership aaron
+#                                                       ^<<<
+#                                  [your user name goes here]
 sudo dscl . append /Groups/sharedroot GroupMembership root
 dscacheutil -q group | grep -C 5 root
 chown :shared_root /usr/local/texlive/texmf-local/tex/latex/local
@@ -41,9 +34,25 @@ chown :shared_root /usr/local/texlive/texmf-local/tex/latex/local
 Then, you can turn this into a \[fish\] shell function, since these commands are
 hard to remember and unique to modern \[OSX\]:
 
-\<Code lang="fish"
-code={`function createSharedRootGroup --description "adds user provided via argument to a shared group with root"   set -lx username $argv[1]   set -lx sharedRootGroup $(dscl . list /Groups | grep "sharedroot" | awk '{print $1}')   if [$sharedRootGroup = "sharedroot"]     return   else 	sudo dscl . create /Groups/sharedroot PrimaryGroupID 101 	sudo dscl . append /Groups/sharedroot GroupMembership $username 	sudo dscl . append /Groups/sharedroot GroupMembership root 	chown :shared_root /usr/local/texlive/texmf-local/tex/latex/local     echo $(dscl . list /Groups | grep -C 5 "sharedroot")   end end`}/>
+```fish annotate
+function createSharedRootGroup --description "adds user provided via argument to a shared group with root"
+    set -lx username $argv[1]
+#                       ^
+#          [input your username as the argument]
+    set -lx sharedRootGroup $(dscl . list /Groups | grep "sharedroot" | awk '{print $1}')
+    if [$sharedRootGroup = "sharedroot"]
+        return
+    else
+        sudo dscl . create /Groups/sharedroot PrimaryGroupID 101
+        sudo dscl . append /Groups/sharedroot GroupMembership $username
+        sudo dscl . append /Groups/sharedroot GroupMembership root
+        chown :shared_root /usr/local/texlive/texmf-local/tex/latex/local
+        echo $(dscl . list /Groups | grep -C 5 "sharedroot")
+    end
+end
+```
 
+## Final output
 The final output of the command should look like this:
 
 ```fish

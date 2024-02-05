@@ -1,0 +1,47 @@
+---
+import { Image } from "astro:assets";
+
+interface Props {
+  link: string;
+  src: ImageMetadata;
+  alt: string;
+  postTitle: string;
+  postLink: string;
+  className?: string;
+  width?: number;
+}
+
+const {
+  src,
+  alt,
+  width = 100,
+  postTitle,
+  postLink,
+  className = "",
+} = Astro.props;
+// console.log({ src });
+// Alt should be the link purpose, not the image content:
+// https://www.w3.org/WAI/tutorials/images/functional/#example-1-image-used-alone-as-a-linked-logo
+---
+
+{
+  src && (
+    <a href={postLink}>
+      <Image
+        class={className}
+        src={src}
+        widths={[100, 240, 540, 720, src.width]}
+        sizes={`(max-width: 360px) 240px, (max-width: 720px) 540px, (max-width: 1600px) 720px, ${src.width}px`}
+        title={alt}
+        alt={`Go to the post titled "${postTitle}"`}
+        width={width}
+      />
+    </a>
+  )
+}
+
+<style>
+  img {
+    @apply brightness-150;
+  }
+</style>

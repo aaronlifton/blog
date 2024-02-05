@@ -1,0 +1,218 @@
+---
+import type { MarkdownHeading } from "astro";
+import { Icon } from "astro-icon/components";
+// @ts-expect-error this library is not written in TypeScript
+import { TOC as TableOfContents } from "astro-toc";
+
+type Props = {
+  headings: MarkdownHeading[];
+};
+
+const { headings } = Astro.props;
+
+let tocItems = headings.map((heading) => ({
+  depth: heading.depth,
+  title: heading.text,
+  url: `#${heading.slug}`,
+}));
+
+const minimumDepth = Math.min(...tocItems.map((item) => item.depth));
+if (minimumDepth > 1) {
+  tocItems = tocItems.map((tocItem) => ({
+    ...tocItem,
+    depth: tocItem.depth - 1,
+  }));
+}
+---
+
+<div class="hidden bg-slate-50 p-4 lg:flex lg:h-full lg:flex-col">
+  <div class:list={["flex", "items-center", "gap-2", "h-10", "flex-none"]}>
+    <Icon name="tabler/list" />
+
+    <b class="m-0">Table of contents</b>
+
+    <div
+      class="ml-auto flex items-center transition-transform duration-150 ease-in group-open:rotate-180 lg:hidden"
+    >
+      <Icon name="tabler/chevron-down" />
+    </div>
+  </div>
+
+  <nav
+    data-toc-wrapper
+    class:list={[
+      "not-prose",
+      "pt-4",
+      "h-full",
+      "min-h-0",
+      "lg:overflow-y-auto",
+      "leading-6",
+      "[&_a_*]:indent-0",
+      "[&_ol]:m-0",
+      "[&_ol]:list-none",
+      "[&_ol]:pl-4",
+      "[&_ol_li]:my-4",
+      "[&_ol_li[data-active]>a]:text-primary",
+      "[&_ol_li[data-active]]:before:bg-primary",
+      "[&_ol_li[data-active]>a:first-of-type]:text-zinc-800",
+      "[&_ol_li[data-active]>a:first-of-type]:text-bold",
+      "[&_ol_li[data-active]]:before:bg-primary",
+      "[&_ol_li[data-active]]>a:text-zinc-800",
+      "[&_ol_li]:relative",
+      "[&_ol_li]:before:absolute",
+      "[&_ol_li]:before:left-0",
+      "[&_ol_li]:before:top-0",
+      "[&_ol_li]:before:h-full",
+      "[&_ol_li]:before:w-[1px]",
+      "[&_ol_li]:before:bg-divider",
+      "[&_ol_li]:before:content-['']",
+      "[&_ol_li_a:hover]:bg-hover",
+      "[&_ol_li_a]:block",
+      // "[&_ol_li_a]:truncate",
+      "[&_ol_li_a]:border-b-0",
+      "[&_ol_li_a]:transition-colors",
+      "[&_ol_li_a]:duration-150",
+      "[&_ol_ol]:pl-8",
+      "[&_ol_ol_ol]:pl-12",
+      "[&_ol_ol_ol_ol]:pl-16",
+      "[&_ol_li_a]:text-zinc-300",
+      "[&_ol_li_a]:text-[rgb(99, 102, 241)]",
+      "[&_ol_li_a]:no-underline",
+      "[&_ol_li_a:hover:first-of-type]:text-zinc-400",
+      "[&_ol_li[data-active]_a:hover:first-of-type]:text-zinc-800",
+    ]}
+  >
+    <TableOfContents toc={tocItems} as="number" />
+  </nav>
+</div>
+
+<details
+  class="group px-horizontal-padding py-4 lg:hidden"
+  aria-label="Table of contents"
+>
+  <summary class="list-none">
+    <div class="align-center flex items-center gap-2">
+      <Icon name="tabler/list" />
+
+      <h2 class="m-0">Table of contents</h2>
+
+      <div
+        class="ml-auto flex items-center transition-transform duration-150 ease-in group-open:rotate-180 lg:hidden"
+      >
+        <Icon name="tabler/chevron-down" />
+      </div>
+    </div>
+  </summary>
+
+  <nav
+    data-toc-wrapper
+    class:list={[
+      "mt-4",
+      "[&_ol]:m-0",
+      "[&_ol]:list-outside",
+      "[&_ol]:px-horizontal-padding",
+      "[&_ol_li:not(:first-child)]:mt-1",
+    ]}
+  >
+    <TableOfContents toc={tocItems} as="number" />
+  </nav>
+</details>
+
+<script>
+  const toc = document.querySelector<HTMLElement>("nav[data-toc-wrapper] ol");
+  const tocContainer = toc?.closest<HTMLElement>("[data-toc-wrapper]");
+  const blogPost = document.querySelector("[data-blog-post]") as HTMLElement;
+  const firstTocItem = toc?.querySelector("li");
+
+  function activate(listItem: HTMLLIElement): void {
+    if (listItem.parentElement?.parentElement?.tagName === "li") {
+      listItem.parentElement.setAttribute("data-active", "");
+    }
+    listItem.setAttribute("data-active", "");
+    console.log({ listItem });
+  }
+
+  function deactivate(listItem: HTMLLIElement): void {
+    listItem.parentElement?.removeAttribute("data-active");
+    listItem.removeAttribute("data-active");
+  }
+
+  function deactivateAllTocItems(): void {
+    toc?.querySelectorAll("li").forEach(deactivate);
+  }
+
+  function getTocItemByHeading(
+    heading: HTMLHeadingElement,
+  ): HTMLLIElement | null {
+    const headingId = heading.getAttribute("id");
+    const tocAnchorElem = toc?.querySelector(`li a[href="#${headingId}"]`);
+
+    if (!tocAnchorElem) {
+      return null;
+    }
+    return tocAnchorElem.closest("li");
+  }
+
+  const observer = new IntersectionObserver(
+    (entries) => {
+      entries.forEach((entry): void => {
+        if (!tocContainer) {
+          return;
+        }
+
+        const heading = entry.target;
+
+        if (entry.isIntersecting) {
+          const tocItem = getTocItemByHeading(heading as HTMLHeadingElement);
+
+          if (!tocItem) {
+            return;
+          }
+
+          deactivateAllTocItems();
+          activate(tocItem);
+          const tocContainerCoords = tocContainer.getBoundingClientRect();
+          const tocItemCoords = tocItem.getBoundingClientRect();
+
+          if (tocItem === firstTocItem) {
+            tocContainer.scrollTop = 0;
+            return;
+          }
+
+          // Is the item not visible because it's above the scrollable area? Then
+          // make it visible by scrolling up.
+          if (tocContainerCoords.top > tocItemCoords.top) {
+            tocContainer.scrollTop -=
+              tocContainerCoords.top - tocItemCoords.top;
+            return;
+          }
+
+          if (tocItemCoords.bottom > tocContainerCoords.bottom) {
+            tocContainer.scrollTop +=
+              tocItemCoords.bottom - tocContainerCoords.bottom;
+          }
+
+          // if (tocContainerCoords.top < 0) {
+          //   console.log("here1");
+          // }
+          // const coords = blogPostTocContainer?.getBoundingClientRect();
+          // if (coords?.top < 0) {
+          //   console.log("here2");
+          // }
+        }
+      });
+    },
+    {
+      threshold: 1,
+      rootMargin: "0% 0% 0% 0%",
+    },
+  );
+
+  const headingsInBlogPost = blogPost.querySelectorAll(
+    "h1, h2, h3, h4, h4, h6",
+  );
+
+  for (const headingInBlogPost of headingsInBlogPost) {
+    observer.observe(headingInBlogPost);
+  }
+</script>
