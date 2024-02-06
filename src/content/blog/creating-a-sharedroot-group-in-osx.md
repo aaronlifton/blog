@@ -53,6 +53,7 @@ end
 ```
 
 ## Final output
+
 The final output of the command should look like this:
 
 ```fish

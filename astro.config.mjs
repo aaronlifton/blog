@@ -37,6 +37,12 @@ export default defineConfig({
           lang: ["tsx", "jsx", "typescript", "sh", "fish", "json"],
         },
       ],
+      [
+        rehypeAutolinkHeadings,
+        {
+          behavior: "append",
+        },
+      ],
     ],
     shikiConfig: {
       theme: "material-theme-darker",
@@ -73,4 +79,3 @@ export default defineConfig({
     },
   },
 });
-

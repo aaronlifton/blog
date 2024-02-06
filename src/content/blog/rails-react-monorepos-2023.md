@@ -88,7 +88,7 @@ data attributes here do not provide a clear way to understand what is happening,
 and the word target seems totally unnecessary given frameworks parse abstract
 syntax trees behind the scenes in order to prove developers much more ergonomic
 ways of doing things nowadays.
- 
+
 ```html
 <div data-controller="hello">
   <input data-hello-target="name" type="text">
