@@ -1,5 +1,6 @@
 const { fontFamily } = require("tailwindcss/defaultTheme");
 const config = require("./tailwind.theme.config.cjs");
+const harmonyPalette = require("@evilmartians/harmony/tailwind");
 const { colors } = config;
 
 function withOpacityValue(variable) {
@@ -11,6 +12,14 @@ export default {
   darkMode: "class",
   content: ["./src/**/*.{astro,html,js,jsx,md,mdx,svelte,ts,tsx,vue}"],
   safelist: ["dark"],
+  variants: {
+    extend: { typography: ["dark"] },
+  },
+  plugins: [
+    require("@tailwindcss/typography"),
+    require("@tailwindcss/forms"),
+    require("@tailwindcss/aspect-ratio"),
+  ],
   theme: {
     data: {
       "toc-open": 'toc="open"',
@@ -19,6 +28,7 @@ export default {
     fontFamily: {
       sans: ["Fira Code", ...fontFamily.sans],
     },
+    colors: { ...colors, ...harmonyPalette },
     extend: {
       maxWidth: {
         "1/2": "50%",
@@ -39,10 +49,10 @@ export default {
       },
       gridTemplateColumns: {
         layout: `
-				[full-start] 1fr
-				[content-start] calc(min(var(--content-max-width), 100%) - var(--horizontal-padding) * 2) [content-end]
-				1fr [full-end]
-			`,
+  		[full-start] 1fr
+  		[content-start] calc(min(var(--content-max-width), 100%) - var(--horizontal-padding) * 2) [content-end]
+  		1fr [full-end]
+  	`,
       },
       gridColumn: {
         content: "content",
@@ -124,12 +134,4 @@ export default {
       }),
     },
   },
-  variants: {
-    extend: { typography: ["dark"] },
-  },
-  plugins: [
-    require("@tailwindcss/typography"),
-    require("@tailwindcss/forms"),
-    require("@tailwindcss/aspect-ratio"),
-  ],
 };

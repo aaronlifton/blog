@@ -1,0 +1,32 @@
+---
+import { getFirstCodeFromMdx } from "$/util/markdown";
+import unified from "unified";
+import markdown from "remark-parse";
+import mdx from "@mdx/mdx-js";
+import remark2rehype from "remark-rehype";
+import stringify from "rehype-stringify";
+
+interface Props {
+  filename: string;
+}
+const { filename }: Props = Astro.props;
+
+if (!filename) {
+  throw new Error("filename is required");
+}
+const mdx = await getFirstCodeFromMdx(filename);
+async function renderMdxToHtml(mdx) {
+  const processor = unified()
+    .use(markdown)
+    .use(mdx)
+    .use(remark2rehype)
+    .use(stringify);
+
+  const result = await processor.process(mdx);
+  return result.contents;
+}
+
+const rendered = await renderMdxToHtml(mdx);
+---
+
+<Fragment set:html={rendered} />
