@@ -1,0 +1,6 @@
+---
+import { getEntryBySlug } from "astro:content";
+const entry = await getEntryBySlug("blog", "eslint-allow-underscore-prefix");
+
+const { Content, headings, remarkPluginFrontmatter } = await entry.render();
+---

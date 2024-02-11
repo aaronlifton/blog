@@ -1,24 +1,24 @@
 ---
-import BaseHead from "$/components/BaseHead.astro";
-import CodeText from "$/components/CodeText.astro";
-import IconTextLink from "$/components/IconTextLink.astro";
-import FormattedDate from "$/components/FormattedDate.astro";
-import Header from "$/components/Header.astro";
-import IconButton from "$/components/IconButton";
-import PostStats from "$/components/PostStats.svelte";
-import Prose from "$/components/Prose.astro";
-import Tags from "$/components/Tags.astro";
-import ZoomImage from "$/components/ZoomImage.svelte";
+import BaseHead from "$components/BaseHead.astro";
+import CodeText from "$components/CodeText.astro";
+import IconTextLink from "$components/IconTextLink.astro";
+import FormattedDate from "$components/FormattedDate.astro";
+import Header from "$components/Header.astro";
+import IconButton from "$components/IconButton";
+import PostStats from "$components/PostStats.svelte";
+import Prose from "$components/Prose.astro";
+import Tags from "$components/Tags.astro";
+import ZoomImage from "$components/ZoomImage.svelte";
 import Layout from "$/layouts/Layout.astro";
 import type { MarkdownHeading } from "astro";
 import { Icon } from "astro-icon/components";
 import { Image } from "astro:assets";
-import Toc from "$/components/Toc.astro";
+import Toc from "$components/Toc.astro";
 import type { CollectionEntry } from "astro:content";
 import clsx from "clsx";
 import "@radix-ui/themes/styles.css";
-import { getSlugFromPathname } from "src/util";
-import "../styles/shaku.css";
+import { getSlugFromPathname } from "$/util";
+import "$/styles/shaku.css";
 
 type Props = CollectionEntry<"blog">["data"] & { headings: MarkdownHeading[] };
 const {
@@ -228,6 +228,7 @@ const tocEmpty = headings.length === 0;
   </Prose>
 </Layout>
 <style>
+  /* TODO: fix back to top */
   /* Size Modifiers: https://github.com/tailwindlabs/tailwindcss-typography#size-modifiers */
   /* Color Themes: https://github.com/tailwindlabs/tailwindcss-typography#color-modifiers */
   [data-back-to-top] {

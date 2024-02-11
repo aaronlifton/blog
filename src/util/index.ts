@@ -15,10 +15,10 @@ const MONTHS = [
 	"Dec",
 ];
 
-export const toTitleCase = (str: string) =>
-	str.replace(/\w\S*/g, (txt) => txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase());
+export const toTitleCase = (str: string): string =>
+	str.replace(/\w\S*/g, (txt) => txt.charAt(0).toUpperCase() + txt.slice(1).toLowerCase());
 
-export const getMonthName = (date: Date) => MONTHS[new Date(date).getMonth()];
+export const getMonthName = (date: Date): string => MONTHS[new Date(date).getMonth()];
 
 export const getSlugFromPathname = (pathname: string) =>
 	path.basename(pathname, path.extname(pathname));
@@ -26,3 +26,7 @@ export const getSlugFromPathname = (pathname: string) =>
 export { iconForTag } from "./tagIconMap";
 
 export * from "./dom"
+export * from "./markdown"
+export * from "./test"
+export * from "./css.mjs"
+export * from "./array"

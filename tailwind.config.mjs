@@ -1,5 +1,6 @@
 const { fontFamily } = require("tailwindcss/defaultTheme");
-const config = require("./tailwind.theme.config.cjs");
+const config = require("./src/styles/tailwind.theme.config.cjs");
+const harmonyPalette = require("@evilmartians/harmony/tailwind");
 const { colors } = config;
 
 function withOpacityValue(variable) {
@@ -11,6 +12,14 @@ export default {
   darkMode: "class",
   content: ["./src/**/*.{astro,html,js,jsx,md,mdx,svelte,ts,tsx,vue}"],
   safelist: ["dark"],
+  variants: {
+    extend: { typography: ["dark"] },
+  },
+  plugins: [
+    require("@tailwindcss/typography"),
+    require("@tailwindcss/forms"),
+    require("@tailwindcss/aspect-ratio"),
+  ],
   theme: {
     data: {
       "toc-open": 'toc="open"',
@@ -19,6 +28,7 @@ export default {
     fontFamily: {
       sans: ["Fira Code", ...fontFamily.sans],
     },
+    colors: { ...colors, ...harmonyPalette },
     extend: {
       maxWidth: {
         "1/2": "50%",
@@ -39,10 +49,10 @@ export default {
       },
       gridTemplateColumns: {
         layout: `
-				[full-start] 1fr
-				[content-start] calc(min(var(--content-max-width), 100%) - var(--horizontal-padding) * 2) [content-end]
-				1fr [full-end]
-			`,
+  		[full-start] 1fr
+  		[content-start] calc(min(var(--content-max-width), 100%) - var(--horizontal-padding) * 2) [content-end]
+  		1fr [full-end]
+  	`,
       },
       gridColumn: {
         content: "content",
@@ -52,6 +62,31 @@ export default {
       //    DEFAULT: '500ms',
       //    0: '0ms',
       // },
+      keyframes: {
+        dialogAnimateIn: {
+          "0%" {
+             transform: "scale(0)";
+             opacity: 0
+           },
+           "50%" {
+             transform: "scale(110%)";
+           },
+           "100%" {
+             transform: "scale(100%)";
+             opacity: 1
+           }
+        },
+        dialogAnimateOut: {
+          "0%" {
+             transform: "scale(100%)";
+             opacity: 1
+           },
+           "100%" {
+             transform: "scale(0)";
+             opacity: 0
+           }
+        }
+      },
       transitionTimingFunction: {
         "in-expo": "cubic-bezier(0.95, 0.05, 0.795, 0.035)",
         "out-expo": "cubic-bezier(0.19, 1, 0.22, 1)",
@@ -124,12 +159,4 @@ export default {
       }),
     },
   },
-  variants: {
-    extend: { typography: ["dark"] },
-  },
-  plugins: [
-    require("@tailwindcss/typography"),
-    require("@tailwindcss/forms"),
-    require("@tailwindcss/aspect-ratio"),
-  ],
 };

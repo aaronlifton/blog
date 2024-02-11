@@ -208,9 +208,8 @@ if (minimumDepth > 1) {
     },
   );
 
-  const headingsInBlogPost = blogPost.querySelectorAll(
-    "h1, h2, h3, h4, h4, h6",
-  );
+  const headingsInBlogPost =
+    blogPost?.querySelectorAll("h1, h2, h3, h4, h4, h6") ?? [];
 
   for (const headingInBlogPost of headingsInBlogPost) {
     observer.observe(headingInBlogPost);

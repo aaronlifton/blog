@@ -5,7 +5,6 @@
  */
 /* @import "./base.css"; */
 
-
 :root {
   --accent: #2337ff;
   --accent-dark: #000d8a;
@@ -13,9 +12,7 @@
   --gray: 96, 115, 159;
   /* --gray-light: 229, 233, 240; */
   --gray-dark: 34, 41, 57;
-  /* --gray-gradient: rgba(var(--gray-light), 50%), #fff; */
-  --box-shadow: 0 2px 6px rgba(var(--theme-bg-gray), 25%),
-    0 8px 24px rgba(#ffffff, 33%), 0 16px 32px rgba(#ffffff, 33%);
+  --box-shadow: 0 2px 6px rgba(var(--gray-dark), 25%);
   --bg-theme-primary: #fff;
   /* --code-callout-bg: rgba(var(--bg-gray-600), 100%); */
   /* */
@@ -27,20 +24,6 @@
   --total-footer-height: calc(var(--footer-height) + var(--footer-margin-top));
   --vert-padding: 1rem;
 
-  --primary: hexToRgb(theme(colors.orange.500));
-  --primary-hover: hexToRgb(theme(colors.orange.600));
-  --on-primary: hexToRgb(theme(colors.stone.800));
-  --background: hexToRgb(theme(colors.stone.100));
-  --on-background: hexToRgb(theme(colors.stone.800));
-  --surface: hexToRgb(theme(colors.stone.200));
-  --hover: hexToRgb(theme(colors.stone.300));
-  --disabled: var(--background);
-  --on-disabled: hexToRgb(theme(colors.stone.400));
-  --divider: hexToRgb(theme(colors.stone.500));
-  --shadow: hexToRgb(theme(colors.stone.600));
-  --note: hexToRgb(theme(colors.blue.600));
-  --warn: hexToRgb(theme(colors.red.600));
-  color-scheme: light;
 }
 
 @tailwind base;
@@ -53,7 +36,7 @@
   }
 
   .card-none {
-    @apply rounded-none bg-background shadow-none;
+    @apply bg-background rounded-none shadow-none;
   }
 
   .grid-cols-layout > * {
@@ -62,9 +45,9 @@
 }
 
 @layer utilities {
-  .full-bleed {
-    @apply -mx-horizontal-padding;
-  }
+ .full-bleed {
+   @apply -mx-horizontal-padding;
+ }
 }
 
 [data-preload] {
@@ -89,7 +72,6 @@
   }
 }
 
-
 @font-face {
   font-family: "Atkinson";
   src: url("/fonts/atkinson-regular.woff") format("woff");
@@ -104,33 +86,29 @@
   font-style: normal;
   font-display: swap;
 }
+
 body {
   font-family: "Atkinson", sans-serif;
-  /* font-family: "Source Sans Pro", sans-serif; */
   text-align: left;
   background-size: 100% 600px;
   word-wrap: break-word;
   overflow-wrap: break-word;
-  /* color: rgb(var(--gray-dark)); */
   font-size: 1.25rem;
   line-height: 1.7;
-  @apply flex h-full flex-col m-0 p-0 bg-theme-bg-secondary
-    bg-gradient-to-b from-white to-theme-bg-secondary bg-no-repeat
-    dark:bg-none dark:bg-theme-dark-background
-    text-theme-text-primary text-left;
+  @apply m-0 flex h-full flex-col bg-red-100 p-0 text-left text-theme-text-primary bg-purple-50;
 }
 
 main {
-  @apply grid grid-cols-layout bg-theme-bg-primary py-6 px-3;
+  @apply grid grid-cols-layout px-3 py-6;
 }
 dialog.welcome {
   p {
-    font-family: "Inter", sans-serif; /*Regular_wght1C20000*/
+    font-family: "Inter", sans-serif;
   }
 }
 @font-face {
   font-family: "iMWritingMono Nerd Font";
-  src: url('fonts/iMWritingMonoNerdFont-Italic.ttf') format('truetype');
+  src: url("fonts/iMWritingMonoNerdFont-Italic.ttf") format("truetype");
 }
 
 h1,
@@ -165,9 +143,9 @@ b {
   font-weight: 700;
 }
 a {
-  @apply subpixel-antialiased text-theme-primary dark:text-theme-dark-primary 
-    decoration-theme-dark-primary/0 decoration-2 underline underline-offset-2 
-    transition-colors duration-100 ease-in-out;
+  @apply text-fuchsia-300 text-theme-primary underline
+    decoration-theme-dark-primary/0 decoration-2 underline-offset-2 subpixel-antialiased
+    transition-colors duration-100 ease-in-out dark:text-theme-dark-primary;
 }
 a:hover {
   @apply text-theme-primary decoration-theme-primary decoration-2 dark:text-theme-dark-primary dark:decoration-theme-dark-primary/100;
@@ -177,14 +155,18 @@ p {
   margin-bottom: 1em;
 }
 .prose {
-  @apply max-w-none lg:prose-lg prose-slate dark:prose-invert;
+  @apply prose-slate max-w-none dark:prose-invert lg:prose-lg;
   /* light:prose-slate dark:prose-dark */
   /* Size Modifiers: https://github.com/tailwindlabs/tailwindcss-typography#size-modifiers */
-  /* Color Themes: https://github.com/tailwindlabs/tailwindcss-typography#color-modifiers */;
+  /* Color Themes: https://github.com/tailwindlabs/tailwindcss-typography#color-modifiers */
 }
 .prose code {
-  &::before { content: "" }
-  &::after { content: "" }
+  &::before {
+    content: "";
+  }
+  &::after {
+    content: "";
+  }
 }
 .prose p {
   @apply max-w-prose;
@@ -217,8 +199,7 @@ img {
   border-radius: 8px;
 }
 code {
-  @apply text-sm px-1 rounded-md border bg-theme-bg-gray
-  dark:bg-theme-dark-background dark:border-theme-accent-gray-dark;
+  @apply rounded-md border bg-theme-bg-gray px-1 text-sm;
   /* background-color: rgb(var(--gray-light)); */
 }
 pre {
@@ -231,11 +212,11 @@ pre > code {
 blockquote {
   border-left: 4px solid var(--accent);
   padding: 0 0 0 20px;
-  margin: 0px;
+  margin: 0;
   font-size: 1.333em;
 }
 hr {
-  @apply border border-t border-slate-200 my-4 p-0;
+  @apply my-4 border border-t border-slate-200 p-0;
 }
 @media (max-width: 720px) {
   body {
@@ -275,5 +256,5 @@ hr {
   background-color: var(--bg-theme-primary);
 }
 .emdash {
-  @apply px-1 mx-1 italic text-theme-bg-gray;
+  @apply mx-1 px-1 italic text-theme-bg-gray;
 }

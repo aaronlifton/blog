@@ -1,0 +1,16 @@
+---
+import { getEntry, type CollectionEntry } from "astro:content";
+import { getFirstCodeFromMdx } from "$/util";
+
+interface Props extends Pick<CollectionEntry<"blog">, "slug"> {}
+const { slug }: Props = Astro.props;
+
+console.log("HERE", Astro.props);
+
+const data = await getEntry("blog", slug);
+const { lang, html } = await getFirstCodeFromMdx(data.body);
+console.log({ html, lang });
+---
+
+<b>{slug}</b>
+<code set:html={html} />

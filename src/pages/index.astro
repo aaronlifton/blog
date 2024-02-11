@@ -1,4 +1,5 @@
 ---
+import { Debug } from "astro:components"
 import Layout from "../layouts/Layout.astro";
 import BaseHead from "../components/BaseHead.astro";
 import Header from "../components/Header.astro";
@@ -12,7 +13,7 @@ import Prose from "../components/Prose.astro";
 import PostPreview from "../components/PostPreview.astro";
 import PostPreviewList from "../components/PostPreviewList.astro";
 import PostPreviewListFooter from "../components/PostPreviewListFooter.astro";
-
+import SampleCode from "../components/SampleCode.astro";
 export const prerender = true;
 
 const posts = (await getCollection("blog"))
@@ -20,6 +21,7 @@ const posts = (await getCollection("blog"))
   .sort((a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf());
 ---
 
+<Debug {posts} />
 <Layout>
   <div class="hero flex justify-center pb-vert-padding">
     <div class="hero__tagline flex justify-center">
@@ -29,7 +31,8 @@ const posts = (await getCollection("blog"))
       </Prose>
     </div>
   </div>
-  <!-- <PostPreviewList posts={posts} heading="Recent posts" asCard /> -->
-  <PostPreviewList posts={posts} heading="Recent posts" />
+  <SampleCode />
+  <PostPreviewList posts={posts} heading="Recent posts" asCard />
+  <!-- <PostPreviewList posts={posts} heading="Recent posts" /> -->
   <PostPreviewListFooter />
 </Layout>

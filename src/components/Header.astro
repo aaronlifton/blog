@@ -5,7 +5,7 @@ import { SITE_TITLE } from "../consts";
 ---
 
 <header class="grid grid-cols-layout">
-  <nav class="sm:col-content h-nav-height">
+  <nav class="h-nav-height sm:col-content">
     <h2>
       <a href="/">{SITE_TITLE}</a>
     </h2>
@@ -36,16 +36,17 @@ import { SITE_TITLE } from "../consts";
 </header>
 <style>
   header {
-    @apply bg-white dark:bg-theme-dark-backgroundSecondary dark:text-theme-dark-textPrimary;
-    background: white;
+    /*@apply bg-white dark:bg-theme-dark-backgroundSecondary dark:text-theme-dark-textPrimary;*/
+    @apply bg-theme-new-header-bg text-theme-new-header-text;
   }
   nav {
-    @apply transition-colors duration-300 ease-in-out max-w-[100ch] flex
-      justify-between items-center;
+    @apply flex max-w-[100ch] items-center justify-between transition-colors
+      duration-300 ease-in-out;
   }
   nav a {
     padding: 1em 0.5em;
-    color: var(--black);
+    /*color: var(--black);*/
+    @apply text-theme-new-header-text decoration-theme-new-card-link;
     border-bottom: 4px solid transparent;
   }
   h2 {
@@ -55,8 +56,9 @@ import { SITE_TITLE } from "../consts";
   }
 
   h2 a {
-    @apply font-bold underline underline-offset-2 decoration-theme-primary hover:decoration-theme-accent-default
-      px-0 mx-0;
+    @apply mx-0 px-0 font-bold underline decoration-theme-new-header-accent
+      underline-offset-2
+hover:decoration-theme-accent-default hover:decoration-theme-new-header-accent;
   }
   h2 a.active {
     @apply no-underline;
@@ -68,10 +70,10 @@ import { SITE_TITLE } from "../consts";
     }
   }
   nav .internal-links a {
-    @apply underline underline-offset-8 decoration-theme-primary/0
-      -translate-x-2/4;
+    @apply -translate-x-2/4 underline decoration-theme-primary/0
+      underline-offset-8;
     &.active {
-      @apply decoration-theme-primary/100;
+      @apply decoration-theme-new-header-accent;
     }
   }
   @media (max-width: 720px) {

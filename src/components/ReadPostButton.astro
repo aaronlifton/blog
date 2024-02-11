@@ -1,0 +1,29 @@
+---
+interface Props {
+  link: string;
+}
+const { link }: Props = Astro.props;
+---
+
+<div class="ml-auto flex shrink p-3">
+  <a
+    class="group/button duration-50 flex h-[50px] transform items-center justify-center space-x-3 !rounded-lg
+    rounded-md border border-pink-500
+    bg-[linear-gradient(76.35deg,_#801AE6_15.89%,_#A21AE6_89.75%)] !px-11 !py-3 px-3 py-2 text-base font-semibold leading-6 text-white
+    shadow-[0px_0px_24px_rgba(0,_0,_0,_0.04)] transition-transform hover:border-pink-600
+    hover:bg-[linear-gradient(76.35deg,_#660AC2_15.89%,_#850AC2_89.75%)] focus:bg-[linear-gradient(76.35deg,_#4D0891_15.89%,_#630891_89.75%)] focus:outline-none
+    focus-visible:ring-2 focus-visible:ring-pink-600 disabled:cursor-not-allowed
+    disabled:border-pink-500 disabled:bg-pink-500 disabled:opacity-50"
+    href={link}
+  >
+    <span class="text-semibold inline-block font-normal">Read</span>
+  </a>
+</div> #A667E4
+<style>
+  a {
+    @apply text-white;
+    &:hover {
+      @apply border-pink-600 text-white outline-offset-2 outline-white/0;
+    }
+  }
+</style>

@@ -3,7 +3,10 @@ import type { CollectionEntry } from "astro:content";
 import { getMonthName, iconForTag } from "$/util";
 import CodeText from "$/components/CodeText.astro";
 import HomeImage from "$/components/HomeImage.astro";
-
+import SampleCode from "$/components/SampleCode.astro";
+import ReadPostButton from "$/components/ReadPostButton.astro";
+import harmonyPalette from "@evilmartians/harmony/tailwind";
+import { cartesianProduct } from "$/util";
 interface Props {
   post: CollectionEntry<"blog">;
   asCard?: boolean;
@@ -13,8 +16,12 @@ const {
   post: { data: post, slug },
   asCard = false,
 } = Astro.props;
+const colors = ["purple", "fuchsia", "indigo", "rose"];
+// const values = [50, 100, 200, 300, 400, 500, 600, 700, 800, 900];
+// const products = console.log(cartesianProduct(colors, values));
 ---
 
+<!-- product.forEach(([color, value]) => { --><!--     return ( --><!--       <div class="post-preview-card" style="min-height:100"> --><!--         <p> --><!--           Lorem ipsum dolor sit amet, qui minim labore adipisicing minim sint --><!--           cillum sint consectetur cupidatat. --><!--         </p> --><!--       </div> --><!--     ); --><!--   }) -->
 <div class:list={["post-preview", { "post-preview--card": asCard }]}>
   <div class="post-preview__date-box">
     <div class="post-preview__date">
@@ -41,14 +48,14 @@ const {
   </div>
   <div class="flex-1">
     <div
-      class="post-preview__title dark:text-theme-dark-primary flex
-      space-apart"
+      class="post-preview__title space-apart flex
+      dark:text-theme-dark-primary"
     >
       <a
         href={`/blog/${slug}`}
         title={post.title}
-        class="font-normal text-md
-        grow"
+        class="text-md grow
+        font-normal"
       >
         <CodeText text={post.title} />
       </a>
@@ -56,35 +63,53 @@ const {
     <p class="post-preview__desc">
       <CodeText text={post.description} />
     </p>
+    <div class="flex flex-row gap-2">
+      <!-- <p style="color:oklab(83.9% -2.09 4.37)">Sample code:</p> -->
+      <!-- <p style="lab(83.37% 1.51 -22.22)">Sample code:</p> -->
+      <p style="lab(86.96% 0.87 -16.77)">Sample code:</p>
+      <!-- oklch(89% 0.045 270.12) -->
+      <!-- oklch(86% 0.06 270.12) -->
+      <!-- oklch(86.5% 0.072 309.04) // French lilac -150 -->
+      <!-- oklch(81.5% 0.107 309.04) // French lilac -175<F19> -->
+      <SampleCode {slug} />
+      <ReadPostButton link={`/blog/${slug}`} />
+    </div>
   </div>
 </div>
 <style>
   .post-preview {
-    @apply flex gap-6;
+    @apply flex gap-6 dark:bg-[#14111C];
   }
   .post-preview__desc :global(code) {
     @apply text-sm;
   }
   .post-preview--card {
-    @apply border border-gray-200 dark:border-slate-300 border rounded-lg p-4;
+    @apply rounded-lg border border-2 border-theme-new-card-border bg-theme-new-card-bg bg-opacity-50 p-4 dark:border-slate-300;
+
+    .post-preview__title a {
+      /*@apply decoration-theme-amethyst-200 underline-offset-4;*/
+    }
     .post-preview__date-box {
-      @apply flex  border border-slate-800;
+      @apply flex;
     }
     .post-preview__date {
-      @apply text-left flex flex-row gap-1;
+      @apply flex flex-row gap-1 text-left;
     }
     .post-preview__date__day {
       @apply text-4xl;
     }
+    img {
+      @apply border border-2 border-theme-new-card-img;
+    }
   }
   [data-home-image] {
-    @apply h-fit flex flex-row-reverse;
+    @apply flex h-fit flex-row-reverse;
   }
   .post-preview__date-box {
     /*@apply sm:w-20 md:w-32;*/
   }
   .post-preview__date {
-    @apply flex flex-col w-full text-center;
+    @apply flex w-full flex-col text-center;
   }
   .post-preview__date__day {
     @apply text-6xl font-semibold text-gray-500 dark:text-gray-300;
@@ -93,7 +118,7 @@ const {
     @apply text-gray-400;
   }
   .post-preview__title {
-    @apply text-2xl font-semibold  mb-2;
+    @apply mb-2 text-2xl  font-semibold;
     a {
       @apply text-theme-primary dark:text-theme-dark-primary;
     }
@@ -102,6 +127,6 @@ const {
     @apply text-lg;
   }
   .post-preview__desc {
-    @apply text-lg leading-6 line-clamp-2 dark:text-white hyphens-auto;
+    @apply line-clamp-2 hyphens-auto text-lg leading-6 dark:text-white;
   }
 </style>

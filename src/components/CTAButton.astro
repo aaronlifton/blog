@@ -1,0 +1,16 @@
+---
+interface Props {
+  text: string,
+  link?: string;
+}
+const { text, link }: Props = props;
+---
+
+<button><a href={link}>{text}</a></button> 
+
+<style>
+button {
+  linear-gradient(in oklch to right, #de72c6, #2dcde4)
+  @apply text-theme-indigo-600 border rounded-md px-4 py-2;
+}
+</style>
