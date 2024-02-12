@@ -7,6 +7,9 @@ const { slug }: Props = Astro.props;
 
 console.log("HERE", Astro.props);
 
+if (!slug) {
+  throw new Error("Slug is required");
+}
 const data = await getEntry("blog", slug);
 const { lang, html } = await getFirstCodeFromMdx(data.body);
 console.log({ html, lang });

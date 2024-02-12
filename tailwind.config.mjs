@@ -64,28 +64,28 @@ export default {
       // },
       keyframes: {
         dialogAnimateIn: {
-          "0%" {
-             transform: "scale(0)";
-             opacity: 0
-           },
-           "50%" {
-             transform: "scale(110%)";
-           },
-           "100%" {
-             transform: "scale(100%)";
-             opacity: 1
-           }
+          "0%": {
+            transform: "scale(0)",
+            opacity: 0,
+          },
+          "50%": {
+            transform: "scale(110%)",
+          },
+          "100%": {
+            transform: "scale(100%)",
+            opacity: 1,
+          },
         },
         dialogAnimateOut: {
-          "0%" {
-             transform: "scale(100%)";
-             opacity: 1
-           },
-           "100%" {
-             transform: "scale(0)";
-             opacity: 0
-           }
-        }
+          "0%": {
+            transform: "scale(100%)",
+            opacity: 1,
+          },
+          "100%": {
+            transform: "scale(0)",
+            opacity: 0,
+          },
+        },
       },
       transitionTimingFunction: {
         "in-expo": "cubic-bezier(0.95, 0.05, 0.795, 0.035)",

@@ -4,13 +4,15 @@ import sitemap from "@astrojs/sitemap";
 import path, { dirname } from "path";
 import { fileURLToPath } from "url";
 import tailwind from "@astrojs/tailwind";
+import vercel from "@astrojs/vercel/serverless";
 import { remarkShakuCodeAnnotate } from "remark-shaku-code-annotate";
+import { rehypeAutolinkHeadings } from "rehype-autolink-headings";
 // import customImageResizerIntegration from "./processImages.mjs";
-import rehypeAutolinkHeadings from "rehype-autolink-headings";
 import { transformerTwoslash } from "shikiji-twoslash";
 import svelte from "@astrojs/svelte";
 import icon from "astro-icon";
 import react from "@astrojs/react";
+import solidJs from "@astrojs/solid-js";
 const __dirname = dirname(fileURLToPath(import.meta.url));
 
 // https://astro.build/config
@@ -20,11 +22,23 @@ export default defineConfig({
   integrations: [
     mdx(),
     sitemap(),
-    tailwind({ applyBaseStyles: false, nesting: true }),
+    tailwind(
+      {
+        applyBaseStyles: false,
+        nesting: true,
+      },
+      react({
+        include: ["**/react/*"],
+      }),
+      solid({
+        include: ["**/solid/*", "**/node_modules/@suid/material/**"],
+      }),
+    ),
     // customImageResizerIntegration,
     svelte(),
     icon(),
     react(),
+    solidJs(),
   ],
   markdown: {
     remarkPlugins: [
@@ -37,6 +51,8 @@ export default defineConfig({
           lang: ["tsx", "jsx", "typescript", "sh", "fish", "json"],
         },
       ],
+    ],
+    rehypePlugins: [
       [
         rehypeAutolinkHeadings,
         {
@@ -71,6 +87,7 @@ export default defineConfig({
   image: {
     service: squooshImageService(),
   },
+  adapter: vercel(),
   redirects: {
     "/blog": {
       status: 308,

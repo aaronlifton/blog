@@ -3,17 +3,14 @@
   "compilerOptions": {
     "baseUrl": ".",
     "paths": {
-      "$/": ["./src/"],
-      "$/*": ["./src/*"],
-      "$i18n/*": ["./src/i18n/*"],
-      "$utils/*": ["./src/utils/*"],
-      "$assets/*": ["./src/assets/*"],
-      "$components/*": ["./src/components/*"],
-      "$layouts/*": ["./src/layouts/*"]
+      "$util/*": ["src/util/*"],
+      "$components/*": ["src/components/*"],
+      "$layouts/*": ["src/layouts/*"],
+      "$/": ["src/"]
     },
     "types": ["astro/client"],
-    "jsx": "react-jsx",
+    "jsx": "react-jsx"
   },
   "include": ["src/**/*", "plugins", "scripts", "tests"],
-  "exclude": ["src/components/devicons", "src/tmpscripts/**/*"]
+  "exclude": ["src/components/devicons", "src/tmpscripts", "src/tmp"]
 }

@@ -10,6 +10,7 @@ export default {
       $: path.resolve(__dirname, "./src"),
       $util: path.resolve(__dirname, "./src/util"),
       $components: path.resolve(__dirname, "./src/components"),
+      $layouts: path.resolve(__dirname, "./src/layouts"),
     },
   },
 };

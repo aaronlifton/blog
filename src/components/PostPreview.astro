@@ -5,8 +5,6 @@ import CodeText from "$/components/CodeText.astro";
 import HomeImage from "$/components/HomeImage.astro";
 import SampleCode from "$/components/SampleCode.astro";
 import ReadPostButton from "$/components/ReadPostButton.astro";
-import harmonyPalette from "@evilmartians/harmony/tailwind";
-import { cartesianProduct } from "$/util";
 interface Props {
   post: CollectionEntry<"blog">;
   asCard?: boolean;
@@ -17,8 +15,6 @@ const {
   asCard = false,
 } = Astro.props;
 const colors = ["purple", "fuchsia", "indigo", "rose"];
-// const values = [50, 100, 200, 300, 400, 500, 600, 700, 800, 900];
-// const products = console.log(cartesianProduct(colors, values));
 ---
 
 <!-- product.forEach(([color, value]) => { --><!--     return ( --><!--       <div class="post-preview-card" style="min-height:100"> --><!--         <p> --><!--           Lorem ipsum dolor sit amet, qui minim labore adipisicing minim sint --><!--           cillum sint consectetur cupidatat. --><!--         </p> --><!--       </div> --><!--     ); --><!--   }) -->
@@ -66,13 +62,13 @@ const colors = ["purple", "fuchsia", "indigo", "rose"];
     <div class="flex flex-row gap-2">
       <!-- <p style="color:oklab(83.9% -2.09 4.37)">Sample code:</p> -->
       <!-- <p style="lab(83.37% 1.51 -22.22)">Sample code:</p> -->
-      <p style="lab(86.96% 0.87 -16.77)">Sample code:</p>
+      <!-- <p style="lab(86.96% 0.87 -16.77)">Sample code:</p> -->
       <!-- oklch(89% 0.045 270.12) -->
       <!-- oklch(86% 0.06 270.12) -->
       <!-- oklch(86.5% 0.072 309.04) // French lilac -150 -->
       <!-- oklch(81.5% 0.107 309.04) // French lilac -175<F19> -->
-      <SampleCode {slug} />
-      <ReadPostButton link={`/blog/${slug}`} />
+      <!-- <SampleCode {slug} /> -->
+      <!-- <ReadPostButton link={`/blog/${slug}`} /> -->
     </div>
   </div>
 </div>

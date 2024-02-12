@@ -7,7 +7,6 @@ import { toHast } from "mdast-util-to-hast";
 import { toString as mdastToString } from "mdast-util-to-string";
 import path from "path";
 import getReadingTime from "reading-time";
-import "./markdown.d.ts";
 
 type FirstCodeResult = {lang: string, html: string}
 export const getFirstCodeFromMdx = async (mdxContent: string): Promise<FirstCodeResult | void> => {

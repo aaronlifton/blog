@@ -73,6 +73,8 @@
     "sharp": "^0.33.2",
     "solid-js": "^1.8.14",
     "squoosh": "^0.0.0",
+    "stylelint": "^16.2.1",
+    "stylelint-config-standard": "^36.0.0",
     "svelte": "^4.2.8",
     "tailwind-merge": "^2.2.1",
     "tailwindcss": "^3.4.1",
@@ -83,7 +85,6 @@
   "devDependencies": {
     "@csstools/postcss-oklab-function": "^3.0.9",
     "@playwright/test": "^1.41.2",
-    "@rollup/rollup-darwin-arm64": "^4.9.5",
     "@tailwindcss/aspect-ratio": "^0.4.2",
     "@tailwindcss/forms": "^0.5.7",
     "@tailwindcss/typography": "^0.5.10",
