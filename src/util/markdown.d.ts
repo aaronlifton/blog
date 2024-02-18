@@ -1,5 +1,10 @@
 // Usage// Register nodes in content.
-declare module "hast" {
+declare module "mdast" {
+
+  interface Data {
+    lang: string;
+  }
+
   // eslint-disable-next-line @typescript-eslint/consistent-type-definitions
   interface RootContentMap {
     /**

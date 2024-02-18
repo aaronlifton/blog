@@ -24,10 +24,10 @@
     @apply w-full flex justify-center mb-4;
   }
   a {
-    @apply mx-1 px-3 py-1 rounded-lg text-theme-accent-gray-dark;
+    @apply mx-1 px-3 py-1 rounded-lg text-accent-gray-dark;
   }
 
   a.selected {
-    @apply bg-theme-primary text-white;
+    @apply bg-primary text-white;
   }
 </style>

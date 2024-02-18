@@ -32,32 +32,30 @@ const { tags }: Props = Astro.props;
 
 <style>
   .tag-list {
-    @apply list-none flex gap-2 flex-wrap justify-center mb-4;
+    @apply mb-4 flex list-none flex-wrap justify-center gap-2;
     .tag {
-      @apply inline-block text-xl px-4 py-1 rounded-full text-theme-primary bg-theme-dark-primary 
-          hover:bg-theme-primary hover:text-theme-amethyst-100 hover:no-underline
-          dark:bg-theme-primary dark:text-theme-dark-primary 
-          dark:hover:bg-theme-dark-primary dark:hover:text-theme-primary;
+      @apply inline-block rounded-full bg-dark-primary px-4 py-1 text-xl text-primary transition-all 
+          hover:bg-primary hover:text-amethyst-100 hover:no-underline;
       svg {
         display: inline-block;
-        @apply text-theme-primary stroke-theme-primary;
+        @apply stroke-primary text-primary;
         g {
-          @apply stroke-theme-primary;
+          @apply stroke-primary;
         }
         * {
-          @apply stroke-theme-primary bg-red-400 fill-red-300;
+          @apply bg-red-400 fill-red-300 stroke-primary;
         }
       }
       &:hover {
         * {
-          @apply text-theme-amethyst-200;
+          @apply text-amethyst-200;
         }
         span {
-          @apply underline underline-offset-2 decoration-theme-amethyst-300;
+          @apply underline decoration-amethyst-300 underline-offset-2;
         }
         svg,
         g {
-          @apply stroke-theme-amethyst-200;
+          @apply stroke-amethyst-200;
         }
       }
     }

@@ -1,0 +1,71 @@
+---
+import { getCodesFromMdx, type CodeResults } from "$util/markdown";
+import { Code, Debug } from "astro:components";
+import { getCollection, type CollectionEntry } from "astro:content";
+import { getCodesFromMdx, type CodeResults } from "$util/markdown";
+
+const posts: CollectionEntry<"blog">[] = await getCollection("blog");
+let allCodes: CodeResults = [];
+let livePosts = posts.filter((post) => !post.data.draft);
+for (let post of livePosts) {
+  const codes = await getCodesFromMdx(post.body);
+  if (!codes) continue;
+
+  const codesWithPost: CodeResults = codes.map((code) => ({ ...code, post }));
+  allCodes = allCodes.concat(codesWithPost);
+}
+---
+
+<style>
+  .codes-container {
+    overflow: scroll;
+    @apply scrollbar-thin scrollbar-track-card-bg scrollbar-thumb-amethyst-300;
+  }
+  .codes-container > div {
+    font-size: 0.7rem;
+  }
+  .codes-container pre.astro-code {
+    @apply scrollbar-thumb-amethyst-300;
+  }
+  .codes-container code {
+    padding: 0;
+    scrollbar-color: var(--bg-card-bg);
+    scrollbar-width: thin;
+    overflow-x: hidden;
+  }
+  .code-header {
+    align-items: baseline;
+  }
+</style>
+<h5>Latest code</h5>
+<div
+  class="codes-container flex h-auto w-full snap-x snap-mandatory snap-always
+  overflow-auto"
+>
+  {
+    allCodes.map((code) => (
+      <div
+        class="mx-4 max-w-[80ch] snap-start rounded-md border border-gray-200
+        p-4"
+      >
+        <div class="code-header flex flex-row justify-between">
+          <h2 class="flex grow pr-3 text-xl font-bold">{code.lang}</h2>
+          <div class="truncate text-sm">
+            <a href={`/blog/${code.post.slug}`}>{code.post.data.title}</a>
+          </div>
+        </div>
+        {/* <div */}
+        {/*   class="overflow-hidden rounded-md bg-gray-100 p-0 text-sm" */}
+        {/*   set:html={code.html} */}
+        {/* /> */}
+        {/* <Code code={code.html} lang={code.lang} /> */}
+        <Code
+          code={code.text}
+          lang={code.lang}
+          class="code-container"
+          style="font-size:9px;"
+        />
+      </div>
+    ))
+  }
+</div>

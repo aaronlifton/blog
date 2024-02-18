@@ -7,6 +7,10 @@ function withOpacityValue(variable) {
   return `rgb(var(${variable}) / <alpha-value>)`;
 }
 
+function withOKLCHOpacityValue(variable) {
+  return `oklch(var(${variable}) / <alpha-value>)`;
+}
+
 /** @type {import('tailwindcss').Config} */
 export default {
   darkMode: "class",
@@ -19,6 +23,7 @@ export default {
     require("@tailwindcss/typography"),
     require("@tailwindcss/forms"),
     require("@tailwindcss/aspect-ratio"),
+    require("tailwind-scrollbar"),
   ],
   theme: {
     data: {
@@ -94,29 +99,22 @@ export default {
         "in-slow": "cubic-bezier(0.4, 0, 0, 1)",
         "out-slow": "cubic-bezier(0.6, 0.6, 0, 1)",
         pop: "cubic-bezier(.23,2,.73,.55)",
+        "in-quint": "cubic-bezier(.755,.05,.855,.06)", // in-quint
+        "out-quint": "cubic-bezier(.23,1,.32,1)", // out-quint
         DEFAULT: "cubic-bezier(.23,1,.32,1)", // out-quint
-        in2: "cubic-bezier(.755,.05,.855,.06)", // in-quint
-        out2: "cubic-bezier(.23,1,.32,1)", // out-quint
       },
       colors: {
         theme: {
           primary: withOpacityValue("--primary"),
-          "primary-hover": withOpacityValue("--primary-hover"),
-          "on-primary": withOpacityValue("--on-primary"),
-          divider: withOpacityValue("--divider"),
-          shadow: withOpacityValue("--shadow"),
+          "on-primary": withOKLCHOpacityValue("--on-primary"),
           "on-background": withOpacityValue("--on-background"),
-          background: withOpacityValue("--background"),
+          background: withOKLCHOpacityValue("--background"),
           surface: withOpacityValue("--surface"),
-          hover: withOpacityValue("--hover"),
-          disabled: withOpacityValue("--disabled"),
-          "on-disabled": withOpacityValue("--on-disabled"),
-          note: withOpacityValue("--note"),
-          warn: withOpacityValue("--warn"),
+          shadow: withOpacityValue("--shadow"),
           ...colors,
         },
       },
-      typography: (theme) => ({
+      typography: ({ theme }) => ({
         dark: {
           css: {
             color: theme("colors.gray.200"),
@@ -131,6 +129,7 @@ export default {
         },
         DEFAULT: {
           css: {
+            "--tw-prose-headings": theme("colors.pink[900]"),
             a: {
               color: colors.dark.primary,
               "&:hover": {

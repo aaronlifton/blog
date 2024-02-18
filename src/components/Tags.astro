@@ -18,7 +18,7 @@ let { tags }: Props = Astro.props;
             {iconForTag(tag) && (
               <Icon
                 name={iconForTag(tag)}
-                class="stroke-theme-primary fill-theme-primary"
+                class="stroke-primary fill-theme-primary"
               />
             )}
             {tag}
@@ -32,7 +32,7 @@ let { tags }: Props = Astro.props;
   .tags {
     @apply mt-4 mb-0;
     a svg {
-      @apply text-theme-primary stroke-theme-primary fill-theme-primary;
+      @apply text-primary stroke-primary fill-theme-primary;
       display: inline;
       width: 16px;
       height: 16px;

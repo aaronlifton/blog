@@ -9,13 +9,13 @@ import { SITE_TITLE } from "../consts";
     <h2>
       <a href="/">{SITE_TITLE}</a>
     </h2>
-    <div class="internal-links">
+    <div class="internal-links select-none">
       <HeaderLink href="/">Home</HeaderLink>
       <HeaderLink href="/blog/1">Blog</HeaderLink>
       <HeaderLink href="/tags">Tags</HeaderLink>
       <HeaderLink href="/about">About</HeaderLink>
     </div>
-    <div class="social-links">
+    <div class="social-links select-none">
       <a href="https://linkedin.com/in/aaronlifton" target="_blank">
         <span class="sr-only"
           >Are you a recruiter? Connect with Aaron on LinkedIn</span
@@ -36,8 +36,7 @@ import { SITE_TITLE } from "../consts";
 </header>
 <style>
   header {
-    /*@apply bg-white dark:bg-theme-dark-backgroundSecondary dark:text-theme-dark-textPrimary;*/
-    @apply bg-theme-new-header-bg text-theme-new-header-text;
+    @apply bg-header-bg text-header-text;
   }
   nav {
     @apply flex max-w-[100ch] items-center justify-between transition-colors
@@ -46,7 +45,7 @@ import { SITE_TITLE } from "../consts";
   nav a {
     padding: 1em 0.5em;
     /*color: var(--black);*/
-    @apply text-theme-new-header-text decoration-theme-new-card-link;
+    @apply text-header-text decoration-card-link;
     border-bottom: 4px solid transparent;
   }
   h2 {
@@ -56,21 +55,23 @@ import { SITE_TITLE } from "../consts";
   }
 
   h2 a {
-    @apply mx-0 px-0 font-bold underline decoration-theme-new-header-accent underline-offset-2 hover:decoration-theme-accent-default hover:decoration-theme-new-header-accent;
-  }
-  h2 a.active {
-    @apply no-underline;
+    @apply mx-0 px-0 font-bold underline decoration-gray-600 underline-offset-2;
   }
   nav .social-links {
     @apply flex;
     a {
       @apply flex no-underline;
+      &:hover {
+        svg {
+          @apply text-purple-400;
+        }
+      }
     }
   }
   nav .internal-links a {
-    @apply -translate-x-2/4 underline decoration-theme-primary/0 underline-offset-8;
+    @apply -translate-x-2/4 underline decoration-primary/0 underline-offset-8;
     &.active {
-      @apply decoration-theme-new-header-accent;
+      @apply decoration-purple-400;
     }
   }
   @media (max-width: 720px) {
@@ -79,6 +80,6 @@ import { SITE_TITLE } from "../consts";
     }
   }
   svg:hover {
-    @apply text-theme-primary;
+    @apply text-primary;
   }
 </style>

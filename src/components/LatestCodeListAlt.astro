@@ -1,0 +1,96 @@
+---
+import { getCollection, type CollectionEntry } from "astro:content";
+import { Code } from "astro:components";
+import { getCodesFromMdx, type CodeResults } from "$util/markdown";
+
+const posts: CollectionEntry<"blog">[] = await getCollection("blog");
+let allCodes: CodeResults = [];
+let livePosts = posts.filter((post) => !post.data.draft);
+for (let post of livePosts) {
+  const codes = await getCodesFromMdx(post.body);
+  if (!codes) continue;
+
+  const codesWithPost: CodeResults = codes.map((code) => ({ ...code, post }));
+  allCodes = allCodes.concat(codesWithPost);
+}
+---
+
+<style>
+  .grid {
+    overflow: scroll;
+    @apply overflow-x-hidden scrollbar-thin scrollbar-track-card-bg
+scrollbar-thumb-amethyst-300;
+
+    background:
+      /* Shadow Cover TOP */
+      linear-gradient(white 30%, rgba(255, 255, 255, 0)) center top,
+      /* Shadow Cover BOTTOM */
+        linear-gradient(rgba(255, 255, 255, 0), white 70%) center bottom,
+      /* Shadow TOP */
+        radial-gradient(
+          farthest-side at 50% 0,
+          rgba(0, 0, 0, 0.2),
+          rgba(0, 0, 0, 0)
+        )
+        center top,
+      /* Shadow BOTTOM */
+        radial-gradient(
+          farthest-side at 50% 100%,
+          rgba(0, 0, 0, 0.2),
+          rgba(0, 0, 0, 0)
+        )
+        center bottom;
+
+    background-repeat: no-repeat;
+    background-size:
+      100% 40px,
+      100% 40px,
+      100% 14px,
+      100% 14px;
+    background-attachment: local, local, scroll, scroll;
+  }
+  .grid > div {
+    font-size: 0.7rem;
+  }
+  .grid pre.astro-code {
+    @apply scrollbar-thumb-amethyst-300;
+  }
+  .grid code {
+    padding: 0;
+    scrollbar-color: var(--bg-card-bg);
+    scrollbar-width: thin;
+    overflow-x: hidden;
+  }
+  .code-header {
+    align-items: baseline;
+  }
+</style>
+<h5>Latest code</h5>
+<div
+  class="grid h-[200px] w-full snap-y snap-mandatory grid-cols-1 gap-4
+  overflow-auto lg:grid-cols-2"
+>
+  {
+    allCodes.map((code) => (
+      <div class="snap-start rounded-md border border-gray-200 p-4">
+        <div class="code-header flex flex-row justify-between">
+          <h2 class="flex grow pr-3 text-xl font-bold">{code.lang}</h2>
+          <div class="truncate text-sm">
+            <a href="/posts">{code.post.data.title}</a>
+          </div>
+        </div>
+        {/* <div */}
+        {/*   class="overflow-hidden rounded-md bg-gray-100 p-0 text-sm" */}
+        {/*   set:html={code.html} */}
+        {/* /> */}
+        {/* <Code code={code.html} lang={code.lang} /> */}
+        <Code
+          code={code.text}
+          lang={code.lang}
+          class="code-container"
+          style="font-size:9px;"
+        />
+      </div>
+    ))
+  }
+</div>

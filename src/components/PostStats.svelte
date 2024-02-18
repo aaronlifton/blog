@@ -25,7 +25,7 @@
 <span class="post-stats__views">{ views } views</span>
 <style>
     .post-stats__views {
-        @apply pr-1 mx-1 italic text-theme-accent-gray-mid;
+        @apply pr-1 mx-1 italic text-accent-gray-mid;
     }
 </style>
 

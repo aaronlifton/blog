@@ -10,14 +10,10 @@
   --accent-dark: #000d8a;
   --black: 15, 18, 25;
   --gray: 96, 115, 159;
-  /* --gray-light: 229, 233, 240; */
   --gray-dark: 34, 41, 57;
-  /* --gray-gradient: rgba(var(--gray-light), 50%), #fff; */
-  --box-shadow: 0 2px 6px rgba(var(--theme-bg-gray), 25%),
+  --box-shadow: 0 2px 6px rgba(var(--bg-gray), 25%),
     0 8px 24px rgba(#ffffff, 33%), 0 16px 32px rgba(#ffffff, 33%);
-  --bg-theme-primary: #fff;
-  /* --code-callout-bg: rgba(var(--bg-gray-600), 100%); */
-  /* */
+  --bg-primary: #fff;
   --horizontal-padding: 1rem;
   --content-max-width: 80rem;
   --nav-height: 5rem;
@@ -25,12 +21,24 @@
   --footer-margin-top: 2.5rem;
   --total-footer-height: calc(var(--footer-height) + var(--footer-margin-top));
   --vert-padding: 1rem;
+  --surface: var(--gray);
 
+  --primary: rgb(34, 41, 57);
+  --on-primary: oklch(94.72% 0.03 308.97);
+  --background: oklch(0.988281 0.0046875 300);
+  /* --on-background: hexToRgb(theme(colors.stone.800)); */
+  --on-background: var(--primary);
+  --disabled: var(--background);
+  --shadow: hexToRgb(theme(colors.stone.600));
 }
 
 @tailwind base;
 @tailwind utilities;
 @tailwind components;
+
+.prose {
+  --tw-prose-headings: var(--primary);
+}
 
 @layer components {
   .card {
@@ -97,7 +105,7 @@ body {
   overflow-wrap: break-word;
   font-size: 1.25rem;
   line-height: 1.7;
-  @apply m-0 flex h-full flex-col bg-red-100 p-0 text-left text-theme-text-primary bg-purple-50;
+  @apply m-0 flex h-full flex-col p-0 text-left text-text-primary bg-purple-50;
 }
 
 main {
@@ -145,12 +153,12 @@ b {
   font-weight: 700;
 }
 a {
-  @apply text-fuchsia-300 text-theme-primary underline
-    decoration-theme-dark-primary/0 decoration-2 underline-offset-2 subpixel-antialiased
-    transition-colors duration-100 ease-in-out dark:text-theme-dark-primary;
+  @apply text-fuchsia-300 text-primary underline
+    decoration-dark-primary/0 decoration-2 underline-offset-2 subpixel-antialiased
+    transition-colors duration-100 ease-in-out;
 }
 a:hover {
-  @apply text-theme-primary decoration-theme-primary decoration-2 dark:text-theme-dark-primary dark:decoration-theme-dark-primary/100;
+  @apply text-primary decoration-primary decoration-2;
 }
 p {
   @apply subpixel-antialiased;
@@ -201,7 +209,7 @@ img {
   border-radius: 8px;
 }
 code {
-  @apply rounded-md border bg-theme-bg-gray px-1 text-sm;
+  @apply rounded-md border bg-bg-gray px-1 text-sm;
   /* background-color: rgb(var(--gray-light)); */
 }
 pre {
@@ -222,7 +230,6 @@ hr {
 }
 @media (max-width: 720px) {
   body {
-    @apply bg-theme-bg-secondary;
     font-size: 18px;
   }
   main {
@@ -254,9 +261,9 @@ hr {
 /*   text-align: center; */
 /* } */
 
-.bg-theme-primary {
-  background-color: var(--bg-theme-primary);
+.bg-primary {
+  background-color: var(--bg-primary);
 }
 .emdash {
-  @apply mx-1 px-1 italic text-theme-bg-gray;
+  @apply mx-1 px-1 italic text-bg-gray;
 }

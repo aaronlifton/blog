@@ -4,7 +4,7 @@
 }
 .shaku-callout {
   @apply bg-gray-600 text-white antialiased px-2 py-[1ch] my-2 relative inline-block
-    text-theme-amethyst-200 italic;
+    text-amethyst-200 italic;
   /* font-family: 'Comic Mono', sans-serif; */
   font-family: 'iMWritingMono Nerd Font', 'Comic Mono', monospace;
 }

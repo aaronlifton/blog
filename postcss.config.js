@@ -10,6 +10,9 @@ function hexToRgb(hex) {
 module.exports = {
   plugins: [
     require('tailwindcss'),
+    require('@csstools/postcss-oklab-function')({
+      preserve: true
+    }),
     require('autoprefixer'),
     require('postcss-import'),
     require('postcss-functions')({

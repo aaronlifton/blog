@@ -90,7 +90,7 @@
     @apply mb-2;
   }
   .dialog-prose {
-    @apply mb-2 text-theme-accent-gray-dark;
+    @apply mb-2 text-accent-gray-dark;
   }
   svg {
     @apply absolute right-0 bottom-0;
