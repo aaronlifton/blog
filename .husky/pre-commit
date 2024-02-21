@@ -1,1 +1,1 @@
-npx cypress run
+# npm test
