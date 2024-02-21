@@ -25,6 +25,6 @@ pnpm-debug.log*
 /playwright/.cache/
 /tests-examples/
 /tmp/
-/tmpscripts/
+/tmpscripts/*
 /experimental/
 
