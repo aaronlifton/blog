@@ -33,7 +33,7 @@ for (const post of livePosts) {
   }
   .code {
     @apply mx-4 max-w-[80ch] snap-start rounded-md border border-gray-200 p-0 p-4
-        transition-colors duration-300 ease-in-out scrollbar-thin;
+        transition-colors duration-300 ease-in-out scrollbar-thin hover:border-amethyst-400;
   }
   .code-container {
     @apply scrollbar-track-card-bg/0 scrollbar-thumb-amethyst-300;
@@ -77,21 +77,19 @@ for (const post of livePosts) {
   }
 </div>
 <script>
-  import { isPaused, isManuallyPaused } from "$state/LatestCodeListState";
-
   const codesContainer = document.querySelector(".codes-container");
   const codes: NodeListOf<HTMLDivElement> = document.querySelectorAll(
     ".codes-container .code",
   );
-  const containerEl = document.querySelector(".codes-header")?.parentElement;
 
   let currentIndex = 0;
-  const intervalTime = 1000;
+  let isPaused = false;
+  const intervalTime = 5000;
 
   const scrollNext = () => {
     if (!codesContainer) return;
 
-    if (!isPaused.get()) {
+    if (!isPaused) {
       if (currentIndex >= codes.length) {
         currentIndex = 0;
       }
@@ -106,7 +104,7 @@ for (const post of livePosts) {
   //   return () => {
   //     if (!codesContainer) return;
   //
-  //     if (!isPaused.get()) {
+  //     if (!isPaused) {
   //       if (currentIndex >= codes.length) {
   //         currentIndex = 0;
   //       }
@@ -121,15 +119,14 @@ for (const post of livePosts) {
   const resetTimer = () => {
     minDiff = Infinity;
     closestIndex = undefined;
-    // return;
+    return;
     clearInterval(interval);
     interval = setInterval(scrollNext, intervalTime);
   };
 
   codesContainer?.addEventListener("mouseenter", function () {
-    if (isManuallyPaused.get()) return;
-
-    isPaused.set(true);
+    isPaused = true;
+    console.log({ isPaused });
   });
 
   const mouseEventWithinRect = (event: MouseEvent, rect: DOMRect): boolean => {
@@ -141,22 +138,26 @@ for (const post of livePosts) {
     );
   };
   codesContainer?.addEventListener("mouseleave", function (event) {
-    if (isManuallyPaused.get() || !containerEl) return;
+    const codesHeader = document.querySelector(".codes-header");
+    if (!codesHeader) return;
 
-    const containerElRect = containerEl.getBoundingClientRect();
-    console.log({ containerEl, containerElRect, event });
-    if (mouseEventWithinRect(event as MouseEvent, containerElRect)) {
+    const codesHeaderRect = codesHeader.getBoundingClientRect();
+    if (mouseEventWithinRect(event as MouseEvent, codesHeaderRect)) {
       return;
     }
 
-    isPaused.set(false);
+    isPaused = false;
+    console.log({ isPaused });
     resetTimer();
   });
 
   let minDiff = Infinity;
   let closestIndex: number | undefined;
   codesContainer?.addEventListener("scroll", function () {
-    if (!isPaused.get() | !codesContainer) return;
+    if (!isPaused) return;
+
+    // codesContainer = document.querySelector(".codes-container");
+    if (!codesContainer) return;
 
     const containerRect = codesContainer.getBoundingClientRect();
     codes.forEach((code, index) => {
@@ -168,6 +169,7 @@ for (const post of livePosts) {
         closestIndex = index;
       }
     });
+    console.log({ closestIndex, minDiff });
     if (closestIndex !== undefined) currentIndex = closestIndex;
     if (
       codes[codes.length - 1].getBoundingClientRect().right <=
@@ -178,16 +180,20 @@ for (const post of livePosts) {
     if (currentIndex >= codes.length - 1) {
       currentIndex = 0;
     }
+    console.log({ currentIndex });
   });
 
   const iconContainer = document.querySelector("div[class*=_iconContainer]");
   iconContainer?.addEventListener("click", function () {
-    const isPausedVal = isPaused.get();
-    isPaused.set(!isPausedVal);
+    const isPlay = iconContainer
+      .querySelector("svg")
+      ?.classList.contains("icon-tabler-player-play");
 
-    if (isPausedVal) {
+    isPaused = !isPlay;
+    if (isPaused) {
       resetTimer();
     }
+    console.log({ isPaused });
   });
 
   // const observer = new window.IntersectionObserver(

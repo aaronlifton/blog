@@ -5,7 +5,7 @@ interface PostResponse {
   pubDate: string
 }
 type PostElMatches =
-Array<(this: HTMLElementTagNameMap, index: number, element: HTMLElementTagNameMap)>;
+Array<{this: HTMLElementTagNameMap, index: number, element: HTMLElementTagNameMap}>;
 
 describe("blog", () => {
   let allPosts: PostResponse[] = null;

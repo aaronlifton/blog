@@ -29,7 +29,7 @@
   /* --on-background: hexToRgb(theme(colors.stone.800)); */
   --on-background: var(--primary);
   --disabled: var(--background);
-  --shadow: hexToRgb(theme(colors.stone.600));
+  --shadow: theme(colors.stone.600);
 }
 
 @tailwind base;

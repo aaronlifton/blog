@@ -1,0 +1,8 @@
+  .iconContainer {
+    @apply cursor-pointer;
+    width: 30px;
+    margin-left: -5px;
+    svg {
+      @apply stroke-amethyst-300 text-amethyst-300;
+    }
+  }

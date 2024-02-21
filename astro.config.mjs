@@ -11,7 +11,9 @@ import { transformerTwoslash } from "shikiji-twoslash";
 import svelte from "@astrojs/svelte";
 import icon from "astro-icon";
 import react from "@astrojs/react";
+// import solid from "@astrojs/solid-js";
 const __dirname = dirname(fileURLToPath(import.meta.url));
+import svgr from "vite-plugin-svgr";
 
 // https://astro.build/config
 export default defineConfig({
@@ -20,11 +22,17 @@ export default defineConfig({
   integrations: [
     mdx(),
     sitemap(),
-    tailwind({ applyBaseStyles: false, nesting: true }),
+    tailwind({
+      applyBaseStyles: false,
+      nesting: true,
+    }),
     // customImageResizerIntegration,
     svelte(),
     icon(),
-    react(),
+    // solid({
+    //   include: ["**/solid/*"],
+    // }),
+    react({}),
   ],
   markdown: {
     remarkPlugins: [
@@ -67,6 +75,23 @@ export default defineConfig({
         $: path.resolve(__dirname, "./src"),
       },
     },
+    plugins: [
+      svgr({
+        include: "**/*.svg?react",
+        svgrOptions: {
+          plugins: ["@svgr/plugin-svgo", "@svgr/plugin-jsx"],
+          svgoConfig: {
+            plugins: [
+              "preset-default",
+              "removeTitle",
+              "removeDesc",
+              "removeDoctype",
+              "cleanupIds",
+            ],
+          },
+        },
+      }),
+    ],
   },
   image: {
     service: squooshImageService(),
@@ -78,3 +103,4 @@ export default defineConfig({
     },
   },
 });
+
