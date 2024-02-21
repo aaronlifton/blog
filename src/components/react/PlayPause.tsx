@@ -35,7 +35,6 @@ const PlayPause: React.FC<Props> = ({className: _className, onClick}) => {
   const IconComponent = iconLookup[status]
 
   const handleClick = useCallback(() => {
-    // console.log(isPlayStatus, isManuallyPaused.get())
     isManuallyPaused.set(!isPlayStatus)
     isPaused.set(!isPlayStatus)
     setStatus(isPlayStatus ? pauseStatus : playStatus)
@@ -44,14 +43,9 @@ const PlayPause: React.FC<Props> = ({className: _className, onClick}) => {
 
   useEffect(() => {
     isPaused.subscribe((paused) => {
-      console.log({paused})
       setStatus(paused ? pauseStatus : playStatus )
     })
   }, [])
-
-  // useEffect(() => {
-  //   isPaused.set(!isPlayStatus)
-  // }, [isPlayStatus])
 
   return (
     <div onClick={handleClick}

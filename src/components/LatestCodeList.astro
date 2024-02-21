@@ -77,135 +77,116 @@ for (const post of livePosts) {
   }
 </div>
 <script>
-  import { isPaused, isManuallyPaused } from "$state/LatestCodeListState";
+  import { isPaused } from "$state/LatestCodeListState";
 
-  const codesContainer = document.querySelector(".codes-container");
-  const codes: NodeListOf<HTMLDivElement> = document.querySelectorAll(
-    ".codes-container .code",
-  );
-  const containerEl = document.querySelector(".codes-header")?.parentElement;
+  document.addEventListener("astro:page-load", () => {
+    const codesContainer = document.querySelector(".codes-container");
+    const codes: NodeListOf<HTMLDivElement> = document.querySelectorAll(
+      ".codes-container .code",
+    );
 
-  let currentIndex = 0;
-  const intervalTime = 1000;
+    let currentIndex = 0;
+    const intervalTime = 1000;
 
-  const scrollNext = () => {
-    if (!codesContainer) return;
+    const scrollNext = () => {
+      if (!codesContainer) return;
 
-    if (!isPaused.get()) {
-      if (currentIndex >= codes.length) {
+      if (!isPaused.get()) {
+        if (currentIndex >= codes.length) {
+          currentIndex = 0;
+        }
+
+        codesContainer.scrollLeft = codes[currentIndex].offsetLeft;
+        // codes.forEach((code) => code.classList.remove("active"));
+        // codes[(currentIndex + 1) % codes.length].classList.add("active");
+        currentIndex++;
+      }
+    };
+
+    // let interval = setInterval(scrollNext, intervalTime);
+
+    // noop
+    const resetTimer = () => {
+      return;
+      // clearInterval(interval);
+      // interval = setInterval(scrollNext, intervalTime);
+    };
+
+    // const mouseEventWithinRect = (event: MouseEvent, rect: DOMRect): boolean => {
+    //   return (
+    //     event.clientX >= rect.left &&
+    //     event.clientX <= rect.right &&
+    //     event.clientY >= rect.top &&
+    //     event.clientY <= rect.bottom
+    //   );
+    // };
+
+    codesContainer?.addEventListener("mouseenter", function () {
+      isPaused.set(true);
+    });
+
+    codesContainer?.addEventListener("mouseleave", function (event) {
+      if (!codesContainer) return;
+
+      isPaused.set(false);
+      resetTimer();
+    });
+
+    codesContainer?.addEventListener("scroll", function () {
+      if (!isPaused.get() || !codesContainer) return;
+      let minDiff = Infinity;
+      let closestIndex: number | undefined;
+
+      const containerRect = codesContainer.getBoundingClientRect();
+      codes.forEach((code, index) => {
+        const rect = code.getBoundingClientRect();
+        const diff = Math.abs(rect.left - containerRect.left);
+
+        if (diff < minDiff) {
+          minDiff = diff;
+          closestIndex = index;
+        }
+      });
+      if (closestIndex !== undefined) currentIndex = closestIndex;
+      if (
+        codes[codes.length - 1].getBoundingClientRect().right <=
+        containerRect.left + codesContainer.clientWidth
+      ) {
         currentIndex = 0;
       }
-
-      codesContainer.scrollLeft = codes[currentIndex].offsetLeft;
-      // codes.forEach((code) => code.classList.remove("active"));
-      // codes[(currentIndex + 1) % codes.length].classList.add("active");
-      currentIndex++;
-    }
-  };
-  // function makeScrollNext(idx) => {
-  //   return () => {
-  //     if (!codesContainer) return;
-  //
-  //     if (!isPaused.get()) {
-  //       if (currentIndex >= codes.length) {
-  //         currentIndex = 0;
-  //       }
-  //
-  //       codesContainer.scrollLeft = codes[currentIndex].offsetLeft;
-  //       currentIndex++;
-  //     }
-  //   }
-  // }
-
-  let interval = setInterval(scrollNext, intervalTime);
-  const resetTimer = () => {
-    minDiff = Infinity;
-    closestIndex = undefined;
-    // return;
-    clearInterval(interval);
-    interval = setInterval(scrollNext, intervalTime);
-  };
-
-  codesContainer?.addEventListener("mouseenter", function () {
-    if (isManuallyPaused.get()) return;
-
-    isPaused.set(true);
-  });
-
-  const mouseEventWithinRect = (event: MouseEvent, rect: DOMRect): boolean => {
-    return (
-      event.clientX >= rect.left &&
-      event.clientX <= rect.right &&
-      event.clientY >= rect.top &&
-      event.clientY <= rect.bottom
-    );
-  };
-  codesContainer?.addEventListener("mouseleave", function (event) {
-    if (isManuallyPaused.get() || !containerEl) return;
-
-    const containerElRect = containerEl.getBoundingClientRect();
-    console.log({ containerEl, containerElRect, event });
-    if (mouseEventWithinRect(event as MouseEvent, containerElRect)) {
-      return;
-    }
-
-    isPaused.set(false);
-    resetTimer();
-  });
-
-  let minDiff = Infinity;
-  let closestIndex: number | undefined;
-  codesContainer?.addEventListener("scroll", function () {
-    if (!isPaused.get() | !codesContainer) return;
-
-    const containerRect = codesContainer.getBoundingClientRect();
-    codes.forEach((code, index) => {
-      const rect = code.getBoundingClientRect();
-      const diff = Math.abs(rect.left - containerRect.left);
-
-      if (diff < minDiff) {
-        minDiff = diff;
-        closestIndex = index;
+      if (currentIndex >= codes.length - 1) {
+        currentIndex = 0;
       }
     });
-    if (closestIndex !== undefined) currentIndex = closestIndex;
-    if (
-      codes[codes.length - 1].getBoundingClientRect().right <=
-      containerRect.left + codesContainer.clientWidth
-    ) {
-      currentIndex = 0;
-    }
-    if (currentIndex >= codes.length - 1) {
-      currentIndex = 0;
-    }
+
+    const iconContainer = document.querySelector("div[class*=_iconContainer]");
+
+    iconContainer?.addEventListener("click", function () {
+      const isPausedVal = isPaused.get();
+      isPaused.set(!isPausedVal);
+
+      if (isPausedVal) {
+        resetTimer();
+      }
+    });
+
+    // const observer = new window.IntersectionObserver(
+    //   (entries) => {
+    //     entries.forEach(console.log);
+    //     const leftmostEntry = entries.reduce((leftmost, entry) =>
+    //       entry.intersectionRatio < leftmost.intersectionRatio ? entry : leftmost,
+    //     );
+    //     // add active class to leftmost element
+    //     // if (leftmostEntry.isIntersecting) {
+    //     codes.forEach((code) => code.classList.remove("active"));
+    //     leftmostEntry.target.classList.add("active");
+    //     // } else {
+    //     //   leftmostEntry.target.classList.remove("active");
+    //     // }
+    //   },
+    //   { threshold: 1 },
+    // );
+    //
+    // codes.forEach((code) => observer.observe(code));
   });
-
-  const iconContainer = document.querySelector("div[class*=_iconContainer]");
-  iconContainer?.addEventListener("click", function () {
-    const isPausedVal = isPaused.get();
-    isPaused.set(!isPausedVal);
-
-    if (isPausedVal) {
-      resetTimer();
-    }
-  });
-
-  // const observer = new window.IntersectionObserver(
-  //   (entries) => {
-  //     entries.forEach(console.log);
-  //     const leftmostEntry = entries.reduce((leftmost, entry) =>
-  //       entry.intersectionRatio < leftmost.intersectionRatio ? entry : leftmost,
-  //     );
-  //     // add active class to leftmost element
-  //     // if (leftmostEntry.isIntersecting) {
-  //     codes.forEach((code) => code.classList.remove("active"));
-  //     leftmostEntry.target.classList.add("active");
-  //     // } else {
-  //     //   leftmostEntry.target.classList.remove("active");
-  //     // }
-  //   },
-  //   { threshold: 1 },
-  // );
-  //
-  // codes.forEach((code) => observer.observe(code));
 </script>
