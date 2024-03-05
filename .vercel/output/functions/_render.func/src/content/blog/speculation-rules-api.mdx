@@ -1,0 +1,138 @@
+---
+title: Speculation rules API
+description: How to use the speculation rules API to create a custom speculative parser for your website.
+pubDate: Jan 30 2024
+cover: ./assets/speculation-rules.png
+coverAlt: Speculation rules can be seen in the new 'Preloading' section of Chrome Developer Tools
+tags: [web-standards, speculation-rules]
+draft: true
+---
+
+Enabling the Speculation Rules API with AstroJS
+
+In the modern web development landscape, page loading speed is integral to user
+experience. any web application. Speculation Rules API, an experimental feature,
+is pretty much a game changer, as page loads will become instant as the client
+fetches them, based on pre-configured rules. This post is intended to guide
+developers through the process of integrating the Speculation Rules API with
+AstroJS.
+
+## Integration of Speculation Rules API with AstroJS
+
+AstroJS is my favorite frontend framework, because it allows you to create a
+"turtles all the way down"-style component heirarchy [@fn1](). This means you can
+use Svelte components, inside of Astro components, inside of Lit components, and
+so-on. This is a great way to learn a new framework, and in my opinion, this is
+the best framework for developing "developer blogs", as many others have also
+done. This site is implemented in AstroJS as well. is a front-end framework that
+
+AstroJS enables you to pre-render your prefetched pages on the client in
+supported browsers\[^5^\]. Additionally, AstroJS overrides the standard prefetch
+behavior, globally applying the Speculation Rules API to prerender links on the
+client\[^4^\].
+
+This is done by configuring the `astro.config.mjs` file\[^4^\]. Once you include
+desired `prefetch` configurations in this file, the experimental Speculation
+Rules API kicks in, preparing the page for quicker—sometimes instant—page
+loads\[^2^\]. Here's how to enable this in the Astro configuration:
+
+```javascript
+{
+  prefetch: {
+    prefetchAll: true,
+    defaultStrategy: 'viewport',
+  },
+  experimental: {
+    clientPrerender: true,
+  },
+}
+```
+
+## Prerendering with Speculation Rules API
+
+Prerendering is a technique used by browsers to load a document before it's
+needed, such as while hovering over a link\[^fn3]. The Speculation Rules API
+enhances this by allowing you to prefetch and **(most importantly)**, prerender
+the next page navigation[^fn2]. This results in basically instant page loads,
+leading to the sought-after "desktop app"-like user experience[^fn2].
+
+With the Speculation Rules API, speculation rules are taken in the form of a
+JSON structure that determines what resources should be prefetched or
+prerendered by the browser. So, developers the room to define rules by
+which certain URLs are dynamically prefetched or prerendered based on user
+interaction[^fn3]. Here's an example of how the `speculationrules` attribute
+might be used in a script tag:
+
+```html
+<script type="speculationrules">
+
+{
+
+  "prerender": [
+
+    {"source": "list", "urls": ["/about", "/contact", "/blog"]}
+
+  ]
+
+}
+
+</script>
+```
+
+\
+However, no actual speculation is being done. One possible way to prerender
+the "right" pages, so as to not waste countless CPU cycles, is to load user
+favorites, like favorite brands on an e-commerce, or their most frequently
+accessed pages.
+
+```html
+<script type="javascript">
+  const session = Session.current()
+  const userFavorites = API.Brands.favorites({user}).sortBy((brandA) =>
+    brand.viewCount - brandB.viewCount
+  )
+</script>
+<script type="speculationrules">
+
+  {
+
+    "prerender": [
+
+      {"source": "list", "urls": userFavorites.slice(10)}
+
+    ]
+
+  }
+
+</script>
+```
+\
+Note that before implementing this, you should review the possible risks when
+prerendering on the client[^fn1]. Debugging speculation rules can be tricky,
+particularly for prerendered pages[^fn2]. However, Chrome provides developer
+tools with the `performance.getEntriesByType('navigation')[0].activationStart`
+function that allows you to verify if a page was prerendered[^fn3].
+
+## Concluding Remarks
+
+Let's make the web faster - try implementing Speculating Rules on your site
+today! If you haven't tried AstroJS yet, try that too!
+
+[^fn1]:
+[Speculation Rules API - Web APIs](https://developer.mozilla.org/docs/Web/API/Speculation_Rules_API)
+
+[^fn2]:
+[Debugging speculation rules | Blog | Chrome for Developers](https://developer.chrome.com/blog/debugging-speculation-rules/)
+
+[^fn3]:
+[Speculation Rules – WordPress plugin | WordPress.org](https://wordpress.org/plugins/speculation-rules/)
+
+[^fn4]:
+[Prerender pages in Chrome for instant page navigations](https://developer.chrome.com/docs/web-platform/prerender-pages)
+
+[^fn5]:
+[Configuration Reference | Docs - Astro Documentation](https://docs.astro.build/en/reference/configuration-reference/)
+
+[^fn16:
+ [Astro Islands](https://docs.astro.build/en/concepts/islands/)
+```

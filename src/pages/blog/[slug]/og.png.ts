@@ -2,6 +2,7 @@ import { getCollection, type CollectionEntry } from "astro:content";
 import fs from "fs";
 import path from "path";
 import { ImageResponse } from "@vercel/og";
+import { fileURLToPath } from "url";
 
 interface Props {
 	params: { slug: string };
@@ -27,13 +28,17 @@ export async function GET({ props }: Props) {
 		path.resolve("public/fonts/dm-sans-latin-400-normal.ttf"),
 	);
 
+	// console.log("HERE!!!!");
+	// const __dirname = path.dirname(fileURLToPath(import.meta.url));
+	// console.log({ src: post.data.cover.src, dirname: __dirname });
+
 	// post cover with Image is pretty tricky for dev and build phase
 	const postCover = fs.readFileSync(
 		process.env.NODE_ENV === "development"
 			? path.resolve(
 					post.data.cover.src.replace(/\?.*/, "").replace("/@fs", ""),
 			  )
-			: path.resolve(post.data.cover.src.replace("/", "dist/")),
+			: path.resolve(post.data.cover.src.replace("/", "dist/server/")),
 	);
 
 	// const downsizedPostCover = await getImage({
@@ -147,8 +152,10 @@ export async function GET({ props }: Props) {
 // to generate an image for each blog posts in a collection
 export async function getStaticPaths() {
 	const blogPosts = await getCollection("blog");
-	return blogPosts.map((post) => ({
-		params: { slug: post.slug },
-		props: { post },
-	}));
+	return blogPosts
+		.filter((post) => post.data.draft !== true)
+		.map((post) => ({
+			params: { slug: post.slug },
+			props: { post },
+		}));
 }

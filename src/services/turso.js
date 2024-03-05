@@ -1,12 +1,21 @@
 import { createClient } from "@libsql/client";
+import os from "os";
 
 export const client = createClient({
 	url: import.meta.env.TURSO_DB_URL,
 	authToken: import.meta.env.TURSO_DB_AUTH_TOKEN,
 });
 
+let isLocal;
+const isLocalhost = () => {
+	if (isLocal !== undefined) return isLocal;
+	isLocal = os.arch() === "arm64";
+	return isLocal;
+};
 export const getViewsBySlug = async (slug) => {
-	if (!slug) {
+	// if ip address is localhost return
+
+	if (isLocalhost() || !slug) {
 		return 0;
 	}
 	try {

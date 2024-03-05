@@ -2,8 +2,8 @@ import fs, { type Dirent } from "fs";
 import path, { dirname } from "path";
 import { fileURLToPath } from "url";
 
-export const __dirname = dirname(fileURLToPath(import.meta.url));
-export const rootPath = path.join(__dirname, "../");
+// export const __dirname = dirname(fileURLToPath(import.meta.url));
+// export const rootPath = path.resolve(__dirname, "../../");
 
 function getAllPaths(iconsPath: string) {
 	let allFilePaths: string[] = [];
@@ -27,12 +27,11 @@ function getAllPaths(iconsPath: string) {
 	return allFilePaths;
 }
 
-const icons = getAllPaths(path.join(rootPath, "public/icons"));
+const icons = getAllPaths(path.resolve("src/icons"));
 
 export const tagIconMap: {
 	[key: string]: string;
 } = {
-	// ruby: "rails",
 	rails: "rails",
 	"quick tips": "tabler/bulb-light",
 	performance: "tabler/rocket",

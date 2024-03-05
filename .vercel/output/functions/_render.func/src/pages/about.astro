@@ -1,0 +1,57 @@
+---
+import Layout from "../layouts/Layout.astro";
+import { Image } from "astro:assets";
+import Prose from "../components/Prose.astro";
+import image from "../content/blog/assets/blog-placeholder-about.jpg";
+---
+
+<Layout>
+  <div class="space-between flex w-full flex-col">
+    <div class="text-center">
+      <h5 class="m-0">About Me</h5>
+    </div>
+
+    <Prose>
+      <div
+        class="space-evenly my-4 flex w-full
+      flex-row items-start justify-center gap-4 align-middle"
+      >
+        <Image
+          src={image}
+          alt="About me"
+          width={128}
+          height={128}
+          class="m-0"
+        />
+        <div>
+          <p class="mt-0">
+            I'm a software engineer who taught himself Ruby on Rails after
+            finishing high school in 2013, and pursued a career in working as a
+            software engineer. I've been using Ruby on Rails for nearly 10
+            years, and React for over 4. Today, I specialize in Ruby on Rails
+            and React/Typescript development.
+          </p>
+          <div class="mt-8">
+            <h5>Links</h5>
+            <ul
+              class="m-0 ml-0 list-disc p-0 pl-0 indent-0 [&_li]:m-0 [&_li]:p-0"
+            >
+              <li>
+                <a href="https://github.com/aaronlifton">Github</a>
+              </li>
+              <li>
+                <a href="https://www.linkedin.com/in/aaronlifton/">LinkedIn</a>
+              </li>
+              <li>Email: aaronlifton [at] gmail.com</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </Prose>
+  </div>
+</Layout>
+<style>
+  ul {
+    @apply m-0 list-disc pl-4;
+  }
+</style>

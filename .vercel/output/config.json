@@ -1,0 +1,46 @@
+{
+	"version": 3,
+	"routes": [
+		{
+			"src": "/blog",
+			"headers": {
+				"Location": "/blog/1"
+			},
+			"status": 308
+		},
+		{
+			"src": "^/_astro/(.*)$",
+			"headers": {
+				"cache-control": "public, max-age=31536000, immutable"
+			},
+			"continue": true
+		},
+		{
+			"handle": "filesystem"
+		},
+		{
+			"src": "^\\/_image$",
+			"dest": "_render"
+		},
+		{
+			"src": "^\\/about\\/?$",
+			"dest": "_render"
+		},
+		{
+			"src": "^\\/api\\/blog\\/test\\/posts\\/?$",
+			"dest": "_render"
+		},
+		{
+			"src": "^\\/tags\\/?$",
+			"dest": "_render"
+		},
+		{
+			"src": "^\\/rss\\.xml\\/?$",
+			"dest": "_render"
+		},
+		{
+			"src": "^\\/blog\\/?$",
+			"dest": "_render"
+		}
+	]
+}

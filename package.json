@@ -23,6 +23,7 @@
     "@astrojs/check": "^0.4.1",
     "@astrojs/cloudflare": "^9.1.0",
     "@astrojs/mdx": "^2.1.1",
+    "@astrojs/node": "^8.2.3",
     "@astrojs/prism": "^3.0.0",
     "@astrojs/react": "^3.0.9",
     "@astrojs/rss": "^4.0.5",
