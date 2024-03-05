@@ -8,7 +8,7 @@ const posts: CollectionEntry<"blog">[] = await getCollection("blog");
 let allCodes: CodeResults = [];
 let livePosts = posts.filter((post) => !post.data.draft);
 for (const post of livePosts) {
-  const codes = await getCodesFromMdx(post.body);
+  const codes = await getCodesFromMdx(post.body, { numLines: 6 });
   if (!codes) continue;
 
   const codesWithPost: CodeResults = codes.map((code) => ({ ...code, post }));
@@ -52,6 +52,7 @@ for (const post of livePosts) {
   <PlayPause client:load className="icon-container" />
   <div class="output"></div>
 </div>
+<!-- if mobile needs more performance, use will-change-scroll -->
 <div
   class="codes-container flex h-auto w-full snap-x snap-mandatory snap-always
   overflow-auto"

@@ -4,7 +4,7 @@ interface Props {
 }
 const { text }: Props = Astro.props;
 
-function parseText(text) {
+function parseText(text: string) {
   const regex = /`([^`]+)`/g;
   let result = text.replace(regex, "<code>$1</code>");
   return result.replace(/`/g, "");

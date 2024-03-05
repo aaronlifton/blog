@@ -49,6 +49,7 @@
     "hast-util-sanitize": "^5.0.1",
     "hast-util-to-html": "^9.0.0",
     "markdown-it-front-matter": "^0.2.3",
+    "mdast": "^3.0.0",
     "mdast-util-mdxjs-esm": "^2.0.1",
     "mdast-util-to-markdown": "^2.1.0",
     "mdast-util-to-string": "^4.0.0",

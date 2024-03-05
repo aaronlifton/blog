@@ -14,13 +14,16 @@ import react from "@astrojs/react";
 // import solid from "@astrojs/solid-js";
 const __dirname = dirname(fileURLToPath(import.meta.url));
 import svgr from "vite-plugin-svgr";
+import { remarkReadingTime } from "./src/plugins/remark-reading-time"
 
 // https://astro.build/config
 export default defineConfig({
   output: "hybrid",
   site: "https://example.com",
+  // prefetch: true,
   integrations: [
-    mdx(),
+    mdx({
+    }),
     sitemap(),
     tailwind({
       applyBaseStyles: false,
@@ -36,6 +39,7 @@ export default defineConfig({
   ],
   markdown: {
     remarkPlugins: [
+      remarkReadingTime,
       [
         remarkShakuCodeAnnotate,
         {
@@ -45,6 +49,8 @@ export default defineConfig({
           lang: ["tsx", "jsx", "typescript", "sh", "fish", "json"],
         },
       ],
+    ],
+    rehypePlugins: [
       [
         rehypeAutolinkHeadings,
         {
@@ -103,4 +109,3 @@ export default defineConfig({
     },
   },
 });
-

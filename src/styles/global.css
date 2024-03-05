@@ -4,6 +4,9 @@
   License MIT: https://github.com/HermanMartinus/bearblog/blob/master/LICENSE.md
  */
 /* @import "./base.css"; */
+/* @import url('https://fonts.googleapis.com/css2?family=Recursive:slnt,wght@-15,885&display=swap'); */
+@import url('https://fonts.googleapis.com/css2?family=Recursive:wght,MONO@385,0.5&display=swap');
+/* @import url('https://fonts.googleapis.com/css2?family=Recursive:slnt,wght,CASL,CRSV,MONO@-15..0,885,0..1,0..1,1&display=swap'); */
 
 :root {
   --accent: #2337ff;
@@ -213,8 +216,17 @@ code {
   /* background-color: rgb(var(--gray-light)); */
 }
 pre {
+  -webkit-font-smoothing: auto;
+  -moz-font-smoothing: auto;
   padding: 1.5em;
   border-radius: 8px;
+  /* font-family: 'Recursive', monospace; */
+  /* font-size: 1.125em; */
+  /* --mono: 1; */
+  /* --casl: 0; */
+  /* --wght: 884; */
+  /* --slnt: 1; */
+  /* font-variation-settings: var(--mono), var(--casl), var(--wght), var(--slnt), var(--CRSV); */
 }
 pre > code {
   all: unset;

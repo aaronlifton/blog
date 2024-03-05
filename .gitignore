@@ -17,14 +17,19 @@ pnpm-debug.log*
 .env
 .env.production
 
-# macOS-specific files
+# testing output
+/playwright-report/
+
+# custom folders
+/tests-examples/
+/tmp/
+/experimental/
+
 .DS_Store
+/.vercel/
+/.yarn/
 /test-results/
 /playwright-report/
 /blob-report/
 /playwright/.cache/
-/tests-examples/
-/tmp/
-/tmpscripts/*
-/experimental/
-
+/tests_oupupt/

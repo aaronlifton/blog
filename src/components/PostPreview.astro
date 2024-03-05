@@ -10,10 +10,8 @@ interface Props {
   asCard?: boolean;
 }
 
-const {
-  post: { data: post, slug },
-  asCard = false,
-} = Astro.props;
+const { post, asCard = false } = Astro.props;
+const { Content, headings, remarkPluginFrontmatter } = await post.render();
 const colors = ["purple", "fuchsia", "indigo", "rose"];
 ---
 
@@ -22,22 +20,22 @@ const colors = ["purple", "fuchsia", "indigo", "rose"];
   <div class="post-preview__date-box">
     <div class="post-preview__date">
       <span class="post-preview__date__day"
-        >{new Date(post.pubDate).getDate()}</span
+        >{new Date(post.data.pubDate).getDate()}</span
       >
       <span class="post-preview__date__month-n-year"
         >{
-          `${getMonthName(post.pubDate)} ${new Date(post.pubDate).getFullYear()}`
+          `${getMonthName(post.data.pubDate)} ${new Date(post.data.pubDate).getFullYear()}`
         }</span
       >
     </div>
   </div>
   <div>
     <HomeImage
-      src={post.cover}
-      alt={post.coverAlt}
+      src={post.data.cover}
+      alt={post.data.coverAlt}
       link={`/posts/${post.slug}`}
-      postTitle={post.title}
-      postLink={`/blog/${slug}`}
+      postTitle={post.data.title}
+      postLink={`/blog/${post.slug}`}
       width={asCard ? 400 : 100}
       data-home-image
     />
@@ -48,16 +46,16 @@ const colors = ["purple", "fuchsia", "indigo", "rose"];
       dark:text-dark-primary"
     >
       <a
-        href={`/blog/${slug}`}
-        title={post.title}
+        href={`/blog/${post.slug}`}
+        title={post.data.title}
         class="text-md grow
         font-normal"
       >
-        <CodeText text={post.title} />
+        <CodeText text={post.data.title} />
       </a>
     </div>
     <p class="post-preview__desc">
-      <CodeText text={post.description} />
+      <CodeText text={post.data.description} />
     </p>
     <div class="flex grow flex-row gap-2">
       <!-- <p style="color:oklab(83.9% -2.09 4.37)">Sample code:</p> -->
@@ -67,8 +65,8 @@ const colors = ["purple", "fuchsia", "indigo", "rose"];
       <!-- oklch(86% 0.06 270.12) -->
       <!-- oklch(86.5% 0.072 309.04) // French lilac -150 -->
       <!-- oklch(81.5% 0.107 309.04) // French lilac -175<F19> -->
-      <!-- <SampleCode {slug} /> -->
-      <!-- <ReadPostButton link={`/blog/${slug}`} /> -->
+      <!-- <SampleCode slug = {post.slug} /> -->
+      <!-- <ReadPostButton link={`/blog/${post.slug}`} /> -->
     </div>
   </div>
 </div>
