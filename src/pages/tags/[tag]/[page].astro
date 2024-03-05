@@ -7,16 +7,12 @@ import Pages from "$/components/Pages.svelte";
 import PostPreviewList from "$/components/PostPreviewList.astro";
 import { PAGE_SIZE } from "$/consts";
 import Layout from "$/layouts/Layout.astro";
-
-export async function getStaticPaths({
-  paginate,
-}: {
-  paginate: (
-    data: CollectionEntry<"blog">[],
-    options: { pageSize: number },
-    params: { tag: string, page: number }
-  ) => any;
-}) {
+//  paginate: (
+// {    data: CollectionEntry<"blog">[],
+//     options: { pageSize: number },
+//     params: { tag: string; page: number }},
+//   ) => any;
+export async function getStaticPaths({ paginate }) {
   const allPosts = await getCollection("blog");
   const filteredPosts = allPosts.filter((post) => !post.data.draft);
 
@@ -27,23 +23,30 @@ export async function getStaticPaths({
 
   return Array.from(allTags).flatMap((tag) => {
     const postsWithTag = allPosts.filter((post) =>
-      post.data.tags.includes(tag)
+      post.data.tags.includes(tag),
     );
-
+    /*
+    return paginate(
+      postsWithTag,
+      {
+        pageSize: PAGE_SIZE,
+      },
+      {
+        tag: tag,
+        page: 1,
+      },
+    ); */
     return paginate(postsWithTag, {
+      params: { tag },
+      props: { allTags },
       pageSize: PAGE_SIZE,
-    }, {
-      tag: tag,
-      page: 1
     });
   });
 }
 
-
-
 // type Params = InferGetStaticParamsType<typeof getStaticPaths>;
 type Props = { page: { data: CollectionEntry<"blog">[]; currentPage: number } };
-type Params = InferGetStaticParamsType<typeof getStaticPaths>;
+type Params = { tag: string; page: number };
 
 const { page } = Astro.props as Props;
 const { tag } = Astro.params as Params;
@@ -64,9 +67,9 @@ const { tag } = Astro.params as Params;
   <Pages
     baseUrl={Astro.url.pathname.slice(0, -2)}
     currentPage={page.currentPage}
-    totalPages={page.data.length}
-    />
-  </Layout>
+    totalPages={page.lastPage}
+  />
+</Layout>
 
 <style>
   .emdash {
@@ -81,3 +84,5 @@ const { tag } = Astro.params as Params;
     line-height: 6;
   }
 </style>
+line-height: 6; }
+
