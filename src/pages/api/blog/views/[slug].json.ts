@@ -6,6 +6,7 @@ import { getViewsBySlug as inMemoryGetViews } from "../../../../services/memory.
 
 const getViewsFn = import.meta.env.PROD ? getViewsBySlug : inMemoryGetViews;
 
+export const prerender = true;
 export async function getStaticPaths() {
 	const posts = await getCollection("blog");
 	return posts.map((post) => ({
