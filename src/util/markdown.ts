@@ -1,5 +1,4 @@
 // rg -s "interface Code" node_modules/
-import type { Code } from "node_modules/remark/node_modules/@types/mdast/index.d.ts";
 // import "@types/mdast/index.d.ts";
 import { raw } from "hast-util-raw";
 import { sanitize } from "hast-util-sanitize";
@@ -8,8 +7,9 @@ import { fromMarkdown } from "mdast-util-from-markdown";
 import { toHast } from "mdast-util-to-hast";
 import { toString as mdastToString } from "mdast-util-to-string";
 // import getReadingTime from "reading-time";
-import "./markdown.d.ts";
 import type { CollectionEntry } from "astro:content";
+import type { Code } from "mdast";
+import "./markdown.d.ts";
 
 type CodeResult = {
 	post?: CollectionEntry<"blog">;

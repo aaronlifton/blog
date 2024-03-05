@@ -1,7 +1,7 @@
 {
   "extends": "astro/tsconfigs/strict",
   "compilerOptions": {
-    "baseUrl": "/Users/aaron/Code/astro/fullstack-dev-blog",
+    "baseUrl": "./",
     "paths": {
       "$util/*": [
         "src/util/*"
@@ -21,7 +21,8 @@
     },
     "types": [
       "astro/client",
-      "astro/env"
+      "astro/env",
+      "mdast"
     ],
     "jsx": "react-jsx",
     "esModuleInterop": true,
