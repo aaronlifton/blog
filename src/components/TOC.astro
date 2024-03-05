@@ -116,100 +116,102 @@ if (minimumDepth > 1) {
 
 <script>
   import { activeHeading } from "$state/BlogPostState";
-  const toc = document.querySelector<HTMLElement>("nav[data-toc-wrapper] ol");
-  const tocContainer = toc?.closest<HTMLElement>("[data-toc-wrapper]");
-  const blogPost = document.querySelector("[data-blog-post]") as HTMLElement;
-  const firstTocItem = toc?.querySelector("li");
+  document.addEventListener("astro:page-load", () => {
+    const toc = document.querySelector<HTMLElement>("nav[data-toc-wrapper] ol");
 
-  function activate(listItem: HTMLLIElement): void {
-    if (listItem.parentElement?.parentElement?.tagName === "li") {
-      listItem.parentElement.setAttribute("data-active", "");
+    const tocContainer = toc?.closest<HTMLElement>("[data-toc-wrapper]");
+    const blogPost = document.querySelector("[data-blog-post]") as HTMLElement;
+    const firstTocItem = toc?.querySelector("li");
+
+    function activate(listItem: HTMLLIElement): void {
+      if (listItem.parentElement?.parentElement?.tagName === "li") {
+        listItem.parentElement.setAttribute("data-active", "");
+      }
+      listItem.setAttribute("data-active", "");
     }
-    listItem.setAttribute("data-active", "");
-    console.log({ listItem });
-  }
 
-  function deactivate(listItem: HTMLLIElement): void {
-    listItem.parentElement?.removeAttribute("data-active");
-    listItem.removeAttribute("data-active");
-  }
-
-  function deactivateAllTocItems(): void {
-    toc?.querySelectorAll("li").forEach(deactivate);
-  }
-
-  function getTocItemByHeading(
-    heading: HTMLHeadingElement,
-  ): HTMLLIElement | null {
-    const headingId = heading.getAttribute("id");
-    const tocAnchorElem = toc?.querySelector(`li a[href="#${headingId}"]`);
-
-    if (!tocAnchorElem) {
-      return null;
+    function deactivate(listItem: HTMLLIElement): void {
+      listItem.parentElement?.removeAttribute("data-active");
+      listItem.removeAttribute("data-active");
     }
-    return tocAnchorElem.closest("li");
-  }
 
-  // let ratios: { [key: string]: number } = {};
-  // let lastMaxRatio = 0;
-  const observer = new IntersectionObserver(
-    (entries) => {
-      // Find the heading that is most visible in the viewport.
-      // const intersectionRatio = Math.max(
-      //   ...entries.map((entry) => entry.intersectionRatio),
-      // );
+    function deactivateAllTocItems(): void {
+      toc?.querySelectorAll("li").forEach(deactivate);
+    }
 
-      entries.forEach((entry): void => {
-        if (!tocContainer) {
-          return;
-        }
+    function getTocItemByHeading(
+      heading: HTMLHeadingElement,
+    ): HTMLLIElement | null {
+      const headingId = heading.getAttribute("id");
+      const tocAnchorElem = toc?.querySelector(`li a[href="#${headingId}"]`);
 
-        const heading = entry.target;
+      if (!tocAnchorElem) {
+        return null;
+      }
+      return tocAnchorElem.closest("li");
+    }
 
-        if (entry.isIntersecting) {
-          const tocItem = getTocItemByHeading(heading as HTMLHeadingElement);
+    // let ratios: { [key: string]: number } = {};
+    // let lastMaxRatio = 0;
+    const observer = new IntersectionObserver(
+      (entries) => {
+        // Find the heading that is most visible in the viewport.
+        // const intersectionRatio = Math.max(
+        //   ...entries.map((entry) => entry.intersectionRatio),
+        // );
 
-          if (!tocItem) {
+        entries.forEach((entry): void => {
+          if (!tocContainer) {
             return;
           }
 
-          deactivateAllTocItems();
-          activate(tocItem);
-          activeHeading.set(tocItem);
-          const tocContainerCoords = tocContainer.getBoundingClientRect();
-          const tocItemCoords = tocItem.getBoundingClientRect();
+          const heading = entry.target;
 
-          if (tocItem === firstTocItem) {
-            tocContainer.scrollTop = 0;
-            return;
+          if (entry.isIntersecting) {
+            const tocItem = getTocItemByHeading(heading as HTMLHeadingElement);
+
+            if (!tocItem) {
+              return;
+            }
+
+            deactivateAllTocItems();
+            activate(tocItem);
+            activeHeading.set(tocItem);
+            const tocContainerCoords = tocContainer.getBoundingClientRect();
+            const tocItemCoords = tocItem.getBoundingClientRect();
+
+            if (tocItem === firstTocItem) {
+              tocContainer.scrollTop = 0;
+              return;
+            }
+
+            // Is the item not visible because it's above the scrollable area? Then
+            // make it visible by scrolling up.
+            if (tocContainerCoords.top > tocItemCoords.top) {
+              tocContainer.scrollTop -=
+                tocContainerCoords.top - tocItemCoords.top;
+              return;
+            }
+
+            if (tocItemCoords.bottom > tocContainerCoords.bottom) {
+              tocContainer.scrollTop +=
+                tocItemCoords.bottom - tocContainerCoords.bottom;
+            }
           }
+        });
+      },
+      {
+        threshold: 1,
+      },
+    );
 
-          // Is the item not visible because it's above the scrollable area? Then
-          // make it visible by scrolling up.
-          if (tocContainerCoords.top > tocItemCoords.top) {
-            tocContainer.scrollTop -=
-              tocContainerCoords.top - tocItemCoords.top;
-            return;
-          }
+    const headingsInBlogPost =
+      blogPost?.querySelectorAll("h1, h2, h3, h4, h4, h6") ?? [];
 
-          if (tocItemCoords.bottom > tocContainerCoords.bottom) {
-            tocContainer.scrollTop +=
-              tocItemCoords.bottom - tocContainerCoords.bottom;
-          }
-        }
-      });
-    },
-    {
-      threshold: 1,
-    },
-  );
-
-  const headingsInBlogPost =
-    blogPost?.querySelectorAll("h1, h2, h3, h4, h4, h6") ?? [];
-
-  for (const headingInBlogPost of headingsInBlogPost) {
-    observer.observe(headingInBlogPost);
-  }
+    for (const headingInBlogPost of headingsInBlogPost) {
+      observer.observe(headingInBlogPost);
+    }
+  });
 </script>
 
 <style>

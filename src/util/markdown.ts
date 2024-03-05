@@ -1,5 +1,6 @@
-import { type Code } from "mdast";
-import "@types/mdast/index.d.ts";
+// rg -s "interface Code" node_modules/
+import type { Code } from "node_modules/remark/node_modules/@types/mdast/index.d.ts";
+// import "@types/mdast/index.d.ts";
 import { raw } from "hast-util-raw";
 import { sanitize } from "hast-util-sanitize";
 import { toHtml } from "hast-util-to-html";

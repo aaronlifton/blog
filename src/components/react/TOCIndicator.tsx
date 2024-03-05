@@ -8,8 +8,14 @@ import {
 } from "framer-motion";
 import { useRef, type FC } from "react";
 import Styles from "./TOCIndicator.module.css";
+import { useBreakpoint } from "./hooks/useBreakpoint";
 
 const CircleIndicator: FC = () => {
+	const isMobile = useBreakpoint(768);
+	if (isMobile) {
+		console.log("isMobile");
+		return null;
+	}
 	// const { scrollY, scrollYProgress } = useScroll();
 	// const scale = useTransform(scrollYProgress, [0, 1], [0, 100]);
 	const indicatorRef = useRef<HTMLDivElement | null>(null);
@@ -27,8 +33,8 @@ const CircleIndicator: FC = () => {
 		if (indicator && activeHeader) {
 			const { top } = activeHeader.getBoundingClientRect();
 
-			// TODO: Get the depth of the header
-			animate(indicator, { y: top - 110 });
+			// TODO: Calculate the depth of the header
+			animate(indicator, { y: top - 133 });
 			lastActiveHeading.set(activeHeader);
 		}
 		return { activeHeader: activeHeader as HTMLLIElement };

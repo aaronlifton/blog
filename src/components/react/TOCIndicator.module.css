@@ -10,7 +10,7 @@
 .wrapper {
   @apply w-3;
   width: 20px;
-  transform: translateX(50%)
+  transform: translateX(50%);
 }
 
 .container {
@@ -24,4 +24,5 @@
   @apply absolute bg-amethyst-200 rounded-full w-3 h-3;
   position: absolute;
   transform-origin: top;
+  top: 23px;
 }
