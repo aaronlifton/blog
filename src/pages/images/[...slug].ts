@@ -2,6 +2,7 @@ import type { APIRoute } from "astro";
 import fs from "fs/promises";
 import path from "path";
 
+export const prerender = true;
 export async function getStaticPaths() {
 	const files: string[] = await fs.readdir("src/content/blog/assets/");
 

@@ -8,6 +8,8 @@ interface Props {
 	props: { post: CollectionEntry<"blog"> };
 }
 
+export const prerender = true;
+
 export async function GET({ props }: Props) {
 	const { post } = props;
 
