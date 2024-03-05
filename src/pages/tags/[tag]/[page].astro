@@ -1,42 +1,56 @@
 ---
 export const prerender = true;
 import type { InferGetStaticParamsType, InferGetStaticPropsType } from "astro";
-import { getCollection } from "astro:content";
+import { getCollection, type CollectionEntry } from "astro:content";
 import HeadingWithIcon from "$/components/HeadingWithIcon.astro";
 import Pages from "$/components/Pages.svelte";
 import PostPreviewList from "$/components/PostPreviewList.astro";
 import { PAGE_SIZE } from "$/consts";
 import Layout from "$/layouts/Layout.astro";
 
-export async function getStaticPaths({ paginate }) {
+export async function getStaticPaths({
+  paginate,
+}: {
+  paginate: (
+    data: CollectionEntry<"blog">[],
+    options: { pageSize: number },
+    params: { tag: string, page: number }
+  ) => any;
+}) {
   const allPosts = await getCollection("blog");
   const filteredPosts = allPosts.filter((post) => !post.data.draft);
+
   const allTags = new Set<string>();
-  filteredPosts.map((post) => {
-    post.data.tags && post.data.tags.map((tag) => allTags.add(tag));
+  filteredPosts.forEach((post) => {
+    post.data.tags && post.data.tags.forEach((tag) => allTags.add(tag));
   });
 
   return Array.from(allTags).flatMap((tag) => {
     const postsWithTag = allPosts.filter((post) =>
-      post.data.tags.includes(tag),
+      post.data.tags.includes(tag)
     );
+
     return paginate(postsWithTag, {
-      params: { tag },
-      props: { allTags },
       pageSize: PAGE_SIZE,
+    }, {
+      tag: tag,
+      page: 1
     });
   });
 }
 
+
+
+// type Params = InferGetStaticParamsType<typeof getStaticPaths>;
+type Props = { page: { data: CollectionEntry<"blog">[]; currentPage: number } };
 type Params = InferGetStaticParamsType<typeof getStaticPaths>;
-type Props = InferGetStaticPropsType<typeof getStaticPaths>;
 
 const { page } = Astro.props as Props;
 const { tag } = Astro.params as Params;
 ---
 
 <Layout>
-  <div class="flex justify-center items-center align-middle leading-4 title">
+  <div class="title flex items-center justify-center align-middle leading-4">
     <HeadingWithIcon text={tag} {tag} className="mr-2" />
     <span class="emdash">—</span>
     <span
@@ -50,19 +64,20 @@ const { tag } = Astro.params as Params;
   <Pages
     baseUrl={Astro.url.pathname.slice(0, -2)}
     currentPage={page.currentPage}
-    totalPages={page.lastPage}
-  />
-</Layout>
+    totalPages={page.data.length}
+    />
+  </Layout>
 
 <style>
-  .emdash,
-  span + span {
-    position: relative;
-    top: -4px;
-  }
-  .title {
-    span {
-      @apply align-middle leading-6;
+  .emdash {
+    span + span {
+      position: relative;
+      top: -4px;
     }
+  }
+
+  .title span {
+    align-items: middle;
+    line-height: 6;
   }
 </style>

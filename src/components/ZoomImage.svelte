@@ -16,7 +16,7 @@
       dialogEl?.showModal();
     } else {
       console.log("closing")
-      dialogEl.close();
+      dialogEl?.close();
     }
     dialogOpen = !dialogOpen;
   };

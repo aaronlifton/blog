@@ -62,9 +62,11 @@ for (const post of livePosts) {
       <div class="code">
         <div class="code-header flex flex-row justify-between">
           <h2 class="flex grow pr-3 text-xl font-bold">{code.lang}</h2>
-          <div class="truncate text-sm">
-            <a href={`/blog/${code.post.slug}`}>{code.post.data.title}</a>
-          </div>
+          {code.post && (
+            <div class="truncate text-sm">
+              <a href={`/blog/${code.post.slug}`}>{code.post.data.title}</a>
+            </div>
+          )}
         </div>
         {/* @ts-ignore */}
         <Code
@@ -104,7 +106,7 @@ for (const post of livePosts) {
       }
     };
 
-    // let interval = setInterval(scrollNext, intervalTime);
+    setInterval(scrollNext, intervalTime);
 
     // noop
     const resetTimer = () => {
@@ -126,7 +128,7 @@ for (const post of livePosts) {
       isPaused.set(true);
     });
 
-    codesContainer?.addEventListener("mouseleave", function (event) {
+    codesContainer?.addEventListener("mouseleave", function () {
       if (!codesContainer) return;
 
       isPaused.set(false);

@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<testsuites errors="0"
+            failures="1"
+            tests="1">
+
+  <testsuite name="test.index"
+    errors="0" failures="1" hostname="" id="" package="index" skipped="0"
+    tests="1" time="15.61" timestamp="">
+  
+    <testcase name="check that the title is correct" classname="test.index" time="5.164" assertions="1">  <failure message="Testing if the page title equals &#39;Astro is awesome!&#39; in 5000ms - expected &#34;is &#39;Astro is awesome!&#39;&#34; but got: &#34;Aaron&#39;s Dev Blog&#34; (5094ms)">    at DescribeInstance.&lt;anonymous&gt; (file:///Users/aaron/Code/astro/fullstack-dev-blog/test/index.js:5:18)</failure>
+
+    
+    </testcase>
+  
+
+  
+
+    
+
+  
+  </testsuite>
+</testsuites>

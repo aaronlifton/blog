@@ -6,7 +6,23 @@ import PostPreviewListFooter from "../../components/PostPreviewListFooter.astro"
 import Pages from "../../components/Pages.svelte";
 import { PAGE_SIZE } from "../../consts.ts";
 
-export async function getStaticPaths({ paginate }) {
+type Props = {
+  page: {
+    currentPage: number;
+    data: CollectionEntry<"blog">[];
+    lastPage: number;
+    pageSize: number;
+  };
+};
+
+export async function getStaticPaths({
+  paginate,
+}: {
+  paginate: (
+    data: CollectionEntry<"blog">[],
+    options: { pageSize: number },
+  ) => any;
+}) {
   let posts: CollectionEntry<"blog">[] = await getCollection("blog");
   posts = posts
     .filter((post) => !post.data.draft)
@@ -16,7 +32,7 @@ export async function getStaticPaths({ paginate }) {
 }
 // All paginated data is passed on the "page" prop
 export const prerender = true;
-const { page } = Astro.props;
+const { page }: Props = Astro.props;
 ---
 
 <Layout>
@@ -33,11 +49,16 @@ const { page } = Astro.props;
         <Pages
           baseUrl={Astro.url.pathname.slice(0, -2)}
           currentPage={page.currentPage}
-          perPage={page.size}
           totalPages={page.lastPage}
         />
       </Fragment>
     )
+  }
+</Layout>
+
+<script define:vars={{ page }}>
+  console.log({ page });
+</script>
   }
 </Layout>
 

@@ -20,11 +20,15 @@
       ]
     },
     "types": [
-      "astro/client"
+      "astro/client",
+      "astro/env"
     ],
     "jsx": "react-jsx",
     "esModuleInterop": true,
   },
+  "files": [
+    "node_modules/gsap/types/index.d.ts"
+  ],
   "include": [
     "src/**/*",
     "plugins",
@@ -34,6 +38,8 @@
   "exclude": [
     "src/components/devicons",
     "src/tmpscripts",
-    "src/tmp"
+    "src/tmp",
+    "src/test",
+    "src/tests"
   ]
 }

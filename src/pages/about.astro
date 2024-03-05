@@ -1,21 +1,20 @@
 ---
 import Layout from "../layouts/Layout.astro";
-import HomeImage from "../components/HomeImage.astro";
 import { Image } from "astro:assets";
 import Prose from "../components/Prose.astro";
 import image from "../content/blog/assets/blog-placeholder-about.jpg";
 ---
 
 <Layout>
-  <div class="flex flex-col space-between w-full">
+  <div class="space-between flex w-full flex-col">
     <div class="text-center">
       <h5 class="m-0">About Me</h5>
     </div>
 
     <Prose>
       <div
-        class="flex flex-row space-evenly w-full
-      align-middle my-4 gap-4 justify-center items-start"
+        class="space-evenly my-4 flex w-full
+      flex-row items-start justify-center gap-4 align-middle"
       >
         <Image
           src={image}
@@ -35,7 +34,7 @@ import image from "../content/blog/assets/blog-placeholder-about.jpg";
           <div class="mt-8">
             <h5>Links</h5>
             <ul
-              class="list-disc indent-0 m-0 p-0 ml-0 pl-0 [&_li]:m-0 [&_li]:p-0"
+              class="m-0 ml-0 list-disc p-0 pl-0 indent-0 [&_li]:m-0 [&_li]:p-0"
             >
               <li>
                 <a href="https://github.com/aaronlifton">Github</a>
@@ -53,6 +52,6 @@ import image from "../content/blog/assets/blog-placeholder-about.jpg";
 </Layout>
 <style>
   ul {
-    @apply list-disc m-0 pl-4;
+    @apply m-0 list-disc pl-4;
   }
 </style>

@@ -1,0 +1,19 @@
+import path from "path";
+import fs from "fs";
+import type { File } from "buffer";
+
+export const getBlogPosts = fs.readDirSync(folderPath, (error, files) => {
+	if (error) {
+		console.error("Error:", error);
+	} else {
+		const filteredFiles = files.filter((file: string) => {
+			const extension = path.extname(file);
+			return extension === ".mdx" || extension === ".md";
+		});
+		// // @ts-nocheck
+		// let themePaths: string[] = [];
+		// for (const file of filteredFiles) {
+		// 	themePaths.push(`${folderPath}/${file}`);
+		// }
+	}
+});

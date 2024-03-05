@@ -11,7 +11,11 @@ if (!slug) {
   throw new Error("Slug is required");
 }
 const data = await getEntry("blog", slug);
-const { lang, html } = await getFirstCodeFromMdx(data.body);
+const code = await getFirstCodeFromMdx(data.body);
+if (code === null) {
+  throw new Error("No code found in blog post");
+}
+const { lang, html } = code;
 console.log({ html, lang });
 ---
 

@@ -1,8 +1,9 @@
 ---
 import type { MarkdownHeading } from "astro";
 import { Icon } from "astro-icon/components";
-// @ts-expect-error this library is not written in TypeScript
+// @ts-ignore -  Missing declaration file
 import { TOC as TableOfContents } from "astro-toc";
+import TOCScroll from "$components/react/TOCIndicator.tsx";
 
 type Props = {
   headings: MarkdownHeading[];
@@ -38,12 +39,14 @@ if (minimumDepth > 1) {
     </div>
   </div>
 
+  <!-- <TOCProgress client:load /> -->
   <nav
     data-toc-wrapper
     class:list={[
       "not-prose",
       "pt-4",
-      "h-full",
+      // "h-full",
+      "h-auto",
       "min-h-0",
       "lg:overflow-y-auto",
       "leading-6",
@@ -71,8 +74,10 @@ if (minimumDepth > 1) {
       "[&_ol_li_a]:no-underline",
       "[&_ol_li_a:hover:first-of-type]:text-zinc-400",
       "[&_ol_li[data-active]_a:hover:first-of-type]:text-zinc-800",
+      "flex flex-row",
     ]}
   >
+    <TOCScroll client:load />
     <TableOfContents toc={tocItems} as="number" />
   </nav>
 </div>
@@ -110,6 +115,7 @@ if (minimumDepth > 1) {
 </details>
 
 <script>
+  import { activeHeading } from "$state/BlogPostState";
   const toc = document.querySelector<HTMLElement>("nav[data-toc-wrapper] ol");
   const tocContainer = toc?.closest<HTMLElement>("[data-toc-wrapper]");
   const blogPost = document.querySelector("[data-blog-post]") as HTMLElement;
@@ -144,8 +150,15 @@ if (minimumDepth > 1) {
     return tocAnchorElem.closest("li");
   }
 
+  // let ratios: { [key: string]: number } = {};
+  // let lastMaxRatio = 0;
   const observer = new IntersectionObserver(
     (entries) => {
+      // Find the heading that is most visible in the viewport.
+      // const intersectionRatio = Math.max(
+      //   ...entries.map((entry) => entry.intersectionRatio),
+      // );
+
       entries.forEach((entry): void => {
         if (!tocContainer) {
           return;
@@ -162,6 +175,7 @@ if (minimumDepth > 1) {
 
           deactivateAllTocItems();
           activate(tocItem);
+          activeHeading.set(tocItem);
           const tocContainerCoords = tocContainer.getBoundingClientRect();
           const tocItemCoords = tocItem.getBoundingClientRect();
 
@@ -195,7 +209,6 @@ if (minimumDepth > 1) {
     },
     {
       threshold: 1,
-      rootMargin: "0% 0% 0% 0%",
     },
   );
 
@@ -206,3 +219,12 @@ if (minimumDepth > 1) {
     observer.observe(headingInBlogPost);
   }
 </script>
+
+<style>
+  [data-toc-wrapper] * {
+    background: linear-gradient(120deg, #ab4e19, #c99a2e);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    -webkit-box-decoration-break: clone;
+  }
+</style>

@@ -13,7 +13,7 @@ import Layout from "$/layouts/Layout.astro";
 import type { MarkdownHeading } from "astro";
 import { Icon } from "astro-icon/components";
 import { Image } from "astro:assets";
-import Toc from "$components/Toc.astro";
+import TOC from "$components/TOC.astro";
 import type { CollectionEntry } from "astro:content";
 import clsx from "clsx";
 import "@radix-ui/themes/styles.css";
@@ -39,12 +39,7 @@ const tocEmpty = headings.length === 0;
 
 <Layout>
   <Fragment slot="head">
-    <BaseHead
-      title={title}
-      description={description}
-      cover={cover.src}
-      coverAlt={coverAlt}
-    />
+    <BaseHead title={title} description={description} cover={cover.src} />
   </Fragment>
   <Fragment slot="header">
     <Header />
@@ -86,6 +81,7 @@ const tocEmpty = headings.length === 0;
               data-closed-toc-label={"Close ToC"}
               aria-label={"Close Table of Contents"}
               style={{
+                // @ts-ignore
                 "--duration": "150ms",
               }}
               data-preload
@@ -109,7 +105,7 @@ const tocEmpty = headings.length === 0;
             >
               <Icon
                 name="tabler/x"
-                className={clsx(
+                class={clsx(
                   "col-start-2",
                   "col-end-2",
                   "row-start-1",
@@ -129,7 +125,7 @@ const tocEmpty = headings.length === 0;
 
               <Icon
                 name="tabler/list"
-                className={clsx(
+                class={clsx(
                   "col-start-2",
                   "col-end-2",
                   "row-start-1",
@@ -174,7 +170,7 @@ const tocEmpty = headings.length === 0;
                 "ease-in-out",
               ]}
             >
-              <Toc headings={headings} />
+              <TOC headings={headings} />
             </div>
           </aside>
         )
@@ -185,7 +181,7 @@ const tocEmpty = headings.length === 0;
         <div class="hero-image">
           {
             false && cover && (
-              <ZoomImage src={cover} alt={coverAlt} hero>
+              <ZoomImage src={cover.src} alt={coverAlt} caption={coverAlt} hero>
                 <Image
                   src={cover}
                   widths={[240, 540, 720, cover.width]}

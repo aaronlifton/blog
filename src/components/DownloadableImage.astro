@@ -11,6 +11,7 @@ let path = `/${Astro.url.pathname}/${src.replace("screenshots", "images")}`;
 ---
 
 <a href={path}>
+  <!-- @ts-ignore -->
   <Image
     {src}
     {alt}

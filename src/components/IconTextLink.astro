@@ -12,11 +12,10 @@ const { text, iconName, className, ...rest }: Props = Astro.props;
 
 <a
   {...rest}
-  class="[&_svg]:fill-theme-amethyst-100; align-middle text-sm text-gray-500
-                text-amethyst-800 no-underline underline-offset-4 hover:text-amethyst-900 hover:no-underline
-                [&:hover_svg]:bg-amethyst-200 [&:hover_svg]:stroke-amethyst-500 [&:hover_svg]:text-amethyst-500
-                [&_hover_span]:underline [&_span]:underline
-                [&_svg]:bg-amethyst-100"
+  class={twMerge(
+    className,
+    "[&_svg]:fill-theme-amethyst-100; align-middle text-sm text-gray-500 text-amethyst-800 no-underline underline-offset-4 hover:text-amethyst-900 hover:no-underline [&:hover_svg]:bg-amethyst-200 [&:hover_svg]:stroke-amethyst-500 [&:hover_svg]:text-amethyst-500 [&_hover_span]:underline [&_span]:underline [&_svg]:bg-amethyst-100",
+  )}
 >
   <span class="underline underline-offset-4">Back to top</span>
   <Icon name="tabler/chevron-up" class="inline-block" />

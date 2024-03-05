@@ -1,0 +1,27 @@
+/* .outer { */
+/*   width: 150px; */
+/*   height: 300px; */
+/*   overflow-x: hidden; */
+/*   padding: 0; */
+/*   margin: 0; */
+/*   background: linear-gradient(180deg, #40f, #05f); */
+/* } */
+
+.wrapper {
+  @apply w-3;
+  width: 20px;
+  transform: translateX(50%)
+}
+
+.container {
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  border-radius: 30px;
+}
+
+.item {
+  @apply absolute bg-amethyst-200 rounded-full w-3 h-3;
+  position: absolute;
+  transform-origin: top;
+}

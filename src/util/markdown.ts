@@ -1,19 +1,20 @@
-import { type RemarkPlugin } from "@astrojs/markdown-remark";
-import { type Code } from "@types/mdast/index.d.ts";
+import { type Code } from "mdast";
+import "@types/mdast/index.d.ts";
 import { raw } from "hast-util-raw";
 import { sanitize } from "hast-util-sanitize";
 import { toHtml } from "hast-util-to-html";
 import { fromMarkdown } from "mdast-util-from-markdown";
 import { toHast } from "mdast-util-to-hast";
 import { toString as mdastToString } from "mdast-util-to-string";
-import getReadingTime from "reading-time";
+// import getReadingTime from "reading-time";
 import "./markdown.d.ts";
 import type { CollectionEntry } from "astro:content";
 
-type CodeResult = Pick<Code, "lang"> & {
+type CodeResult = {
 	post?: CollectionEntry<"blog">;
 	html?: string;
 	text?: string;
+	lang?: string | null;
 };
 export type CodeResults = CodeResult[];
 
@@ -41,7 +42,7 @@ export const getFirstCodeFromMdx = async (
 	};
 };
 
-const getCommentForLang = (lang: Pick<Code, "lang">["lang"]): string => {
+const getCommentForLang = (lang: string): string => {
 	const str = "continued...";
 	if (lang === null || lang === undefined) {
 		return str;
@@ -127,6 +128,7 @@ const truncateCode = (code: Code, opts: TruncateCodeOptions): string => {
 		)
 		.slice(0, opts.numLines)
 		.join("\n");
+	// @ts-ignore
 	return `${firstLines}\n${getCommentForLang(code.lang)}`;
 };
 
@@ -140,27 +142,6 @@ type GetCodesFn = (
 	mdxContent: string,
 	options: TruncateCodeOptions,
 ) => Promise<CodeResults | null>;
-
-const getCodesFromMdxAsHtml = async (
-	mdxContent: string,
-	{ numLines = defaultNumLines },
-): Promise<CodeResults | null> => {
-	const codes = codesFromMdAst(mdxContent);
-	if (codes.length === 0) {
-		return null;
-	}
-	const result = [];
-	for (const code of codes) {
-		const hast = raw(toHast(code, { allowDangerousHtml: true }));
-		const safeHast = sanitize(hast);
-		const html = toHtml(safeHast);
-		result.push({
-			lang: code.lang,
-			html,
-		});
-	}
-	return result;
-};
 
 export const getCodesFromMdx: GetCodesFn = async (
 	mdxContent: string,
@@ -182,3 +163,24 @@ export const getCodesFromMdx: GetCodesFn = async (
 
 	return result;
 };
+
+// const getCodesFromMdxAsHtml = async (
+// 	mdxContent: string,
+// 	{ numLines = defaultNumLines },
+// ): Promise<CodeResults | null> => {
+// 	const codes = codesFromMdAst(mdxContent);
+// 	if (codes.length === 0) {
+// 		return null;
+// 	}
+// 	const result = [];
+// 	for (const code of codes) {
+// 		const hast = raw(toHast(code, { allowDangerousHtml: true }));
+// 		const safeHast = sanitize(hast);
+// 		const html = toHtml(safeHast);
+// 		result.push({
+// 			lang: code.lang,
+// 			html,
+// 		});
+// 	}
+// 	return result;
+// };

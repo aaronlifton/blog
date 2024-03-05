@@ -71,6 +71,7 @@ export default defineConfig({
         transformerTwoslash(),
       ],
     },
+    extendDefaultPlugins: true,
   },
   vite: {
     ssr: {

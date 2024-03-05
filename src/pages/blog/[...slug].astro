@@ -1,10 +1,8 @@
 ---
 import { Image } from "astro:assets";
 import { getCollection, type CollectionEntry } from "astro:content";
-import PostStats from "../../components/PostStats.svelte";
 import ZoomImage from "../../components/ZoomImage.svelte";
 import BlogPost from "../../layouts/BlogPost.astro";
-import { Icon } from "astro-icon/components";
 
 export const prerender = true;
 export async function getStaticPaths() {
@@ -24,7 +22,12 @@ const { Content, headings, remarkPluginFrontmatter } = await post.render();
 
 <BlogPost {...post.data} {headings}>
   <div class="flex w-full flex-col gap-8 pb-4 transition-all md:flex-row">
-    <ZoomImage src={post.data.cover.src} alt={post.data.coverAlt} client:load>
+    <ZoomImage
+      src={post.data.cover.src}
+      alt={post.data.coverAlt}
+      caption={post.data.coverAlt}
+      client:load
+    >
       <Image
         src={post.data.cover}
         widths={[240, 540, 720, post.data.cover.width]}
@@ -35,3 +38,5 @@ const { Content, headings, remarkPluginFrontmatter } = await post.render();
   </div>
   <Content />
 </BlogPost>
+
+<Content />

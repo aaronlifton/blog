@@ -1,7 +1,7 @@
 ---
 import Layout from "$/layouts/Layout.astro";
 import { Icon } from "astro-icon/components";
-import { getCollection, CollectionEntry } from "astro:content";
+import { getCollection, type CollectionEntry } from "astro:content";
 import { unique } from "$/util/array";
 import TagList from "$/components/TagList.astro";
 
@@ -15,7 +15,7 @@ const allTags = unique(data.flat());
   <TagList tags={allTags}>
     <Fragment slot="header">
       <h5>
-        <Icon name="tabler/tags" class="inline relative top-[-0.1ch]" />Tags
+        <Icon name="tabler/tags" class="relative top-[-0.1ch] inline" />Tags
       </h5>
     </Fragment>
   </TagList>
