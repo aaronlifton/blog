@@ -1,6 +1,6 @@
 import React__default, { createElement } from 'react';
 import ReactDOM from 'react-dom/server';
-import { Z as AstroJSX, A as AstroError, T as renderJSX, _ as createVNode } from './chunks/astro_V9-A_eD8.mjs';
+import { Z as AstroJSX, A as AstroError, T as renderJSX, _ as createVNode } from './chunks/astro_XjYta8gE.mjs';
 
 function check$2(Component) {
 	return Component['render'] && Component['$$render'];

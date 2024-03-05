@@ -33,3 +33,4 @@ blob-report/
 playwright/.cache/
 tests_output/
 tests_output/
+.vercel2
