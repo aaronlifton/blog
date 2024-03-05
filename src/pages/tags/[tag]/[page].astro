@@ -12,6 +12,7 @@ import Layout from "$/layouts/Layout.astro";
 //     options: { pageSize: number },
 //     params: { tag: string; page: number }},
 //   ) => any;
+// @ts-ignore ts-nocheck
 export async function getStaticPaths({ paginate }) {
   const allPosts = await getCollection("blog");
   const filteredPosts = allPosts.filter((post) => !post.data.draft);
@@ -37,7 +38,7 @@ export async function getStaticPaths({ paginate }) {
       },
     ); */
     return paginate(postsWithTag, {
-      params: { tag },
+      params: { tag, page },
       props: { allTags },
       pageSize: PAGE_SIZE,
     });
@@ -67,7 +68,7 @@ const { tag } = Astro.params as Params;
   <Pages
     baseUrl={Astro.url.pathname.slice(0, -2)}
     currentPage={page.currentPage}
-    totalPages={page.lastPage}
+    totalPages={page.data.length}
   />
 </Layout>
 
