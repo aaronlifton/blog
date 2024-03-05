@@ -26,7 +26,6 @@ tmp/
 experimental/
 
 .DS_Store
-.vercel/
 .yarn/
 test-results/
 playwright-report/
