@@ -49,6 +49,7 @@
     "astro-icon": "^1.0.4",
     "astro-seo": "^0.8.0",
     "clsx": "^2.1.0",
+    "cookie": "^0.6.0",
     "cypress": "^13.6.4",
     "framer-motion": "^11.0.6",
     "gsap": "^3.12.5",
