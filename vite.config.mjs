@@ -9,6 +9,7 @@ export default {
 			"@astrojs/vercel",
 			"@astrojs/react",
 			"@astrojs/solid-js",
+			"cookie",
 		],
 	},
 	resolve: {

@@ -1,7 +1,8 @@
+import { ImageResponse } from "@vercel/og";
+import { getImage } from "astro:assets";
 import { getCollection, type CollectionEntry } from "astro:content";
 import fs from "fs";
 import path from "path";
-import { ImageResponse } from "@vercel/og";
 import { fileURLToPath } from "url";
 
 interface Props {
@@ -10,6 +11,12 @@ interface Props {
 }
 
 export const prerender = true;
+
+export const size = {
+	width: 350,
+	height: 200,
+};
+const twString = `w-[${size.width}px] h-[${size.height}px] flex rounded-3xl`;
 
 export async function GET({ props }: Props) {
 	const { post } = props;
@@ -28,11 +35,6 @@ export async function GET({ props }: Props) {
 		path.resolve("public/fonts/dm-sans-latin-400-normal.ttf"),
 	);
 
-	// console.log("HERE!!!!");
-	// const __dirname = path.dirname(fileURLToPath(import.meta.url));
-	// console.log({ src: post.data.cover.src, dirname: __dirname });
-
-	// post cover with Image is pretty tricky for dev and build phase
 	const postCover = fs.readFileSync(
 		process.env.NODE_ENV === "development"
 			? path.resolve(
@@ -41,12 +43,24 @@ export async function GET({ props }: Props) {
 			: path.resolve(post.data.cover.src.replace("/", "dist/server/")),
 	);
 
+	// console.log("HERE!!!!");
+	// const __dirname = path.dirname(fileURLToPath(import.meta.url));
+	// console.log({ src: post.data.cover.src, dirname: __dirname });
 	// const downsizedPostCover = await getImage({
 	// 	// @ts-ignore
-	// 	src: postCover,
+	// 	src: postCover.buffer,
 	// 	width: 200,
 	// 	height: 200,
+	// 	format: "webp",
 	// });
+
+	// const cover = downsizedPostCover; //post.data.cover
+	// // post cover with Image is pretty tricky for dev and build phase
+	// const postCoverBuffer = fs.readFileSync(
+	// 	process.env.NODE_ENV === "development"
+	// 		? path.resolve(cover.src.replace(/\?.*/, "").replace("/@fs", ""))
+	// 		: path.resolve(cover.src.replace("/", "dist/server/")),
+	// );
 
 	// Astro doesn't support tsx endpoints so usign React-element objects
 	const html = {
@@ -57,7 +71,8 @@ export async function GET({ props }: Props) {
 					type: "div",
 					props: {
 						// using tailwind
-						tw: "w-[250px] h-[100px] flex rounded-3xl ",
+						// 250 x 100
+						tw: twString,
 						children: [
 							{
 								type: "img",

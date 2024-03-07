@@ -81,6 +81,7 @@ const tocEmpty = headings.length === 0;
               data-closed-toc-label={"Close ToC"}
               aria-label={"Close Table of Contents"}
               style={{
+                display: "none",
                 // @ts-ignore
                 "--duration": "150ms",
               }}
@@ -186,7 +187,7 @@ const tocEmpty = headings.length === 0;
                   src={cover}
                   widths={[240, 540, 720, cover.width]}
                   sizes={`(max-width: 360px) 240px, (max-width: 720px) 540px, (max-width: 1600px) 720px, ${cover.width}px`}
-                  alt={coverAlt}
+                  alt={coverAlt || ""}
                 />
               </ZoomImage>
             )

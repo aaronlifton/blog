@@ -30,11 +30,11 @@ const { Content, headings, remarkPluginFrontmatter } = await post.render();
     >
       <Image
         src={post.data.cover}
-        widths={[240, 540, 720, post.data.cover.width]}
-        sizes={`(max-width: 360px) 240px, (max-width: 720px) 540px, (max-width: 1600px) 720px, ${post.data.cover.width}px`}
+        inferSize
         alt={post.data.coverAlt}
-      />
+        />
+      </Image>
     </ZoomImage>
+    <Content />
   </div>
-  <Content />
 </BlogPost>
