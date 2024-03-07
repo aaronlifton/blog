@@ -45,8 +45,13 @@ export async function getStaticPaths({ paginate }) {
   });
 }
 
-// type Params = InferGetStaticParamsType<typeof getStaticPaths>;
-type Props = { page: { data: CollectionEntry<"blog">[]; currentPage: number } };
+type Props = {
+   page: {
+    data: CollectionEntry<"blog">[];
+    currentPage: number;
+    lastPage: number;
+  }
+};
 type Params = { tag: string; page: number };
 
 const { page } = Astro.props as Props;

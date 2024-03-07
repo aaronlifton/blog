@@ -18,6 +18,13 @@ type Props = CollectionEntry<"blog">;
 
 const post = Astro.props;
 const { Content, headings, remarkPluginFrontmatter } = await post.render();
+
+let width = post.data.cover.width
+let height = post.data.cover.height
+if (post.data.cover.width > 1000) {
+  width /= 2;
+  height /= 2;
+}
 ---
 
 <BlogPost {...post.data} {headings}>
@@ -28,13 +35,12 @@ const { Content, headings, remarkPluginFrontmatter } = await post.render();
       caption={post.data.coverAlt}
       client:load
     >
-      <Image
-        src={post.data.cover}
-        inferSize
-        alt={post.data.coverAlt}
-        />
-      </Image>
+      <Image src={post.data.cover}
+        {width}
+        {height}
+        alt={post.data.coverAlt} />
     </ZoomImage>
-    <Content />
   </div>
+  <Content />
+</BlogPost>
 </BlogPost>
