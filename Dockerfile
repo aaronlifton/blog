@@ -8,8 +8,7 @@ WORKDIR /app
 
 COPY . .
 
-RUN --mount=type=secret,id=_env,dst=/etc/secrets/.env cat /etc/secrets/.env \
-    && npm install \
+RUN --mount=type=secret,id=_env,dst=/etc/secrets/.env npm install \
     && npm run build
 
 ENV HOST=0.0.0.0

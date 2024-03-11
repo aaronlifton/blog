@@ -8,13 +8,13 @@ export const client = createClient({
 
 let isLocal;
 const isLocalhost = () => {
-	if (isLocal !== undefined) return isLocal;
+	if (isLocal !== undefined) {
+		return isLocal;
+	}
 	isLocal = os.arch() === "arm64";
 	return isLocal;
 };
 export const getViewsBySlug = async (slug) => {
-	// if ip address is localhost return
-
 	if (isLocalhost() || !slug) {
 		return 0;
 	}
@@ -41,6 +41,26 @@ export const getViewsBySlug = async (slug) => {
 	} catch (e) {
 		console.error(e);
 		return 0;
+	}
+};
+
+export const getViews = async () => {
+	// return a hash of views by slug
+	if (isLocalhost()) {
+		return {};
+	}
+	try {
+		const rs = await client.execute({
+			sql: "SELECT * FROM post_stats",
+		});
+		const views = {};
+		for (const row of rs.rows) {
+			views[row.slug] = row.views;
+		}
+		return views;
+	} catch (e) {
+		console.error(e);
+		return {};
 	}
 };
 

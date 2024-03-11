@@ -19,7 +19,7 @@
 		"try-deno": "deno run --allow-net --allow-read --allow-env ./dist/server/entry.mjs",
 		"e2e": "npx playwright test --ui",
 		"build-docker": "DOCKER_BUILDKIT=1 docker build --secret id=_env,src=.env -t blog .",
-    "run-docker": "docker run -p 4321:4312 -it --rm blog",
+		"run-docker": "docker run -p 4321:4312 -it --rm blog"
 	},
 	"dependencies": {
 		"@astrojs/check": "^0.5.6",
