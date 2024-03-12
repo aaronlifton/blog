@@ -34,3 +34,6 @@ playwright/.cache/
 tests_output/
 tests_output/
 .vercel2
+
+# prisma
+prisma/dev.db*
