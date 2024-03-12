@@ -1,46 +1,26 @@
 {
-  "extends": "astro/tsconfigs/strict",
-  "compilerOptions": {
-    "baseUrl": "./",
-    "paths": {
-      "$util/*": [
-        "src/util/*"
-      ],
-      "$components/*": [
-        "src/components/*"
-      ],
-      "$state/*": [
-        "src/components/state/*"
-      ],
-      "$layouts/*": [
-        "src/layouts/*"
-      ],
-      "$/*": [
-        "src/*"
-      ],
-    },
-    "types": [
-      "astro/client",
-      "astro/env",
-      "mdast"
-    ],
-    "jsx": "react-jsx",
-    "esModuleInterop": true
-  },
-  "files": [
-    "node_modules/gsap/types/index.d.ts"
-  ],
-  "include": [
-    "src/**/*",
-    "plugins",
-    "scripts",
-    "tests"
-  ],
-  "exclude": [
-    "src/components/devicons",
-    "src/tmpscripts",
-    "src/tmp",
-    "src/test",
-    "src/tests"
-  ]
+	"extends": "astro/tsconfigs/strict",
+	"compilerOptions": {
+		"baseUrl": "./",
+		"paths": {
+			"$/*": ["src/*"],
+			"$api/*": ["src/pages/api/*"],
+			"$util/*": ["src/util/*"],
+			"$components/*": ["src/components/*"],
+			"$state/*": ["src/components/state/*"],
+			"$layouts/*": ["src/layouts/*"],
+			"$prisma/*": ["prisma/*"]
+		},
+		"types": ["astro/client", "astro/env", "mdast"],
+		"jsx": "react-jsx",
+		"esModuleInterop": true
+	},
+	"include": ["src/**/*", "plugins", "scripts", "tests"],
+	"exclude": [
+		"src/components/devicons",
+		"src/tmpscripts",
+		"src/tmp",
+		"src/test",
+		"src/tests"
+	]
 }

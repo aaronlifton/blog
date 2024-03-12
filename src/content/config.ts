@@ -1,5 +1,5 @@
 import { defineCollection, z } from "astro:content";
-import { type ImageMetadata } from "astro";
+import type { ImageMetadata } from "astro";
 
 const minImageWidth = 300;
 const blog = defineCollection({

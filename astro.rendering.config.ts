@@ -3,8 +3,8 @@ import {
   type AstroExpressiveCodeOptions,
 } from "astro-expressive-code";
 import { transformerTwoslash } from "shikiji-twoslash";
-import path from "path";
-import fs from "fs";
+import path from "node:path";
+import fs from "node:fs";
 import { ShikiConfig } from "astro";
 
 const __dirname = path.dirname(new URL(import.meta.url).pathname);

@@ -1,7 +1,7 @@
-import { readdirSync, mkdirSync, existsSync } from "fs";
+import { readdirSync, mkdirSync, existsSync } from "node:fs";
 import sharp from "sharp";
-import path from "path";
-import { fileURLToPath } from "url";
+import path from "node:path";
+import { fileURLToPath } from "node:url";
 
 const size = {
 	width: 250,

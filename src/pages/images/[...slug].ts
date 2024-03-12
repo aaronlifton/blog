@@ -1,6 +1,6 @@
 import type { APIRoute } from "astro";
 import fs from "fs/promises";
-import path from "path";
+import path from "node:path";
 
 export const prerender = true;
 export async function getStaticPaths() {

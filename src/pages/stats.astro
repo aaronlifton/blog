@@ -1,0 +1,28 @@
+---
+import Layout from "../layouts/Layout.astro";
+// import { GET } from "$/pages/api/blog/views/index.ts";
+import { GET } from "$api/blog/views";
+
+const views = await GET();
+const data = await views.json();
+console.log({ data });
+---
+
+<Layout>
+  <div class="space-between flex w-full flex-col">
+    <h5 class="m-0">Stats</h5>
+    <div class="space-between flex w-full flex-col gap-2">
+      {
+        data.views.map((entry) => (
+          <div>
+            {entry[0]} - {entry[1]}
+          </div>
+        ))
+      }
+    </div>
+  </div>
+</Layout>
+
+<script define:vars={{ data }}>
+  console.log(data);
+</script>

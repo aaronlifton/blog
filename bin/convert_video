@@ -1,6 +1,6 @@
 #!/opt/homebrew/bin/node
 import { exec, spawn } from "child_process"
-import path from "path";
+import path from "node:path";
 
 const filename = process.argv[2];
 

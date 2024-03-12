@@ -30,4 +30,11 @@ import { SITE_TITLE, SITE_DESCRIPTION } from "../consts";
     </main>
     <Footer />
   </body>
+  <script>
+    window.onerror = function (message, url, lineNumber, rest) {
+      //save error and send to server for example.
+      console.log({ message, url, lineNumber, rest });
+      return false;
+    };
+  </script>
 </html>

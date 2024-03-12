@@ -1,9 +1,9 @@
 import { ImageResponse } from "@vercel/og";
 import { getImage } from "astro:assets";
 import { getCollection, type CollectionEntry } from "astro:content";
-import fs from "fs";
+import fs from "node:fs";
 import path from "path";
-import { fileURLToPath } from "url";
+import { fileURLToPath } from "node:url";
 
 interface Props {
 	params: { slug: string };

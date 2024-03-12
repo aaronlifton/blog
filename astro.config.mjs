@@ -2,9 +2,9 @@ import mdx from "@astrojs/mdx";
 import sitemap from "@astrojs/sitemap";
 import tailwind from "@astrojs/tailwind";
 import { defineConfig, squooshImageService } from "astro/config";
-import path, { dirname } from "path";
+import path, { dirname } from "node:path";
 import { remarkShakuCodeAnnotate } from "remark-shaku-code-annotate";
-import { fileURLToPath } from "url";
+import { fileURLToPath } from "node:url";
 import react from "@astrojs/react";
 import svelte from "@astrojs/svelte";
 import icon from "astro-icon";
@@ -113,4 +113,3 @@ export default defineConfig({
 		},
 	},
 });
-

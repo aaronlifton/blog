@@ -1,6 +1,6 @@
-import fs, { type Dirent } from "fs";
-import path, { dirname } from "path";
-import { fileURLToPath } from "url";
+import fs, { type Dirent } from "node:fs";
+import path, { dirname } from "node:path";
+import { fileURLToPath } from "node:url";
 
 // export const __dirname = dirname(fileURLToPath(import.meta.url));
 // export const rootPath = path.resolve(__dirname, "../../");

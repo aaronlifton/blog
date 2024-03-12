@@ -1,5 +1,7 @@
 import { createClient } from "@libsql/client";
-import os from "os";
+import os from "node:os";
+import prisma from "./db";
+import { ErrorModel } from "$prisma/zod/error";
 
 export const client = createClient({
 	url: import.meta.env.TURSO_DB_URL,
@@ -18,27 +20,54 @@ export const getViewsBySlug = async (slug) => {
 	if (isLocalhost() || !slug) {
 		return 0;
 	}
-	try {
-		const initialViewCount = 0;
-		const transaction = await client.transaction("write");
-		const rsSelected = await transaction.execute({
-			sql: "SELECT * FROM post_stats WHERE slug = :slug",
-			args: { slug },
-		});
-		const prevViewCount = rsSelected?.rows?.length
-			? rsSelected.rows[0].views
-			: initialViewCount;
-		const rsUpdated = await transaction.execute({
-			sql: "INSERT INTO post_stats (uid, slug, views) VALUES (:uid, :slug, :views) ON CONFLICT(slug) DO UPDATE SET views = :views RETURNING views",
-			args: {
-				uid: crypto.randomUUID(),
-				slug,
-				views: prevViewCount + 1,
+
+	const upsert = async () => {
+		const updated = prisma.blogPostMeta.upsert({
+			where: {
+				postSlug: slug,
+			},
+			create: {
+				postSlug: slug,
+				numViews: initialViewCount,
+			},
+			update: {
+				numViews: blogPost.numViews + 1,
+			},
+			select: {
+				postSlug: true,
+				numViews: true,
 			},
 		});
-		await transaction.commit();
-		return rsUpdated.rows[0].views;
+	};
+
+	try {
+		const initialViewCount = 0;
+		let blogPost = await prisma.blogPostMeta.findUnique({
+			// Since where only contains one field, which is unique, prisma will use a
+			// DB upsert, which avoids unique constraint violations
+			// and eschews the need for a transaction.
+			// See: https://www.prisma.io/docs/orm/reference/prisma-client-reference#database-upserts
+			where: {
+				postSlug: slug,
+			},
+			select: {
+				postSlug: true,
+				numViews: true,
+			},
+		});
+		if (!blogPost) {
+			return initialViewCount;
+		}
+		blogPost = upsert();
+		return blogPost.numViews;
 	} catch (e) {
+		if (e.code === "P2002") {
+			// https://www.prisma.io/docs/concepts/components/prisma-client/handling-errors
+			// A unique constraint was violated
+			// This means that a unique constraint was violated and the transaction was rolled back
+			console.error("Unique constraint violation", e);
+			return 0;
+		}
 		console.error(e);
 		return 0;
 	}
@@ -50,12 +79,15 @@ export const getViews = async () => {
 		return {};
 	}
 	try {
-		const rs = await client.execute({
-			sql: "SELECT * FROM post_stats",
+		const results = await prisma.blogPostMeta.findMany({
+			select: {
+				postSlug: true,
+				numViews: true,
+			},
 		});
 		const views = {};
-		for (const row of rs.rows) {
-			views[row.slug] = row.views;
+		for (const result of results) {
+			views[result.postSlug] = result.numViews;
 		}
 		return views;
 	} catch (e) {
@@ -69,15 +101,13 @@ export const saveError = async (error) => {
 		return;
 	}
 	try {
-		const transaction = await client.transaction("write");
-		await transaction.execute({
-			sql: "INSERT INTO errors (uid, error) VALUES (:uid, :error)",
-			args: {
-				uid: crypto.randomUUID(),
-				error,
-			},
-		});
-		await transaction.commit();
+		const errorObj = {
+			message: error.message,
+			stacktrace: error.stack,
+		};
+		ErrorModel.parse(errorObj);
+
+		const savedError = prisma.error.create({ data: errorObj });
 	} catch (e) {
 		console.error(e);
 	}

@@ -1,0 +1,43 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+  previewFeatures = ["driverAdapters"]
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = "file:./dev.db"
+//url      = env("DATABASE_URL")
+}
+
+generator zod {
+  provider = "zod-prisma"
+  output   = "./zod"
+}
+
+//model BlogPost {
+//  id          String   @id             @default(uuid())
+//  title       String   @unique
+//  slug        String   @unique
+//  description String
+//  pubDate     DateTime @default(now()) // @zod.coerce
+//  updatedDate DateTime @updatedAt      // @zod.coerce
+//  content     String
+//  coverAlt    String
+//  draft       Boolean  @default(false)
+//}
+
+model BlogPostMeta {
+  id       String @default(uuid())
+  postSlug String @id
+  numViews BigInt @default(0)
+}
+
+model Error {
+  id          String @id @default(uuid())
+  message     String
+  stackTrace  String // @zod.coerce
+  createdAt   DateTime @default(now())
+}
