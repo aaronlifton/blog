@@ -9,16 +9,16 @@ interface Props {
 let { tags }: Props = Astro.props;
 ---
 
-<div class="tags w-full max-w-xl mx-auto flex center justify-center">
+<div class="tags center mx-auto flex w-full max-w-xl justify-center">
   {
     tags &&
       tags.map((tag, idx) => (
         <span class="tag mr-1">
-          <a href={`/tags/${tag}`}>
+          <a href={`/tags/${tag}/1`}>
             {iconForTag(tag) && (
               <Icon
                 name={iconForTag(tag)}
-                class="stroke-primary fill-theme-primary"
+                class="fill-theme-primary stroke-primary"
               />
             )}
             {tag}
@@ -30,9 +30,9 @@ let { tags }: Props = Astro.props;
 </div>
 <style>
   .tags {
-    @apply mt-4 mb-0;
+    @apply mb-0 mt-4;
     a svg {
-      @apply text-primary stroke-primary fill-theme-primary;
+      @apply fill-theme-primary stroke-primary text-primary;
       display: inline;
       width: 16px;
       height: 16px;
