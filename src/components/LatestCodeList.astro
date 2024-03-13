@@ -8,11 +8,11 @@ const posts: CollectionEntry<"blog">[] = await getCollection("blog");
 let allCodes: CodeResults = [];
 const livePosts = posts.filter((post) => !post.data.draft);
 for (const post of livePosts) {
-  const codes = await getCodesFromMdx(post.body, { numLines: 6 });
-  if (!codes) continue;
+	const codes = await getCodesFromMdx(post.body, { numLines: 6 });
+	if (!codes) continue;
 
-  const codesWithPost: CodeResults = codes.map((code) => ({ ...code, post }));
-  allCodes = allCodes.concat(codesWithPost);
+	const codesWithPost: CodeResults = codes.map((code) => ({ ...code, post }));
+	allCodes = allCodes.concat(codesWithPost);
 }
 ---
 
@@ -125,45 +125,7 @@ for (const post of livePosts) {
     //   );
     // };
 
-    codesContainer?.addEventListener("touchstart", function () {
-      isPaused.set(true);
-    });
-    codesContainer?.addEventListener("touchend", function () {
-      if (!codesContainer) return;
-
-      isPaused.set(false);
-
-      const containerRect = codesContainer.getBoundingClientRect();
-      const closestCode = Array.from(codes).find((code, index) => {
-        const rect = code.getBoundingClientRect();
-
-        if ( rect.left < containerRect.scrollLeft) {
-          currentIndex = index;
-          return true;
-        } else {
-          return false;
-        }
-      });
-
-      console.log({closestCode})
-      // scroll the container to the beginning of the closest code
-      if (closestCode) {
-        console.log("Scrolling!");
-        codesContainer.scrollLeft =
-          closestCode.offsetLeft - codesContainer.offsetLeft;
-      }
-    });
-
-    codesContainer?.addEventListener("mouseenter", function () {
-      isPaused.set(true);
-    });
-    codesContainer?.addEventListener("mouseleave", function () {
-      if (!codesContainer) return;
-
-      isPaused.set(false);
-    });
-
-    codesContainer?.addEventListener("scroll", function () {
+    function onManualScroll() {
       if (!isPaused.get() || !codesContainer) return;
       let minDiff = Infinity;
       let closestIndex: number | undefined;
@@ -188,7 +150,27 @@ for (const post of livePosts) {
       if (currentIndex >= codes.length - 1) {
         currentIndex = 0;
       }
+    }
+
+    codesContainer?.addEventListener("touchstart", function () {
+      isPaused.set(true);
     });
+    codesContainer?.addEventListener("touchend", function () {
+      if (!codesContainer) return;
+
+      isPaused.set(false);
+      onManualScroll();
+    });
+
+    codesContainer?.addEventListener("mouseenter", function () {
+      isPaused.set(true);
+    });
+    codesContainer?.addEventListener("mouseleave", function () {
+      if (!codesContainer) return;
+
+      isPaused.set(false);
+    });
+    codesContainer?.addEventListener("scroll", onManualScroll);
 
     const iconContainer = document.querySelector("div[class*=_iconContainer]");
 

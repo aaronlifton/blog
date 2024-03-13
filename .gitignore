@@ -38,3 +38,4 @@ tests_output/
 # prisma
 prisma/dev.db*
 dev.db*
+**/*.bk*
