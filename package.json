@@ -22,6 +22,7 @@
 		"run-docker": "docker run -p 4321:4312 -it --rm blog",
 		"turso-dev": "turso dev --db-file ./dev.db",
 		"prisma-generate": "prisma generate && node ./prisma/fix-prisma-module-specifier.js",
+		"init-db": "prisma migrate dev --name init",
 		"add-migration": "prisma migrate dev --name",
 		"turso-load-migration": "turso db shell devblog < ",
 		"turso-db-shell": "turso db shell devblog"

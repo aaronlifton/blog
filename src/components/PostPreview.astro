@@ -12,7 +12,14 @@ const { post, asCard = false } = Astro.props;
 ---
 
 <!-- product.forEach(([color, value]) => { --><!--     return ( --><!--       <div class="post-preview-card" style="min-height:100"> --><!--         <p> --><!--           Lorem ipsum dolor sit amet, qui minim labore adipisicing minim sint --><!--           cillum sint consectetur cupidatat. --><!--         </p> --><!--       </div> --><!--     ); --><!--   }) -->
-<div class:list={["post-preview", { "post-preview--card": asCard }]}>
+<div
+  class:list={[
+    "post-preview",
+    "flex-col",
+    "sm:flex-row",
+    { "post-preview--card": asCard },
+  ]}
+>
   <div class="post-preview__date-box">
     <div class="post-preview__date">
       <span class="post-preview__date__day"

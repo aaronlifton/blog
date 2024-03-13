@@ -14,7 +14,7 @@ export async function getStaticPaths() {
 	}));
 }
 
-export const GET: APIRoute = async () => {
+export const GET: APIRoute = async ({ params, request: _ }) => {
 	const views = await getViews();
 	return new Response(JSON.stringify({ views }));
 };

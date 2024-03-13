@@ -10,41 +10,74 @@ import { useRef, type FC, useEffect } from "react";
 import Styles from "./TOCIndicator.module.css";
 import { useBreakpoint } from "./hooks/useBreakpoint";
 
+const addDepthDataAttributesToUlTree = (
+	listEl: HTMLUListElement | HTMLOListElement,
+) => {
+	// set the depths to the number of parent UL elements
+	listEl.setAttribute("data-depth", "0");
+	const lis = listEl.querySelectorAll("li");
+	for (const li of lis) {
+		const parentDepth = li.parentElement?.getAttribute("data-depth") || 0;
+		if (!parentDepth) {
+			continue;
+		}
+
+		const newDepth = Number.parseInt(parentDepth) + 1;
+		li.setAttribute("data-depth", newDepth.toString());
+	}
+};
+
 const CircleIndicator: FC = () => {
 	const isMobile = useBreakpoint(768);
-	if (isMobile) {
-		console.log("isMobile");
-		return null;
-	}
+	//
 	// const { scrollY, scrollYProgress } = useScroll();
 	// const scale = useTransform(scrollYProgress, [0, 1], [0, 100]);
 	const indicatorRef = useRef<HTMLDivElement | null>(null);
 	const yOffset = useRef(0);
-	// const scaleY = useSpring(scrollYProgress, {
-	// 	stiffness: 100,
-	// 	damping: 30,
-	// 	restDelta: 0.001,
-	// });
+
+	function getUpperPadding(element: HTMLElement) {
+		const style = window.getComputedStyle(element);
+		const paddingTop = Number.parseFloat(style.paddingTop) || 0;
+		const borderTop = Number.parseFloat(style.borderTopWidth) || 0;
+		return paddingTop + borderTop;
+	}
 
 	useEffect(() => {
+		let height = 0;
+		let firstListEl: HTMLOListElement | null = null;
+		const fallback = 133;
+		const nav = document.querySelector("nav");
+		const main = document.querySelector("main");
 		const toc = document.querySelector(
 			"[data-blog-post-toc-container]",
 		) as HTMLDivElement;
-		const tocOffsetParent = toc?.offsetParent as HTMLDivElement;
-		if (tocOffsetParent) {
-			const tocOffset = tocOffsetParent.offsetTop - window.pageYOffset;
-			const difference = tocOffset;
 
+		if (nav && main) {
+			const mainUpperPadding = getUpperPadding(main);
+			height = nav.getBoundingClientRect().height + mainUpperPadding;
+			firstListEl = nav.querySelector("ol");
+		}
+
+		if (height && toc) {
+			const ballHeight = 13.5;
 			const firstHeader = toc.querySelector("a");
 			const firstHeaderHeight = firstHeader?.getBoundingClientRect().height;
-			console.log({ difference, tocOffset, firstHeaderHeight });
-			if (difference && firstHeaderHeight) {
-				const textOffset = firstHeaderHeight / 2 + 4;
-				yOffset.current = difference + textOffset;
-				console.log("yOffset", yOffset.current);
+
+			if (firstHeaderHeight !== undefined) {
+				const textOffset = firstHeaderHeight - ballHeight + 2.5;
+				yOffset.current = height + textOffset;
 			}
 		}
+
+		if (firstListEl) {
+			addDepthDataAttributesToUlTree(firstListEl);
+		}
 	}, []);
+
+	if (isMobile) {
+		console.log("isMobile");
+		return null;
+	}
 
 	activeHeading.subscribe((activeHeader): { activeHeader: HTMLLIElement } => {
 		const indicator = indicatorRef.current;

@@ -3,9 +3,8 @@ import Layout from "../layouts/Layout.astro";
 // import { GET } from "$/pages/api/blog/views/index.ts";
 import { GET } from "$api/blog/views";
 
-const views = await GET();
+const views = await GET(Astro);
 const data = await views.json();
-console.log({ data });
 ---
 
 <Layout>
@@ -13,11 +12,11 @@ console.log({ data });
     <h5 class="m-0">Stats</h5>
     <div class="space-between flex w-full flex-col gap-2">
       {
-        data.views.map((entry) => (
-          <div>
-            {entry[0]} - {entry[1]}
-          </div>
-        ))
+        // data.views.map((entry) => (
+        //   <div>
+        //     {entry[0]} - {entry[1]}
+        //   </div>
+        // ))
       }
     </div>
   </div>

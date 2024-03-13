@@ -6,7 +6,7 @@ import PlayPause from "$components/react/PlayPause";
 
 const posts: CollectionEntry<"blog">[] = await getCollection("blog");
 let allCodes: CodeResults = [];
-let livePosts = posts.filter((post) => !post.data.draft);
+const livePosts = posts.filter((post) => !post.data.draft);
 for (const post of livePosts) {
   const codes = await getCodesFromMdx(post.body, { numLines: 6 });
   if (!codes) continue;
@@ -46,11 +46,16 @@ for (const post of livePosts) {
   }
 </style>
 
-<div class="codes-header">
-  <h5>Latest code</h5>
+<div
+  class:list={[
+    "codes-header flex flex-col portrait:flex-row",
+    "[&_~div]:portrait:translate-y-4",
+  ]}
+>
+  <h5 class="portrait:grow">Latest code</h5>
   {/* @ts-ignore */}
   <PlayPause client:load className="icon-container" />
-  <div class="output"></div>
+  <!-- <div class="output"></div> -->
 </div>
 <!-- if mobile needs more performance, use will-change-scroll -->
 <div
@@ -83,13 +88,15 @@ for (const post of livePosts) {
   import { isPaused } from "$state/LatestCodeListState";
 
   document.addEventListener("astro:page-load", () => {
-    const codesContainer = document.querySelector(".codes-container");
+    const codesContainer = document.querySelector(
+      ".codes-container",
+    ) as HTMLDivElement;
     const codes: NodeListOf<HTMLDivElement> = document.querySelectorAll(
       ".codes-container .code",
     );
 
     let currentIndex = 0;
-    const intervalTime = 3000;
+    const intervalTime = 5000;
 
     const scrollNext = () => {
       if (!codesContainer) return;
@@ -99,7 +106,8 @@ for (const post of livePosts) {
           currentIndex = 0;
         }
 
-        codesContainer.scrollLeft = codes[currentIndex].offsetLeft;
+        codesContainer.scrollLeft =
+          codes[currentIndex].offsetLeft - codesContainer.offsetLeft;
         // codes.forEach((code) => code.classList.remove("active"));
         // codes[(currentIndex + 1) % codes.length].classList.add("active");
         currentIndex++;
@@ -107,13 +115,6 @@ for (const post of livePosts) {
     };
 
     setInterval(scrollNext, intervalTime);
-
-    // noop
-    const resetTimer = () => {
-      return;
-      // clearInterval(interval);
-      // interval = setInterval(scrollNext, intervalTime);
-    };
 
     // const mouseEventWithinRect = (event: MouseEvent, rect: DOMRect): boolean => {
     //   return (
@@ -124,15 +125,42 @@ for (const post of livePosts) {
     //   );
     // };
 
+    codesContainer?.addEventListener("touchstart", function () {
+      isPaused.set(true);
+    });
+    codesContainer?.addEventListener("touchend", function () {
+      if (!codesContainer) return;
+
+      isPaused.set(false);
+
+      const containerRect = codesContainer.getBoundingClientRect();
+      const closestCode = Array.from(codes).find((code, index) => {
+        const rect = code.getBoundingClientRect();
+
+        if ( rect.left < containerRect.scrollLeft) {
+          currentIndex = index;
+          return true;
+        } else {
+          return false;
+        }
+      });
+
+      console.log({closestCode})
+      // scroll the container to the beginning of the closest code
+      if (closestCode) {
+        console.log("Scrolling!");
+        codesContainer.scrollLeft =
+          closestCode.offsetLeft - codesContainer.offsetLeft;
+      }
+    });
+
     codesContainer?.addEventListener("mouseenter", function () {
       isPaused.set(true);
     });
-
     codesContainer?.addEventListener("mouseleave", function () {
       if (!codesContainer) return;
 
       isPaused.set(false);
-      resetTimer();
     });
 
     codesContainer?.addEventListener("scroll", function () {
@@ -167,10 +195,6 @@ for (const post of livePosts) {
     iconContainer?.addEventListener("click", function () {
       const isPausedVal = isPaused.get();
       isPaused.set(!isPausedVal);
-
-      if (isPausedVal) {
-        resetTimer();
-      }
     });
 
     // const observer = new window.IntersectionObserver(

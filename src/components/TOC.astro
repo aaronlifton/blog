@@ -28,7 +28,7 @@ if (minimumDepth > 1) {
 
 <div class="hidden bg-slate-50 p-4 lg:flex lg:h-full lg:flex-col">
   <div class:list={["flex", "items-center", "gap-2", "h-10", "flex-none"]}>
-    <Icon name="tabler/list" />
+    <Icon name="tabler/list" class="relative top-[-1px] inline" />
 
     <b class="m-0">Table of contents</b>
 
@@ -90,7 +90,7 @@ if (minimumDepth > 1) {
     <div class="align-center flex items-center gap-2">
       <Icon name="tabler/list" />
 
-      <h2 class="m-0">Table of contents</h2>
+      <h2>Table of contents</h2>
 
       <div
         class="ml-auto flex items-center transition-transform duration-150 ease-in group-open:rotate-180 lg:hidden"
@@ -220,5 +220,8 @@ if (minimumDepth > 1) {
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     -webkit-box-decoration-break: clone;
+  }
+  summary h2 {
+    @apply m-0 text-[var(--tw-prose-body)];
   }
 </style>
