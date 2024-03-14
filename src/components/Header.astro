@@ -2,6 +2,7 @@
 import HeaderLink from "./HeaderLink.astro";
 import { Icon } from "astro-icon/components";
 import { SITE_TITLE } from "../consts";
+import ThemeToggle from "$components/react/ThemeToggle"
 ---
 
 <header class="grid grid-cols-layout antialiased">
@@ -41,6 +42,7 @@ import { SITE_TITLE } from "../consts";
           ></path></svg
         >
       </a>
+      <!-- <ThemeToggle client:load /> -->
     </div>
   </nav>
 </header>

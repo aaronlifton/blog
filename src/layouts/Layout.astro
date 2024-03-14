@@ -3,6 +3,8 @@ import BaseHead from "../components/BaseHead.astro";
 import Header from "../components/Header.astro";
 import Footer from "../components/Footer.astro";
 import { SITE_TITLE, SITE_DESCRIPTION } from "../consts";
+import nightwind from "nightwind/helper";
+
 // export const prerender = true;
 ---
 
@@ -18,6 +20,14 @@ import { SITE_TITLE, SITE_DESCRIPTION } from "../consts";
     <slot name="head">
       <BaseHead title={SITE_TITLE} description={SITE_DESCRIPTION} />
     </slot>
+    <script set:html={nightwind.init()} />
+    <script>
+      document.addEventListener('astro:after-swap', () => {
+        if (localStorage.getItem('nightwind-mode') === 'dark') {
+          document.querySelector('html')?.classList.add('dark');
+        }
+      });
+    </script>
   </head>
   <body>
     <slot name="header">

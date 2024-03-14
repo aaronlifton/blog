@@ -246,6 +246,7 @@ p {
 
 .prose {
   @apply prose-slate max-w-none dark:prose-invert lg:prose-lg;
+  /* @apply prose-slate max-w-none lg:prose-lg; */
   /* light:prose-slate dark:prose-dark */
   /* Size Modifiers: https://github.com/tailwindlabs/tailwindcss-typography#size-modifiers */
   /* Color Themes: https://github.com/tailwindlabs/tailwindcss-typography#color-modifiers */

@@ -10,21 +10,21 @@ export const prerender = true;
 
 let posts: CollectionEntry<"blog">[] = await getCollection("blog");
 posts = Array.from(posts)
-  .filter((post) => !post.data.draft)
-  .sort((a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf());
+	.filter((post) => !post.data.draft)
+	.sort((a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf());
 ---
 
 <Layout>
   <div class="hero flex justify-center pb-vert-padding">
     <div class="hero__tagline flex justify-center">
-      <Prose className="prose prose-base mb-3 dark:prose-invert lg:prose-base">
+      <Prose className="prose prose-base mb-3 lg:prose-base">
         A developer blog focusing on Ruby on Rails, React, AstroJS, and Neovim.
       </Prose>
     </div>
   </div>
   <div
     class="flex flex-col gap-0 rounded-lg border border-2 border-card-border bg-card-bg bg-opacity-50 p-4
-    scrollbar-thin scrollbar-track-card-bg dark:border-slate-300 sm:flex-row sm:gap-6"
+    scrollbar-thin scrollbar-track-card-bg sm:flex-row sm:gap-6"
   >
     <LatestCodeList />
   </div>

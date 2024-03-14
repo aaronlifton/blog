@@ -45,7 +45,7 @@ const { post, asCard = false } = Astro.props;
   </div>
   <div class="flex flex-1 flex-col">
     <div
-      class="post-preview__title space-apart flex"
+      class="post-preview__title space-apart flex""
     >
       <a
         href={`/blog/${post.slug}`}
