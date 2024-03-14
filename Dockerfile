@@ -17,7 +17,7 @@ SHELL ["/bin/ash", "-o", "pipefail", "-c"]
 #     && npm install \
 #     && npm run prisma-generate \
 #     && npm run build
-RUN --mount=type=secret,id=env,dst=/etc/secrets/.env cat /etc/secrets/.env \
+RUN --mount=type=secret,id=env,dst=/etc/secrets/.env \
       TURSO_DB_AUTH_TOKEN=$(grep TURSO_DB_AUTH_TOKEN /etc/secrets/.env | cut -d '=' -f 2) \
       TURSO_DB_URL=$(grep TURSO_DB_URL /etc/secrets/.env | cut -d '=' -f 2) \
       DATABASE_URL=$(grep DATABASE_URL /etc/secrets/.env | cut -d '=' -f 2) \
