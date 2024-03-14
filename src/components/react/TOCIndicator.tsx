@@ -61,7 +61,9 @@ const CircleIndicator: FC = () => {
 		if (height && toc) {
 			const ballHeight = 13.5;
 			const firstHeader = toc.querySelector("a");
-			const firstHeaderHeight = firstHeader?.getBoundingClientRect().height;
+			const firstHeaderHeight = firstHeader
+				? Number.parseInt(window.getComputedStyle(firstHeader).lineHeight)
+				: 27;
 
 			if (firstHeaderHeight !== undefined) {
 				const textOffset = firstHeaderHeight - ballHeight + 2.5;

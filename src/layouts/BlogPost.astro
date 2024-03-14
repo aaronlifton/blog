@@ -22,14 +22,14 @@ import "$/styles/shaku.css";
 
 type Props = CollectionEntry<"blog">["data"] & { headings: MarkdownHeading[] };
 const {
-  title,
-  description,
-  pubDate,
-  updatedDate,
-  cover,
-  coverAlt,
-  tags,
-  headings,
+	title,
+	description,
+	pubDate,
+	updatedDate,
+	cover,
+	coverAlt,
+	tags,
+	headings,
 } = Astro.props;
 
 const slug = getSlugFromPathname(Astro.url.pathname);
@@ -177,59 +177,59 @@ const tocEmpty = headings.length === 0;
     const blogPostContainer = document.querySelector(
       "[data-blog-post-container]",
     ) as HTMLElement;
-    const toggleTocButton = document.querySelector(
-      "[data-toggle-toc]",
-    ) as HTMLElement;
-    const tocContainer = document.querySelector(
-      "[data-blog-post-toc-container]",
-    );
+    // const toggleTocButton = document.querySelector(
+    //   "[data-toggle-toc]",
+    // ) as HTMLElement;
+    // const tocContainer = document.querySelector(
+    //   "[data-blog-post-toc-container]",
+    // );
+    //
+    // const storedTocState = localStorage.getItem("__preferred_toc_state");
+    // if (storedTocState !== null) {
+    //   if (storedTocState === "open") {
+    //     openToc();
+    //   } else {
+    //     closeToc();
+    //   }
+    // }
 
-    const storedTocState = localStorage.getItem("__preferred_toc_state");
-    if (storedTocState !== null) {
-      if (storedTocState === "open") {
-        openToc();
-      } else {
-        closeToc();
-      }
-    }
-
-    function openToc() {
-      blogPostContainer?.setAttribute("data-toc", "open");
-      toggleTocButton.setAttribute("data-state", "open");
-      saveState("open");
-      toggleTocButton.setAttribute(
-        "aria-label",
-        toggleTocButton.dataset.offLabel ?? "",
-      );
-    }
-
-    function closeToc() {
-      blogPostContainer?.setAttribute("data-toc", "closed");
-      saveState("closed");
-      toggleTocButton.setAttribute(
-        "aria-label",
-        toggleTocButton.dataset.openTocLabel ?? "",
-      );
-    }
-
-    toggleTocButton?.addEventListener("click", () => {
-      const tocIsOpen = blogPostContainer.dataset.toc === "open";
-      if (tocIsOpen) {
-        closeToc();
-        tocContainer?.addEventListener(
-          "transitionend",
-          () => {
-            tocContainer.classList.add("invisible");
-          },
-          {
-            once: true,
-          },
-        );
-      } else {
-        openToc();
-        tocContainer?.classList.remove("invisible");
-      }
-    });
+    // function openToc() {
+    //   blogPostContainer?.setAttribute("data-toc", "open");
+    //   toggleTocButton.setAttribute("data-state", "open");
+    //   saveState("open");
+    //   toggleTocButton.setAttribute(
+    //     "aria-label",
+    //     toggleTocButton.dataset.offLabel ?? "",
+    //   );
+    // }
+    //
+    // function closeToc() {
+    //   blogPostContainer?.setAttribute("data-toc", "closed");
+    //   saveState("closed");
+    //   toggleTocButton.setAttribute(
+    //     "aria-label",
+    //     toggleTocButton.dataset.openTocLabel ?? "",
+    //   );
+    // }
+    //
+    // toggleTocButton?.addEventListener("click", () => {
+    //   const tocIsOpen = blogPostContainer.dataset.toc === "open";
+    //   if (tocIsOpen) {
+    //     closeToc();
+    //     tocContainer?.addEventListener(
+    //       "transitionend",
+    //       () => {
+    //         tocContainer.classList.add("invisible");
+    //       },
+    //       {
+    //         once: true,
+    //       },
+    //     );
+    //   } else {
+    //     openToc();
+    //     tocContainer?.classList.remove("invisible");
+    //   }
+    // });
 
     type TocState = "open" | "closed";
 
