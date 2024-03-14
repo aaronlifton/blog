@@ -8,11 +8,11 @@ ARG TURSO_DB_AUTH_TOKEN
 
 COPY . .
 
-# RUN --mount=type=secret,id=_env,required=true TURSO_DB_URL=$(cat /run/secrets/_env | grep TURSO_DB_URL | cut -d '=' -f 2) \
-#     TURSO_DB_URL=$(cat /run/secrets/_env | grep TURSO_DB_AUTH_TOKEN | cut -d '=' -f 2) \
-#     DATABASE_URL=$(cat /run/secrets/_env | grep DATABASE_URL | cut -d '=' -f 2) \
-# RUN --mount=type=secret,id=env,required=true $(cat /run/secrets/env) \
-RUN --mount=type=secret,id=_env,dst=/etc/secrets/.env cat /etc/secrets/.env \
+SHELL ["/bin/bash", "-o", "pipefail", "-c"]
+RUN --mount=type=secret,id=_env,target=/etc/secrets/.env TURSO_DB_URL=$(grep TURSO_DB_URL /etc/secrets/.env | cut -d '=' -f 2) \
+    TURSO_DB_AUTH_TOKEN=$(grep TURSO_DB_AUTH_TOKEN /etc/secrets/.env | cut -d '=' -f 2) \
+    DATABASE_URL=$(grep DATABASE_URL /etc/secrets/.env | cut -d '=' -f 2) \
+    export TURSO_DB_URL && export TURSO_DB_AUTH_TOKEN && export DATABASE_URL \
     && npm install \
     && npm run prisma-generate \
     && npm run build
