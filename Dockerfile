@@ -20,7 +20,7 @@ SHELL ["/bin/ash", "-o", "pipefail", "-c"]
 RUN --mount=type=secret,id=env,dst=/etc/secrets/.env cat /etc/secrets/.env \
       && npm install \
       && npm run prisma-generate \
-      && npm run buil
+      && npm run build
 
 ENV HOST=0.0.0.0
 ENV PORT=4321
