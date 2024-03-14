@@ -17,7 +17,7 @@ SHELL ["/bin/ash", "-o", "pipefail", "-c"]
 #     && npm install \
 #     && npm run prisma-generate \
 #     && npm run build
-RUN --mount=type=secret,id=_env,dst=/etc/secrets/.env cat /etc/secrets/.env \
+RUN --mount=type=secret,id=env,dst=/etc/secrets/.env cat /etc/secrets/.env \
       && npm install \
       && npm run prisma-generate \
       && npm run buil
