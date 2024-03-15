@@ -1,0 +1,179 @@
+---
+// import ThemeSelect from '@components/ThemeSelect.astro'
+import LanguageSelect from "./LanguageSelect.astro";
+import IconButton from "$components/react/IconButton";
+import { Icon } from "astro-icon/components";
+import { menuItems } from "$util/menu.ts";
+
+type IsActiveMenuItemOptions = {
+  currentPathname: string;
+  menuItemPathname: string;
+  rootPathname: string;
+};
+
+export const isActiveMenuItem = ({
+  currentPathname,
+  menuItemPathname,
+  rootPathname,
+}: IsActiveMenuItemOptions) => {
+  let isActive = currentPathname.startsWith(menuItemPathname);
+
+  if (menuItemPathname === rootPathname) {
+    isActive = currentPathname === menuItemPathname;
+  }
+
+  if (currentPathname + "/" === rootPathname) {
+    isActive = currentPathname + "/" === menuItemPathname;
+  }
+
+  return isActive;
+};
+---
+
+<aside
+  id="sidenav"
+  data-a11y-dialog="sidenav"
+  aria-hidden="true"
+  class="fixed z-50 h-full w-full"
+  style="visibility: hidden;"
+  data-hamburger-nav
+>
+  <div
+    data-a11y-dialog-hide
+    class="fixed inset-0 -z-1 mt-nav-height w-full bg-purple-50/50 backdrop-blur-sm"
+  >
+  </div>
+
+  <div
+    role="document"
+    class="bg-background margin-auto z-50 ml-auto flex h-full w-full flex-col rounded-none py-0 will-change-transform"
+  >
+    <div
+      data-close-btn
+      class="mb-2 flex h-nav-height items-center justify-end px-horizontal-padding"
+    >
+      <IconButton
+        variant="rounded-full"
+        data-a11y-dialog-hide
+        aria-label="Close"
+      >
+        <Icon name="tabler/x" />
+      </IconButton>
+    </div>
+
+    <nav class="flex w-full flex-col" aria-label="Main navigation">
+      <ul
+        class="bg-amethyst-100/75 border-amethyst-300/55 flex h-full w-full list-none flex-col items-center justify-center overflow-y-auto border-4 bg-purple-50 p-3 px-horizontal-padding"
+      >
+        {
+          menuItems.map((item) => {
+            const isActive = isActiveMenuItem({
+              currentPathname: Astro.url.pathname,
+              menuItemPathname: item.pathname,
+              rootPathname: "/",
+            });
+
+            return (
+              <li class="w-full">
+                <a
+                  class="bg-amethyst-300/55  text=md not-prose block w-full rounded-full px-4 py-2 text-center font-bold text-black transition-colors duration-200 ease-in-out focus:bg-amethyst-100 focus:outline-none focus:ring-2 focus:ring-amethyst-300 focus:ring-opacity-50"
+                  href={item.pathname}
+                  color={isActive ? "primary" : "secondary"}
+                  {...(isActive && { "aria-current": "page" })}
+                  data-astro-reload
+                >
+                  {item.name}
+                </a>
+              </li>
+            );
+          })
+        }
+      </ul>
+    </nav>
+  </div>
+</aside>
+
+<script>
+  import "a11y-dialog";
+
+  const DIALOG_BACKDROP_ANIMATION_DURATION = 300;
+  const DIALOG_CONTENT_ANIMATION_DURATION = 300;
+  const maxAnimationDuration = Math.max(
+    DIALOG_CONTENT_ANIMATION_DURATION,
+    DIALOG_BACKDROP_ANIMATION_DURATION,
+  );
+
+  (() => {
+    const dialogElement =
+      document.querySelector<HTMLElement>("[data-a11y-dialog]");
+    const btn = document.querySelector("[data-hamburger-btn]");
+    dialogElement.querySelector("a").addEventListener("click", () => {
+      dialogElement.hide();
+    });
+
+    if (!dialogElement) {
+      return;
+    }
+
+    const backdrop = dialogElement.querySelector<HTMLElement>(
+      "[data-a11y-dialog-hide]",
+    );
+    const content = dialogElement.querySelector<HTMLElement>("[role=document]");
+
+    if (!backdrop || !content) {
+      return;
+    }
+
+    const hideSidenav = () => {
+      backdrop.style.transition = `opacity ${DIALOG_BACKDROP_ANIMATION_DURATION}ms ease`;
+      content.style.transition = `transform ${DIALOG_CONTENT_ANIMATION_DURATION}ms ease`;
+      dialogElement.style.transition = `visibility 0ms ${maxAnimationDuration}ms ease`;
+
+      content.style.transform = "translateX(100%)";
+      backdrop.style.opacity = "0";
+      dialogElement.style.visibility = "hidden";
+
+      document.body.style.overflowY = "visible";
+      // btn.classList.add("text-red bg-red");
+      // btn.classList.remove("hidden")
+    };
+
+    const showSidenav = () => {
+      dialogElement.style.transition = `visibility 0ms`;
+      backdrop.style.transition = `opacity ${DIALOG_BACKDROP_ANIMATION_DURATION}ms ease`;
+      content.style.transition = `transform ${DIALOG_CONTENT_ANIMATION_DURATION}ms ease`;
+
+      dialogElement.style.visibility = "visible";
+      backdrop.style.opacity = "1";
+      content.style.transform = "translateX(0px)";
+
+      dialogElement
+        .querySelector<HTMLElement>("button[data-a11y-dialog-hide]")
+        ?.focus();
+
+      document.body.style.overflowY = "hidden";
+    };
+
+    hideSidenav();
+
+    dialogElement.addEventListener("show", () => {
+      showSidenav();
+    });
+
+    dialogElement.addEventListener("hide", () => {
+      hideSidenav();
+    });
+  })();
+
+  // document.addEventListener("astro:page-load", () => {
+  //   const dialogElement =
+  //     document.querySelector<HTMLElement>("[data-a11y-dialog]");
+  //   const dialog = new A11yDialog(dialogElement);
+  // });
+</script>
+
+<style>
+  [data-close-btn] {
+    opacity: 0;
+  }
+</style>
