@@ -39,3 +39,4 @@ tests_output/
 prisma/dev.db*
 dev.db*
 **/*.bk*
+logs/analytics/*

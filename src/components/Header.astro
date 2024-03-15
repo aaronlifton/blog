@@ -16,7 +16,7 @@ import { menuItems } from "$util/menu";
     <div class="internal-links hidden select-none sm:flex">
       {
         menuItems.map((item, index) => (
-          <HeaderLink href={item.href}>{item.name}</HeaderLink>
+          <HeaderLink href={item.pathname}>{item.name}</HeaderLink>
         ))
       }
     </div>

@@ -4,32 +4,29 @@ import CodeText from "$components/CodeText.astro";
 import IconTextLink from "$components/IconTextLink.astro";
 import FormattedDate from "$components/FormattedDate.astro";
 import Header from "$components/Header.astro";
-import IconButton from "$components/react/IconButton";
 import PostStats from "$components/PostStats.svelte";
 import Prose from "$components/Prose.astro";
 import Tags from "$components/Tags.astro";
 import ZoomImage from "$components/ZoomImage.svelte";
 import Layout from "$/layouts/Layout.astro";
 import type { MarkdownHeading } from "astro";
-import { Icon } from "astro-icon/components";
 import { Image } from "astro:assets";
 import TOC from "$components/TOC.astro";
 import type { CollectionEntry } from "astro:content";
-import clsx from "clsx";
 import "@radix-ui/themes/styles.css";
 import { getSlugFromPathname } from "$/util";
 import "$/styles/shaku.css";
 
 type Props = CollectionEntry<"blog">["data"] & { headings: MarkdownHeading[] };
 const {
-	title,
-	description,
-	pubDate,
-	updatedDate,
-	cover,
-	coverAlt,
-	tags,
-	headings,
+  title,
+  description,
+  pubDate,
+  updatedDate,
+  cover,
+  coverAlt,
+  tags,
+  headings,
 } = Astro.props;
 
 const slug = getSlugFromPathname(Astro.url.pathname);
@@ -175,7 +172,7 @@ const tocEmpty = headings.length === 0;
 <script>
   document.addEventListener("astro:page-load", () => {
     const blogPostContainer = document.querySelector(
-      "[data-blog-post-container]",
+      "[data-blog-post-container]"
     ) as HTMLElement;
     // const toggleTocButton = document.querySelector(
     //   "[data-toggle-toc]",

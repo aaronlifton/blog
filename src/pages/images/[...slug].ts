@@ -4,31 +4,37 @@ import path from "node:path";
 
 export const prerender = true;
 export async function getStaticPaths() {
-	const files: string[] = await fs.readdir("src/content/blog/assets/");
+  const files: string[] = await fs.readdir("src/content/blog/assets/");
 
-	return files.map((fileName) => {
-		return {
-			params: {
-				slug: fileName,
-			},
-		};
-	});
+  return files.map((fileName) => {
+    return {
+      params: {
+        slug: fileName,
+      },
+    };
+  });
 }
 
 export const GET: APIRoute = async ({ props, params }) => {
-	// Define the path to your image file
-	const imagePath = path.join(
-		process.cwd(),
-		"/src/content/blog/assets/screenshots/nvim-no-unused-vars.png",
-	);
+  // Define the path to your image file
+  let imagePath;
+  let imageBuffer;
+  if (params.slug !== undefined) {
+    imagePath = path.join(process.cwd(), params.slug);
+    imageBuffer = await fs.readFile(imagePath);
+  }
 
-	// Read the image file
-	const imageBuffer = await fs.readFile(imagePath);
-
-	// Return the image as a response
-	return new Response(imageBuffer, {
-		headers: {
-			"Content-Type": "image/png",
-		},
-	});
+  if (imageBuffer) {
+    // Return the image as a response
+    return new Response(imageBuffer, {
+      headers: {
+        "Content-Type": "image/png",
+      },
+    });
+  } else {
+    return new Response(null, {
+      status: 404,
+      statusText: "Image not found",
+    });
+  }
 };

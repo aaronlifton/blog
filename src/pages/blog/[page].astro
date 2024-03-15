@@ -1,10 +1,10 @@
 ---
 import { type CollectionEntry, getCollection } from "astro:content";
-import Layout from "../../layouts/Layout.astro";
-import PostPreviewList from "../../components/PostPreviewList.astro";
-import PostPreviewListFooter from "../../components/PostPreviewListFooter.astro";
-import Pages from "../../components/Pages.svelte";
-import { PAGE_SIZE } from "../../consts.ts";
+import Layout from "$layouts/Layout.astro";
+import PostPreviewList from "$components/PostPreviewList.astro";
+import PostPreviewListFooter from "$components/PostPreviewListFooter.astro";
+import Pages from "$components/Pages.svelte";
+import { PAGE_SIZE } from "$/consts.ts";
 
 type Props = {
   page: {
@@ -20,7 +20,7 @@ export async function getStaticPaths({
 }: {
   paginate: (
     data: CollectionEntry<"blog">[],
-    options: { pageSize: number },
+    options: { pageSize: number }
   ) => any;
 }) {
   let posts: CollectionEntry<"blog">[] = await getCollection("blog");

@@ -1,6 +1,5 @@
 ---
 // import ThemeSelect from '@components/ThemeSelect.astro'
-import LanguageSelect from "./LanguageSelect.astro";
 import IconButton from "$components/react/IconButton";
 import { Icon } from "astro-icon/components";
 import { menuItems } from "$util/menu.ts";
@@ -100,23 +99,19 @@ export const isActiveMenuItem = ({
   const DIALOG_CONTENT_ANIMATION_DURATION = 300;
   const maxAnimationDuration = Math.max(
     DIALOG_CONTENT_ANIMATION_DURATION,
-    DIALOG_BACKDROP_ANIMATION_DURATION,
+    DIALOG_BACKDROP_ANIMATION_DURATION
   );
 
   (() => {
     const dialogElement =
       document.querySelector<HTMLElement>("[data-a11y-dialog]");
-    const btn = document.querySelector("[data-hamburger-btn]");
-    dialogElement.querySelector("a").addEventListener("click", () => {
-      dialogElement.hide();
-    });
 
     if (!dialogElement) {
       return;
     }
 
     const backdrop = dialogElement.querySelector<HTMLElement>(
-      "[data-a11y-dialog-hide]",
+      "[data-a11y-dialog-hide]"
     );
     const content = dialogElement.querySelector<HTMLElement>("[role=document]");
 

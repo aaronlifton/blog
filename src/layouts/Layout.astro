@@ -20,9 +20,9 @@ import { SITE_TITLE, SITE_DESCRIPTION } from "../consts";
       <BaseHead title={SITE_TITLE} description={SITE_DESCRIPTION} />
     </slot>
     <script>
-      document.addEventListener('astro:after-swap', () => {
-        if (localStorage.getItem('theme') === 'dark') {
-          document.querySelector('html')?.classList.add('dark');
+      document.addEventListener("astro:after-swap", () => {
+        if (localStorage.getItem("theme") === "dark") {
+          document.querySelector("html")?.classList.add("dark");
         }
       });
     </script>
@@ -39,9 +39,17 @@ import { SITE_TITLE, SITE_DESCRIPTION } from "../consts";
     <Footer />
   </body>
   <script>
-    window.onerror = function (message, url, lineNumber, rest) {
+    import { saveError } from "$/services/turso";
+    window.onerror = function (message, url, lineno, colno, error) {
       //save error and send to server for example.
-      console.log({ message, url, lineNumber, rest });
+      console.error({ message, url, lineno, colno, error });
+      const evt = new ErrorEvent("error", {
+        message: message.toString(),
+        filename: url,
+        lineno,
+        colno,
+      });
+      saveError(evt);
       return false;
     };
   </script>

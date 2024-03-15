@@ -1,6 +1,5 @@
 ---
 export const prerender = true;
-import type { InferGetStaticParamsType, InferGetStaticPropsType } from "astro";
 import { getCollection, type CollectionEntry } from "astro:content";
 import HeadingWithIcon from "$/components/HeadingWithIcon.astro";
 import Pages from "$/components/Pages.svelte";
@@ -24,7 +23,7 @@ export async function getStaticPaths({ paginate }) {
 
   return Array.from(allTags).flatMap((tag) => {
     const postsWithTag = allPosts.filter((post) =>
-      post.data.tags.includes(tag),
+      post.data.tags.includes(tag)
     );
     /*
     return paginate(
@@ -38,7 +37,7 @@ export async function getStaticPaths({ paginate }) {
       },
     ); */
     return paginate(postsWithTag, {
-      params: { page: 1, tag},
+      params: { page: 1, tag },
       props: { allTags },
       pageSize: PAGE_SIZE,
     });
@@ -46,11 +45,11 @@ export async function getStaticPaths({ paginate }) {
 }
 
 type Props = {
-   page: {
+  page: {
     data: CollectionEntry<"blog">[];
     currentPage: number;
     lastPage: number;
-  }
+  };
 };
 type Params = { tag: string; page: number };
 
@@ -90,4 +89,3 @@ const { tag } = Astro.params as Params;
     line-height: 6;
   }
 </style>
-

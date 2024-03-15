@@ -18,7 +18,7 @@
     "cypress": "npx cypress open",
     "try-deno": "deno run --allow-net --allow-read --allow-env ./dist/server/entry.mjs",
     "e2e": "npx playwright test --ui",
-    "docker-build": "DOCKER_BUILDKIT=1 docker build --secret id=_env,src=.env -t blog .",
+    "docker-build": "DOCKER_BUILDKIT=1 docker build --secret id=env,src=.env -t blog .",
     "docker-run": "docker run -p 4321:4321 -it --rm blog",
     "turso-dev": "turso dev --db-file ./dev.db",
     "prisma-generate": "prisma generate && node ./prisma/fix-prisma-module-specifier.js",

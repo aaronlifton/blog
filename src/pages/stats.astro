@@ -1,10 +1,10 @@
 ---
 import Layout from "../layouts/Layout.astro";
-// import { GET } from "$/pages/api/blog/views/index.ts";
 import { GET } from "$api/blog/views/all.ts";
 
 const views = await GET(Astro);
 const data = await views.json();
+console.log({ views, data });
 ---
 
 <Layout>
@@ -21,7 +21,3 @@ const data = await views.json();
     </div>
   </div>
 </Layout>
-
-<script define:vars={{ data }}>
-  console.log(data);
-</script>

@@ -1,30 +1,36 @@
 import { createClient } from "@libsql/client";
 import os from "node:os";
-import prisma from "./db";
-import { ErrorModel } from "$prisma/zod/error";
+import prisma, { ErrorModel } from "./db";
+import type { PrismaClientKnownRequestError } from "@prisma/client/runtime/library";
+// import { ErrorModel } from "$prisma/zod/error";
 
 export const client = createClient({
   url: import.meta.env.TURSO_DB_URL,
   authToken: import.meta.env.TURSO_DB_AUTH_TOKEN,
 });
 
-let isLocal;
+let isLocal: boolean | undefined;
 const isLocalhost = () => {
   if (isLocal !== undefined) {
     return isLocal;
   }
 
-  // Mac M2 Mac Mini has 12 cores
-  isLocal = os.arch() == "arm64" && os.cpus().length == 12;
+  // My M2 Mac Mini has 12 cores
+  isLocal =
+    os.arch() == "arm64" &&
+    os.cpus().length == 12 &&
+    import.meta.env.TURSO_DEBUG != true;
   return isLocal;
 };
-export const getViewsBySlug = async (slug) => {
+export const getViewsBySlug = async (slug: string, shouldIncrement = false) => {
   if (isLocalhost() || !slug) {
+    console.log("isLocalhost");
     return 0;
   }
 
-  const upsert = async () => {
-    const updated = prisma.blogPostMeta.upsert({
+  const initialViewCount = 0;
+  const upsert = async () =>
+    prisma.blogPostMeta.upsert({
       where: {
         postSlug: slug,
       },
@@ -33,18 +39,18 @@ export const getViewsBySlug = async (slug) => {
         numViews: initialViewCount,
       },
       update: {
-        numViews: blogPost.numViews + 1,
+        numViews: {
+          increment: 1,
+        },
       },
       select: {
         postSlug: true,
         numViews: true,
       },
     });
-  };
 
-  try {
-    const initialViewCount = 0;
-    let blogPost = await prisma.blogPostMeta.findUnique({
+  const find = async () =>
+    await prisma.blogPostMeta.findUnique({
       // Since where only contains one field, which is unique, prisma will use a
       // DB upsert, which avoids unique constraint violations
       // and eschews the need for a transaction.
@@ -57,13 +63,20 @@ export const getViewsBySlug = async (slug) => {
         numViews: true,
       },
     });
-    if (!blogPost) {
-      return initialViewCount;
+
+  try {
+    let blogPostMeta;
+    if (shouldIncrement) {
+      blogPostMeta = await upsert();
+    } else {
+      blogPostMeta = await find();
+      if (!blogPostMeta) {
+        blogPostMeta = await upsert();
+      }
     }
-    blogPost = upsert();
-    return blogPost.numViews;
+    return blogPostMeta.numViews;
   } catch (e) {
-    if (e.code === "P2002") {
+    if ((e as PrismaClientKnownRequestError).code === "P2002") {
       // https://www.prisma.io/docs/concepts/components/prisma-client/handling-errors
       // A unique constraint was violated
       // This means that a unique constraint was violated and the transaction was rolled back
@@ -78,6 +91,10 @@ export const getViewsBySlug = async (slug) => {
 export const getViews = async () => {
   // return a hash of views by slug
   if (isLocalhost()) {
+    console.log(
+      "getViews: localhost detected",
+      `(${os.arch()} ${os.cpus().length} cores)`,
+    );
     return {};
   }
   try {
@@ -87,7 +104,7 @@ export const getViews = async () => {
         numViews: true,
       },
     });
-    const views = {};
+    const views: { [key: string]: bigint } = {};
     for (const result of results) {
       views[result.postSlug] = result.numViews;
     }
@@ -98,19 +115,29 @@ export const getViews = async () => {
   }
 };
 
-export const saveError = async (error) => {
-  if (!error) {
+export const saveError = async (evt: ErrorEvent) => {
+  if (!evt) {
     return;
   }
   try {
     const errorObj = {
-      message: error.message,
-      stacktrace: error.stack,
+      message: evt.message,
+      stacktrace: evt.error.stack,
     };
-    ErrorModel.parse(errorObj);
-
-    const savedError = prisma.error.create({ data: errorObj });
+    const validatedError = ErrorModel.parse(errorObj);
+    const savedError = prisma.error.create({ data: validatedError });
+    console.log("Saved error", savedError);
   } catch (e) {
     console.error(e);
+  }
+};
+
+export const getErrors = async () => {
+  try {
+    const errors = await prisma.error.findMany();
+    return errors;
+  } catch (e) {
+    console.error(e);
+    return [];
   }
 };
