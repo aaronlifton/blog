@@ -25,8 +25,7 @@
     "init-db": "prisma migrate dev --name init",
     "add-migration": "prisma migrate dev --name",
     "turso-load-migration": "turso db shell devblog < ",
-    "turso-db-shell": "turso db shell devblog",
-    "postinstall": "patch-package"
+    "turso-db-shell": "turso db shell devblog"
   },
   "dependencies": {
     "@astrojs/check": "^0.5.6",
