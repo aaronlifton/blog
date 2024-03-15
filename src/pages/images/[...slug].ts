@@ -15,7 +15,7 @@ export async function getStaticPaths() {
   });
 }
 
-export const GET: APIRoute = async ({ props, params }) => {
+export const GET: APIRoute = async ({ props: _props, params }) => {
   // Define the path to your image file
   let imagePath;
   let imageBuffer;

@@ -115,6 +115,7 @@ export const saveError = async (evt: Zod.infer<typeof ErrorModel>) => {
     const validatedError = ErrorModel.parse(errorObj);
     const savedError = prisma.error.create({ data: validatedError });
     console.log("Saved error", savedError);
+    return savedError;
   } catch (e) {
     console.error(e);
   }

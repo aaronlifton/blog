@@ -230,9 +230,9 @@ const tocEmpty = headings.length === 0;
 
     type TocState = "open" | "closed";
 
-    function saveState(state: TocState) {
-      localStorage.setItem("__preferred_toc_state", state);
-    }
+    // function saveState(state: TocState) {
+    //   localStorage.setItem("__preferred_toc_state", state);
+    // }
 
     const backToTopButton = document.querySelector("[data-back-to-top]");
     backToTopButton?.addEventListener("click", () => {

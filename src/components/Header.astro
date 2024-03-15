@@ -2,7 +2,7 @@
 import HeaderLink from "./HeaderLink.astro";
 import { Icon } from "astro-icon/components";
 import { SITE_TITLE } from "../consts";
-import ThemeToggle from "$components/react/ThemeToggle";
+// import ThemeToggle from "$components/react/ThemeToggle";
 import HamburgerMenu from "./HamburgerMenu.astro";
 import IconButton from "$components/react/IconButton";
 import { menuItems } from "$util/menu";
@@ -15,7 +15,7 @@ import { menuItems } from "$util/menu";
     </h2>
     <div class="internal-links hidden select-none sm:flex">
       {
-        menuItems.map((item, index) => (
+        menuItems.map((item) => (
           <HeaderLink href={item.pathname}>{item.name}</HeaderLink>
         ))
       }

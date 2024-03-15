@@ -7,12 +7,12 @@ export const GET: APIRoute = async ({ params, request }) => {
   return new Response(
     JSON.stringify(
       { errors },
-      (key, value) => (typeof value === "bigint" ? value.toString() : value), // return everything else unchanged
+      (_, value) => (typeof value === "bigint" ? value.toString() : value), // return everything else unchanged
     ),
   );
 };
 
-export const POST: APIRoute = async ({ params, request }) => {
+export const POST: APIRoute = async ({ params: _params, request }) => {
   const data = await request.json();
   console.log({ data });
   const errorObj = {
@@ -22,7 +22,9 @@ export const POST: APIRoute = async ({ params, request }) => {
   const validatedError = ErrorModel.parse(errorObj);
   try {
     const error = await saveError(validatedError);
-    console.log("Created Error#%s", error.id);
+    if (error !== undefined) {
+      console.log("Created Error#%s", error.id);
+    }
     return new Response(
       JSON.stringify({
         message: "Success!",

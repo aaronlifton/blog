@@ -3,9 +3,7 @@ import { getCollection } from "astro:content";
 import { getViews } from "$/services/turso.js";
 import { getViews as getViewsInMem } from "$/services/memory.ts";
 
-const getViewsFn = import.meta.env.PROD ? getViews : getViewsInMem;
-
-export const prerender = true;
+export const prerender = false;
 export async function getStaticPaths() {
   const posts = await getCollection("blog");
   return posts.map((post) => ({
