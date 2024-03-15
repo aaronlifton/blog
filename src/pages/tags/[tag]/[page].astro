@@ -6,7 +6,9 @@ import Pages from "$/components/Pages.svelte";
 import PostPreviewList from "$/components/PostPreviewList.astro";
 import { PAGE_SIZE } from "$/consts";
 import Layout from "$/layouts/Layout.astro";
-import { isMobile } from "$state/windowState";
+import { getIsMobile } from "$/util";
+
+const isMobile = getIsMobile(Astro);
 
 // @ts-ignore ts-nocheck
 export async function getStaticPaths({ paginate }) {
@@ -22,17 +24,6 @@ export async function getStaticPaths({ paginate }) {
     const postsWithTag = allPosts.filter((post) =>
       post.data.tags.includes(tag)
     );
-    /*
-    return paginate(
-      postsWithTag,
-      {
-        pageSize: PAGE_SIZE,
-      },
-      {
-        tag: tag,
-        page: 1,
-      },
-    ); */
     return paginate(postsWithTag, {
       params: { page: 1, tag },
       props: { allTags },
@@ -65,18 +56,13 @@ const { tag } = Astro.params as Params;
       Page {page.currentPage}
     </span>
   </div>
-  <PostPreviewList
-    posts={page.data}
-    heading="Posts"
-    asCard={isMobile.get() || false}
-  />
+  <PostPreviewList posts={page.data} heading="Posts" asCard={isMobile} />
   <Pages
     baseUrl={Astro.url.pathname.slice(0, -2)}
     currentPage={page.currentPage}
     totalPages={page.lastPage}
   />
 </Layout>
-
 <style>
   .emdash {
     span + span {

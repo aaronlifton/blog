@@ -23,7 +23,7 @@
 
 <style>
   nav {
-    @apply mb-4 flex w-full justify-center;
+    @apply my-4 flex w-full justify-center;
   }
   a {
     @apply mx-1 rounded-lg px-3 py-1 text-accent-gray-dark;

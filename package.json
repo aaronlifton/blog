@@ -3,7 +3,7 @@
   "type": "module",
   "version": "0.0.1",
   "scripts": {
-    "dev": "DATABASE_URL=file:./dev.db astro dev",
+    "dev": "astro dev",
     "start": "astro dev",
     "build": "astro check && astro build",
     "preview": "astro preview",
@@ -94,6 +94,7 @@
     "remark-parse": "^11.0.0",
     "remark-rehype": "^11.1.0",
     "remark-unwrap-images": "^4.0.0",
+    "serialize-error": "^11.0.3",
     "sharp": "^0.33.2",
     "squoosh": "^0.0.0",
     "stylelint": "^16.2.1",

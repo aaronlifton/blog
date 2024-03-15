@@ -16,100 +16,99 @@ import { remarkReadingTime } from "./src/plugins/remark-reading-time";
 import customImageResizer from "./bin/processImages.mjs";
 import node from "@astrojs/node";
 const __dirname = dirname(fileURLToPath(import.meta.url));
-
 // https://astro.build/config
 export default defineConfig({
-	output: "server",
-	adapter: node({
-		mode: "standalone",
-	}),
-	site: "https://railsdev.dev",
-	// prefetch: true,
-	integrations: [
-		customImageResizer,
-		mdx({}),
-		sitemap(),
-		tailwind({
-			applyBaseStyles: false,
-			nesting: true,
-		}),
-		svelte(),
-		icon(),
-		// solid({
-		//   include: ["**/solid/*"],
-		// }),
-		react({}),
-	],
-	markdown: {
-		remarkPlugins: [
-			remarkReadingTime,
-			[
-				remarkShakuCodeAnnotate,
-				{
-					fallbackToShiki: true,
-					theme: "material-theme-darker",
-					offset: "2",
-					lang: ["tsx", "jsx", "typescript", "sh", "fish", "json"],
-				},
-			],
-		],
-		rehypePlugins: [
-			[
-				rehypeAutolinkHeadings,
-				{
-					behavior: "append",
-				},
-			],
-		],
-		shikiConfig: {
-			theme: "material-theme-darker",
-			transformers: [
-				(node) => {
-					if (node.type === "element" && node.tagName === "pre") {
-						const tabIndexNode = node.getAttributeNode("tabIndex");
-						node.removeAttributeNode(tabIndexNode);
-					}
-					return node;
-				},
-				transformerTwoslash(),
-			],
-		},
-		extendDefaultPlugins: true,
-	},
-	vite: {
-		ssr: {
-			noExternal: ["@radix-ui/react-tabs"],
-		},
-		resolve: {
-			alias: {
-				$: path.resolve(__dirname, "./src"),
-			},
-		},
-		plugins: [
-			svgr({
-				include: "**/*.svg?react",
-				svgrOptions: {
-					plugins: ["@svgr/plugin-svgo", "@svgr/plugin-jsx"],
-					svgoConfig: {
-						plugins: [
-							"preset-default",
-							"removeTitle",
-							"removeDesc",
-							"removeDoctype",
-							"cleanupIds",
-						],
-					},
-				},
-			}),
-		],
-	},
-	image: {
-		service: squooshImageService(),
-	},
-	redirects: {
-		"/blog": {
-			status: 308,
-			destination: "/blog/1",
-		},
-	},
+  output: "server",
+  adapter: node({
+    mode: "standalone",
+  }),
+  site: "https://www.railsdev.dev",
+  // prefetch: true,
+  integrations: [
+    customImageResizer,
+    mdx({}),
+    sitemap(),
+    tailwind({
+      applyBaseStyles: false,
+      nesting: true,
+    }),
+    svelte(),
+    icon(),
+    // solid({
+    //   include: ["**/solid/*"],
+    // }),
+    react({}),
+  ],
+  markdown: {
+    remarkPlugins: [
+      remarkReadingTime,
+      [
+        remarkShakuCodeAnnotate,
+        {
+          fallbackToShiki: true,
+          theme: "material-theme-darker",
+          offset: "2",
+          lang: ["tsx", "jsx", "typescript", "sh", "fish", "json"],
+        },
+      ],
+    ],
+    rehypePlugins: [
+      [
+        rehypeAutolinkHeadings,
+        {
+          behavior: "append",
+        },
+      ],
+    ],
+    shikiConfig: {
+      theme: "material-theme-darker",
+      transformers: [
+        (node) => {
+          if (node.type === "element" && node.tagName === "pre") {
+            const tabIndexNode = node.getAttributeNode("tabIndex");
+            node.removeAttributeNode(tabIndexNode);
+          }
+          return node;
+        },
+        transformerTwoslash(),
+      ],
+    },
+    extendDefaultPlugins: true,
+  },
+  vite: {
+    ssr: {
+      noExternal: ["@radix-ui/react-tabs"],
+    },
+    resolve: {
+      alias: {
+        $: path.resolve(__dirname, "./src"),
+      },
+    },
+    plugins: [
+      svgr({
+        include: "**/*.svg?react",
+        svgrOptions: {
+          plugins: ["@svgr/plugin-svgo", "@svgr/plugin-jsx"],
+          svgoConfig: {
+            plugins: [
+              "preset-default",
+              "removeTitle",
+              "removeDesc",
+              "removeDoctype",
+              "cleanupIds",
+            ],
+          },
+        },
+      }),
+    ],
+  },
+  image: {
+    service: squooshImageService(),
+  },
+  redirects: {
+    "/blog": {
+      status: 308,
+      destination: "/blog/1",
+    },
+  },
 });

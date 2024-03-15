@@ -1,29 +1,18 @@
 import { createClient } from "@libsql/client";
 import os from "node:os";
-import prisma, { ErrorModel } from "./db";
+import prisma from "./db";
 import type { PrismaClientKnownRequestError } from "@prisma/client/runtime/library";
-// import { ErrorModel } from "$prisma/zod/error";
+import { ErrorModel } from "$prisma/zod/error";
 
+console.log("meta", import.meta.env.TURSO_DB_URL);
 export const client = createClient({
   url: import.meta.env.TURSO_DB_URL,
   authToken: import.meta.env.TURSO_DB_AUTH_TOKEN,
 });
 
-let isLocal: boolean | undefined;
-const isLocalhost = () => {
-  if (isLocal !== undefined) {
-    return isLocal;
-  }
-
-  // My M2 Mac Mini has 12 cores
-  isLocal =
-    os.arch() == "arm64" &&
-    os.cpus().length == 12 &&
-    import.meta.env.TURSO_DEBUG != true;
-  return isLocal;
-};
+const isLocalhost = import.meta.env.mode == "development";
 export const getViewsBySlug = async (slug: string, shouldIncrement = false) => {
-  if (isLocalhost() || !slug) {
+  if (isLocalhost || !slug) {
     console.log("isLocalhost");
     return 0;
   }
@@ -90,10 +79,9 @@ export const getViewsBySlug = async (slug: string, shouldIncrement = false) => {
 
 export const getViews = async () => {
   // return a hash of views by slug
-  if (isLocalhost()) {
+  if (isLocalhost) {
     console.log(
-      "getViews: localhost detected",
-      `(${os.arch()} ${os.cpus().length} cores)`,
+      "getViews: localhost detected, saving resulting in memory instead of using Turso API.",
     );
     return {};
   }
@@ -115,28 +103,20 @@ export const getViews = async () => {
   }
 };
 
-export const saveError = async (evt: ErrorEvent) => {
+export const saveError = async (evt: Zod.infer<typeof ErrorModel>) => {
   if (!evt) {
     return;
   }
   try {
     const errorObj = {
       message: evt.message,
-      stacktrace: evt.error.stack,
+      stackTrace: evt.stackTrace,
     };
     const validatedError = ErrorModel.parse(errorObj);
     const savedError = prisma.error.create({ data: validatedError });
     console.log("Saved error", savedError);
   } catch (e) {
     console.error(e);
-  }
-};
-
-export const saveErrorFn = (evt: ErrorEvent) => {
-  if (os.arch() == "arm64" && os.cpus().length == 12) {
-    return ((error: ErrorEvent) => null)(evt);
-  } else {
-    return saveError;
   }
 };
 

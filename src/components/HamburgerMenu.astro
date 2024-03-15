@@ -76,9 +76,9 @@ export const isActiveMenuItem = ({
             });
 
             return (
-              <li class="w-full">
+              <li class="mb-2 w-full">
                 <a
-                  class="bg-amethyst-300/55 text=md not-prose block w-full rounded-full px-4 py-2 text-center font-bold text-black transition-colors duration-200 ease-in-out focus:bg-amethyst-100 focus:outline-none focus:ring-2 focus:ring-amethyst-300 focus:ring-opacity-50"
+                  class="text=md not-prose block w-full rounded-full bg-[var(--on-primary)] px-4 py-2 text-center font-bold text-black transition-colors duration-200 ease-in-out focus:bg-amethyst-100 focus:outline-none focus:ring-2 focus:ring-amethyst-300 focus:ring-opacity-50"
                   href={item.pathname}
                   color={isActive ? "primary" : "secondary"}
                   {...(isActive && { "aria-current": "page" })}

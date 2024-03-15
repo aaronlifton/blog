@@ -1,5 +1,6 @@
 import type { APIRoute } from "astro";
-import { getErrors } from "$/services/turso.js";
+import { getErrors, saveError } from "$/services/turso.js";
+import { ErrorModel } from "$prisma/zod/error";
 
 export const GET: APIRoute = async ({ params, request }) => {
   let errors = await getErrors();
@@ -9,4 +10,31 @@ export const GET: APIRoute = async ({ params, request }) => {
       (key, value) => (typeof value === "bigint" ? value.toString() : value), // return everything else unchanged
     ),
   );
+};
+
+export const POST: APIRoute = async ({ params, request }) => {
+  const data = await request.json();
+  console.log({ data });
+  const errorObj = {
+    message: data.message,
+    stacktrace: data.stack,
+  };
+  const validatedError = ErrorModel.parse(errorObj);
+  try {
+    const error = await saveError(validatedError);
+    console.log("Created Error#%s", error.id);
+    return new Response(
+      JSON.stringify({
+        message: "Success!",
+      }),
+      { status: 200 },
+    );
+  } catch (e) {
+    return new Response(
+      JSON.stringify({
+        message: "Could not save error",
+      }),
+      { status: 500 },
+    );
+  }
 };

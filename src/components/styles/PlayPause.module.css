@@ -1,7 +1,7 @@
-  .iconContainer {
-    @apply cursor-pointer w-[30px] ml-[-5px] relative portrait:top-[-10px];
+.iconContainer {
+  @apply relative ml-[-5px] w-[30px] cursor-pointer;
 
-    svg {
-      @apply stroke-amethyst-300 text-amethyst-300;
-    }
+  svg {
+    @apply stroke-amethyst-300 text-amethyst-300;
   }
+}

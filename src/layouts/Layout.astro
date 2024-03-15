@@ -40,7 +40,7 @@ import { SITE_TITLE, SITE_DESCRIPTION } from "../consts";
     <Footer />
   </body>
   <script>
-    import { saveErrorFn as saveError } from "$/services/turso";
+    import { serializeError } from "serialize-error";
     window.onerror = function (message, url, lineno, colno, error) {
       //save error and send to server for example.
       console.error({ message, url, lineno, colno, error });
@@ -50,8 +50,17 @@ import { SITE_TITLE, SITE_DESCRIPTION } from "../consts";
         lineno,
         colno,
       });
-      saveError(evt);
+      try {
+        fetch(`/api/blog/errors.json`, {
+          body: JSON.stringify(serializeError(evt)),
+          method: "post",
+        });
+      } catch (e) {
+        console.error("Error capturing error", e);
+      }
       return false;
     };
+    // raise an error
+    // throw new Error("This is an error");
   </script>
 </html>

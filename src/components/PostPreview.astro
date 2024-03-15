@@ -1,8 +1,13 @@
 ---
 import type { CollectionEntry } from "astro:content";
-import { getMonthName } from "$/util";
+import { getMonthName, mobileUserAgent } from "$/util";
 import CodeText from "$/components/CodeText.astro";
 import HomeImage from "$/components/HomeImage.astro";
+import { getIsMobile } from "$/util";
+
+const isMobile = getIsMobile(Astro);
+console.log(isMobile, mobileUserAgent);
+
 interface Props {
   post: CollectionEntry<"blog">;
   asCard?: boolean;
@@ -32,7 +37,9 @@ const { post, asCard = false } = Astro.props;
       >
     </div>
   </div>
-  <div>
+  <div
+    class:list={["lg:w-auto landscape:w-[300px]", { "w-[100px]": isMobile() }]}
+  >
     <HomeImage
       src={post.data.cover}
       alt={post.data.coverAlt}
@@ -151,6 +158,6 @@ const { post, asCard = false } = Astro.props;
     @apply text-lg;
   }
   .post-preview__desc {
-    @apply line-clamp-2 hyphens-auto text-lg leading-6;
+    @apply line-clamp-2 hyphens-auto text-lg leading-6 landscape:line-clamp-3;
   }
 </style>
