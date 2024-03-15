@@ -3,8 +3,6 @@ import BaseHead from "../components/BaseHead.astro";
 import Header from "../components/Header.astro";
 import Footer from "../components/Footer.astro";
 import { SITE_TITLE, SITE_DESCRIPTION } from "../consts";
-
-// export const prerender = true;
 ---
 
 <!doctype html>
@@ -20,11 +18,14 @@ import { SITE_TITLE, SITE_DESCRIPTION } from "../consts";
       <BaseHead title={SITE_TITLE} description={SITE_DESCRIPTION} />
     </slot>
     <script>
+      import useWindowSize from "$/util/useWindowSize";
+
       document.addEventListener("astro:after-swap", () => {
         if (localStorage.getItem("theme") === "dark") {
           document.querySelector("html")?.classList.add("dark");
         }
       });
+      useWindowSize();
     </script>
   </head>
   <body>
@@ -39,7 +40,7 @@ import { SITE_TITLE, SITE_DESCRIPTION } from "../consts";
     <Footer />
   </body>
   <script>
-    import { saveError } from "$/services/turso";
+    import { saveErrorFn as saveError } from "$/services/turso";
     window.onerror = function (message, url, lineno, colno, error) {
       //save error and send to server for example.
       console.error({ message, url, lineno, colno, error });

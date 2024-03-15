@@ -60,7 +60,10 @@ export const isActiveMenuItem = ({
       </IconButton>
     </div>
 
-    <nav class="flex w-full flex-col" aria-label="Main navigation">
+    <nav
+      class="flex w-full translate-y-[-9px] flex-col"
+      aria-label="Main navigation"
+    >
       <ul
         class="bg-amethyst-100/75 border-amethyst-300/55 flex h-full w-full list-none flex-col items-center justify-center overflow-y-auto border-4 bg-purple-50 p-3 px-horizontal-padding"
       >
@@ -75,7 +78,7 @@ export const isActiveMenuItem = ({
             return (
               <li class="w-full">
                 <a
-                  class="bg-amethyst-300/55  text=md not-prose block w-full rounded-full px-4 py-2 text-center font-bold text-black transition-colors duration-200 ease-in-out focus:bg-amethyst-100 focus:outline-none focus:ring-2 focus:ring-amethyst-300 focus:ring-opacity-50"
+                  class="bg-amethyst-300/55 text=md not-prose block w-full rounded-full px-4 py-2 text-center font-bold text-black transition-colors duration-200 ease-in-out focus:bg-amethyst-100 focus:outline-none focus:ring-2 focus:ring-amethyst-300 focus:ring-opacity-50"
                   href={item.pathname}
                   color={isActive ? "primary" : "secondary"}
                   {...(isActive && { "aria-current": "page" })}

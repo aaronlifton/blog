@@ -4,8 +4,8 @@ import { getMonthName } from "$/util";
 import CodeText from "$/components/CodeText.astro";
 import HomeImage from "$/components/HomeImage.astro";
 interface Props {
-	post: CollectionEntry<"blog">;
-	asCard?: boolean;
+  post: CollectionEntry<"blog">;
+  asCard?: boolean;
 }
 
 const { post, asCard = false } = Astro.props;
@@ -44,9 +44,7 @@ const { post, asCard = false } = Astro.props;
     />
   </div>
   <div class="flex flex-1 flex-col">
-    <div
-      class="post-preview__title space-apart flex"
-    >
+    <div class="post-preview__title space-apart flex">
       <a
         href={`/blog/${post.slug}`}
         title={post.data.title}

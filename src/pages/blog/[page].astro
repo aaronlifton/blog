@@ -44,7 +44,7 @@ const { page }: Props = Astro.props;
             Page {page.currentPage}
           </p>
         </div>
-        <PostPreviewList posts={page.data} heading="Posts" />
+        <PostPreviewList posts={page.data} heading="Posts" asCard />
         <PostPreviewListFooter />
         <Pages
           baseUrl={Astro.url.pathname.slice(0, -2)}

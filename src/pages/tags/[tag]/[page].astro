@@ -6,11 +6,8 @@ import Pages from "$/components/Pages.svelte";
 import PostPreviewList from "$/components/PostPreviewList.astro";
 import { PAGE_SIZE } from "$/consts";
 import Layout from "$/layouts/Layout.astro";
-//  paginate: (
-// {    data: CollectionEntry<"blog">[],
-//     options: { pageSize: number },
-//     params: { tag: string; page: number }},
-//   ) => any;
+import { isMobile } from "$state/windowState";
+
 // @ts-ignore ts-nocheck
 export async function getStaticPaths({ paginate }) {
   const allPosts = await getCollection("blog");
@@ -68,7 +65,11 @@ const { tag } = Astro.params as Params;
       Page {page.currentPage}
     </span>
   </div>
-  <PostPreviewList posts={page.data} heading="Posts" />
+  <PostPreviewList
+    posts={page.data}
+    heading="Posts"
+    asCard={isMobile.get() || false}
+  />
   <Pages
     baseUrl={Astro.url.pathname.slice(0, -2)}
     currentPage={page.currentPage}

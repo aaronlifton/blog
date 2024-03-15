@@ -132,6 +132,14 @@ export const saveError = async (evt: ErrorEvent) => {
   }
 };
 
+export const saveErrorFn = (evt: ErrorEvent) => {
+  if (os.arch() == "arm64" && os.cpus().length == 12) {
+    return ((error: ErrorEvent) => null)(evt);
+  } else {
+    return saveError;
+  }
+};
+
 export const getErrors = async () => {
   try {
     const errors = await prisma.error.findMany();
