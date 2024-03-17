@@ -27,6 +27,7 @@ const IconButton = React.forwardRef<HTMLButtonElement, Props>(
             "rounded border border-divider p-1 shadow-sm shadow-shadow":
               variant === "rounded",
             "hover:white bg:black": variant === "menu",
+            "absolute right-0 bottom-0 [&_svg_*]:text-white z-20": variant === "inset"
           },
           providedClassName,
         ),

@@ -1,0 +1,116 @@
+/**
+ * 1. Make the dialog container, and its child overlay spread across
+ *    the entire window.
+ */
+dialog {
+  @apply m-auto;
+  &::backdrop {
+    @apply bg-black/30;
+  }
+}
+.container,
+.overlay {
+  @apply fixed bottom-0 left-0 right-0 top-0;
+}
+
+/**
+ * 1. Make sure the dialog container and all its descendants sits on
+ *    top of the rest of the page.
+ * 2. Make the dialog container a flex container to easily center the
+ *    dialog.
+ */
+.container {
+  @apply z-20 flex;
+}
+
+/**
+ * 1. Make sure the dialog container and all its descendants are not
+ *    visible and not focusable when it is hidden.
+ */
+.container[aria-hidden="true"] {
+  @apply hidden;
+}
+
+/**
+ * 1. Make the overlay look like an overlay.
+ */
+.overlay {
+  @apply bg-amethyst-300;
+  /* animation: fade-in 100ms both; */
+}
+
+/**
+ * 1. Vertically and horizontally center the dialog in the page.
+ * 2. Make sure the dialog sits on top of the overlay.
+ * 3. Make sure the dialog has an opaque background.
+ */
+.content {
+  @apply relative z-50 m-auto min-w-[40%] max-w-[90%] animate-[dialogAnimateIn_300ms_ease] rounded-md bg-white p-4;
+}
+
+@media screen and (min-width: 700px) {
+  .content {
+    padding: 2em;
+  }
+}
+
+@keyframes fade-in {
+  from {
+    opacity: 0;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .overlay,
+  .content {
+    animation: none;
+  }
+}
+
+.content h1 {
+  margin: 0;
+  font-size: 1.25em;
+}
+
+.close {
+  position: absolute;
+  top: 0.5em;
+  right: 0.5em;
+  border: 0;
+  padding: 0.25em;
+  background-color: transparent;
+  font-size: 1.5em;
+  width: 1.5em;
+  height: 1.5em;
+  text-align: center;
+  cursor: pointer;
+  transition: 0.15s;
+  border-radius: 50%;
+}
+
+.close:hover {
+  background-color: rgb(50 50 0 / 0.15);
+}
+
+@media screen and (min-width: 700px) {
+  .close {
+    top: 1em;
+    right: 1em;
+  }
+}
+
+.button {
+  background-color: #81c784;
+  color: white;
+  border: 0;
+  font-family: inherit;
+  font-size: inherit;
+  padding: 8px 15px;
+  cursor: pointer;
+  transition: 0.15s;
+  display: inline-block;
+}
+
+.outerContainer {
+  @apply w-full;
+}

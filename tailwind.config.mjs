@@ -1,6 +1,7 @@
 const { fontFamily } = require("tailwindcss/defaultTheme");
 const config = require("./src/styles/tailwind.theme.config.cjs");
 const harmonyPalette = require("@evilmartians/harmony/tailwind");
+const angularColors = require("./src/styles/angularColors.cjs");
 const { colors } = config;
 
 function withOpacityValue(variable) {
@@ -33,7 +34,7 @@ export default {
     fontFamily: {
       sans: ["Fira Code", ...fontFamily.sans],
     },
-    colors: { ...colors, ...harmonyPalette },
+    colors: { ...colors, ...harmonyPalette, ...angularColors },
     extend: {
       maxWidth: {
         "1/2": "50%",
@@ -91,11 +92,79 @@ export default {
             opacity: 0,
           },
         },
+        shimmer: {
+          "0%": {
+            "background-position": "-1000px 0",
+          },
+          "100%": {
+            "background-position": "1000px 0",
+          },
+        },
+        sway: {
+          "0%, 100%": {
+            transform: "rotate(-10deg) scale(1.5) translateY(4rem)",
+          },
+          "50%": {
+            transform: "rotate(10deg) scale(1.5) translateY(2rem)",
+          },
+        },
+        levitate: {
+          "0%": {
+            transform: "translateY(0)",
+          },
+          "30%": {
+            transform: "translateY(-10px)",
+          },
+          "50%": {
+            transform: "translateY(4px)",
+          },
+          "70%": {
+            transform: "translateY(-15px)",
+          },
+          "100%": {
+            transform: "translateY(0)",
+          },
+        },
+        expand: {
+          "0%": { transform: "scale(1)" },
+          "50%": { transform: "scale(1.2)" },
+          "100%": { transform: "scale(1)" },
+        },
+        "expand-opacity": {
+          "0%": {
+            opacity: 0,
+            transform: "scale(1)",
+          },
+          "50%": {
+            opacity: 1,
+            transform: "scale(1.3)",
+          },
+          "100%": {
+            opacity: 0,
+            transform: "scale(1.295)",
+          },
+        },
+        "text-gradient": {
+          to: {
+            backgroundPosition: "-200% center",
+          },
+        },
       },
       animation: {
-        dialogAnimateIn: "dialogAnimateIn 300ms cubic-bezier(0.19, 1, 0.22, 1)",
+        dialogBounceIn: "dialogAnimateIn 300ms cubic-bezier(0.19, 1, 0.22, 1)",
+        dialogAnimateIn: "dialogAnimateIn 300ms cubic-bezier(0.19, 1, 0.12, 1)",
         dialogAnimateOut:
           "dialogAnimateOut 300ms cubic-bezier(0.19, 1, 0.22, 1)",
+        shimmer: "shimmer 2s infinite linear",
+        sway: "sway 3s cubic-bezier(0.4, 0, 0.6, 1) infinite",
+        levitate: "levitate 5s ease infinite",
+        expand: "expand 6s ease-out infinite both",
+        "expand-opacity": "expand-opacity 6s linear infinite both",
+        "text-gradient":
+          "text-gradient 4s linear 0s infinite normal forwards running",
+      },
+      transitionProperty: {
+        "transform-opacity": "transform, opacity",
       },
       transitionTimingFunction: {
         "in-expo": "cubic-bezier(0.95, 0.05, 0.795, 0.035)",
@@ -106,6 +175,7 @@ export default {
         pop: "cubic-bezier(.23,2,.73,.55)",
         "in-quint": "cubic-bezier(.755,.05,.855,.06)", // in-quint
         "out-quint": "cubic-bezier(.23,1,.32,1)", // out-quint
+        "in-dialog": "cubic-bezier(0,0,.3,1)",
         DEFAULT: "cubic-bezier(.23,1,.32,1)", // out-quint
       },
       colors: {
@@ -118,6 +188,11 @@ export default {
           shadow: withOpacityValue("--shadow"),
           ...colors,
         },
+      },
+      backgroundImage: {
+        none: "none",
+        angularGradient:
+          "linear-gradient( 140deg, var(--vivid-pink) 0%, var(--vivid-pink) 15%, color-mix(in srgb, var(--vivid-pink), var(--electric-violet) 50%) 25%, color-mix(in srgb, var(--vivid-pink), var(--electric-violet) 10%) 35%, color-mix(in srgb, var(--vivid-pink), var(--orange-red) 50%) 42%, color-mix(in srgb, var(--vivid-pink), var(--orange-red) 50%) 44%, color-mix(in srgb, var(--vivid-pink), var(--page-background) 70%) 47%, var(--electric-violet) 48%, var(--bright-blue) 60%",
       },
       typography: ({ theme }) => ({
         dark: {

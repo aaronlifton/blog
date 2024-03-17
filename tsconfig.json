@@ -9,9 +9,14 @@
 			"$components/*": ["src/components/*"],
 			"$state/*": ["src/components/state/*"],
 			"$layouts/*": ["src/layouts/*"],
-			"$prisma/*": ["prisma/*"]
+			"$prisma/*": ["prisma/*"],
+			"$services/*": ["src/services/*"],
+			"$rpc/*": ["rpc-server/*"]
 		},
-		"types": ["astro/client", "astro/env", "mdast"],
+		"types": [
+			"astro/client", "astro/env", "mdast", "easing-coordinates",
+			"@octokit/plugin-rest-endpoint-methods"
+		],
 		"jsx": "react-jsx",
 		"esModuleInterop": true
 	},

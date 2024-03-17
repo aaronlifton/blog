@@ -1,8 +1,7 @@
 import path from "node:path";
-import { createRequire } from "node:module";
-import { loadEnv } from "vite";
+// import { loadEnv } from "vite";
 
-const env = loadEnv(process.env.NODE_ENV, process.cwd(), "");
+// const env = loadEnv(process.env.NODE_ENV, process.cwd(), "");
 
 const __dirname = path.resolve();
 export default {
@@ -16,9 +15,9 @@ export default {
       "cookie",
     ],
   },
-  define: {
-    __APP_ENV__: JSON.stringify(process.env.APP_ENV),
-  },
+  // define: {
+  //   __APP_ENV__: JSON.stringify(process.env.APP_ENV),
+  // },
   resolve: {
     alias: {
       $: path.resolve(__dirname, "./src"),
@@ -28,6 +27,8 @@ export default {
       $state: path.resolve(__dirname, "./src/components/state"),
       $layouts: path.resolve(__dirname, "./src/layouts"),
       $prisma: path.resolve(__dirname, "./prisma"),
+      $services: path.resolve(__dirname, "./src/services"),
+      $rpc: path.resolve(__dirname, "./rpc-server"),
       ".prisma/client/index-browser":
         "./node_modules/@prisma/client/index-browser.js",
     },

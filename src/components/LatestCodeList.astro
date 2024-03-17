@@ -39,18 +39,15 @@ for (const post of livePosts) {
   .code.active {
     @apply border-amethyst-400;
   }
-  .code-header {
-    @apply items-baseline;
-  }
 </style>
 
 <div
   class:list={[
-    "codes-header flex flex-col sm:flex-col lg:flex-row",
+    "codes-header flex flex-col items-baseline md:flex-row landscape:flex-col",
     "[&_~div]:portrait:translate-y-4",
   ]}
 >
-  <h5 class="portrait:grow">Latest code</h5>
+  <h5>Latest code</h5>
   {/* @ts-ignore */}
   <PlayPause client:load className="icon-container" />
   <!-- <div class="output"></div> -->
@@ -83,7 +80,7 @@ for (const post of livePosts) {
   }
 </div>
 <script>
-  import { isPaused } from "$state/LatestCodeListState";
+  import { isPaused } from "$state/index";
 
   document.addEventListener("astro:page-load", () => {
     const codesContainer = document.querySelector(

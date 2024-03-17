@@ -14,7 +14,7 @@ import PlayFilled from "$/icons/tabler/play-filled.svg?react";
 import Pause from "$/icons/tabler/pause.svg?react";
 // @ts-ignore
 import PauseFilled from "$/icons/tabler/pause-filled.svg?react";
-import { isPaused, isManuallyPaused } from "$state/LatestCodeListState";
+import { isPaused, isManuallyPaused } from "$state/index";
 
 interface Props extends PropsWithChildren {
 	className: string;

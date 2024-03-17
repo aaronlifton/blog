@@ -28,7 +28,25 @@ posts = Array.from(posts)
   >
     <LatestCodeList />
   </div>
+
+  <!-- <div class="flex flex-col"> -->
+  <!--   <div -->
+  <!--     class="my-4 flex w-1/2 flex-col gap-0 rounded-lg border border-2 border-card-border bg-card-bg bg-opacity-50 p-4" -->
+  <!--   > -->
+  <!--     <DeployWatch /> -->
+  <!--   </div> -->
+  <!-- </div> -->
   <PostPreviewList posts={posts} heading="Recent posts" asCard />
-  <!-- <PostPreviewList posts={posts} heading="Recent posts" /> -->
+  <!-- <PostPreviewList posts={po {deploys.map((deploy) => (
+
+    <ul>
+      <h2>Deploy ID: {deploy.deploy.id}</h2>
+      <li>Status: {deploy.deploy.status}</li>
+      <li>Trigger: {deploy.deploy.trigger}</li>
+      <li>Created At: {deploy.deploy.createdAt}</li>
+      <li>Updated At: {deploy.deploy.updatedAt}</li>
+      <li>Finished At: {deploy.deploy.finishedAt}</li>
+    </ul>
+  ))}sts} heading="Recent posts" /> -->
   <PostPreviewListFooter />
 </Layout>

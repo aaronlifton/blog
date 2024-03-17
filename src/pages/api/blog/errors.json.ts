@@ -3,7 +3,7 @@ import { getErrors, saveError } from "$/services/turso.js";
 import { ErrorModel } from "$prisma/zod/error";
 
 export const GET: APIRoute = async ({ params, request }) => {
-  let errors = await getErrors();
+  const errors = await getErrors();
   return new Response(
     JSON.stringify(
       { errors },
@@ -11,7 +11,6 @@ export const GET: APIRoute = async ({ params, request }) => {
     ),
   );
 };
-
 export const POST: APIRoute = async ({ params: _params, request }) => {
   const data = await request.json();
   console.log({ data });
@@ -19,24 +18,27 @@ export const POST: APIRoute = async ({ params: _params, request }) => {
     message: data.message,
     stacktrace: data.stack,
   };
-  const validatedError = ErrorModel.parse(errorObj);
-  try {
-    const error = await saveError(validatedError);
-    if (error !== undefined) {
-      console.log("Created Error#%s", error.id);
-    }
-    return new Response(
-      JSON.stringify({
-        message: "Success!",
-      }),
-      { status: 200 },
-    );
-  } catch (e) {
-    return new Response(
-      JSON.stringify({
-        message: "Could not save error",
-      }),
-      { status: 500 },
-    );
-  }
+  console.log({ ErrorModel, errorObj });
+  return new Response({ status: 200 })
+  // const validatedError = ErrorModel.parse(errorObj);
+
+  // try {
+  //   const error = await saveError(validatedError);
+  //   if (error !== undefined) {
+  //     console.log("Created Error#%s", error.id);
+  //   }
+  //   return new Response(
+  //     JSON.stringify({
+  //       message: "Success!",
+  //     }),
+  //     { status: 200 },
+  //   );
+  // } catch (e) {
+  //   return new Response(
+  //     JSON.stringify({
+  //       message: "Could not save error: " + e.message,
+  //     }),
+  //     { status: 500 },
+  //   );
+  // }
 };

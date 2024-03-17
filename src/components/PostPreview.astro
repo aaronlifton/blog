@@ -1,25 +1,25 @@
 ---
 import type { CollectionEntry } from "astro:content";
 import { getMonthName, mobileUserAgent } from "$/util";
-import CodeText from "$/components/CodeText.astro";
-import HomeImage from "$/components/HomeImage.astro";
+import CodeText from "$components/CodeText.astro";
+import HomeImage from "$components/HomeImage.astro";
 import { getIsMobile } from "$/util";
 
 const isMobile = getIsMobile(Astro);
 console.log(isMobile, mobileUserAgent);
 
 interface Props {
-  post: CollectionEntry<"blog">;
-  asCard?: boolean;
+	post: CollectionEntry<"blog">;
+	asCard?: boolean;
 }
 
 const { post, asCard = false } = Astro.props;
 ---
 
-<!-- product.forEach(([color, value]) => { --><!--     return ( --><!--       <div class="post-preview-card" style="min-height:100"> --><!--         <p> --><!--           Lorem ipsum dolor sit amet, qui minim labore adipisicing minim sint --><!--           cillum sint consectetur cupidatat. --><!--         </p> --><!--       </div> --><!--     ); --><!--   }) -->
 <div
   class:list={[
     "post-preview",
+    "w-full",
     "flex-col",
     "sm:flex-row",
     { "post-preview--card": asCard },
@@ -38,8 +38,10 @@ const { post, asCard = false } = Astro.props;
     </div>
   </div>
   <div
-    class:list={["lg:w-auto landscape:w-[300px]", { "w-[100px]": isMobile() }]}
-  >
+    class:list={[
+			"lg:w-auto landscape:w-[300px]",
+			{ "w-[100px]": isMobile() },
+		]}>
     <HomeImage
       src={post.data.cover}
       alt={post.data.coverAlt}
@@ -47,6 +49,7 @@ const { post, asCard = false } = Astro.props;
       postTitle={post.data.title}
       postLink={`/blog/${post.slug}`}
       width={asCard ? 400 : 100}
+      key={post.id}
       data-home-image
     />
   </div>
@@ -122,18 +125,19 @@ const { post, asCard = false } = Astro.props;
       }
     }
     .post-preview__date-box {
-      @apply flex;
+      @apply flex text-lg sm:block sm:text-inherit;
     }
     .post-preview__date {
       @apply flex flex-row gap-1 text-left;
     }
     .post-preview__date__day {
-      @apply text-4xl;
+      @apply text-lg sm:text-4xl;
     }
     img {
       @apply border border-2 border-card-img;
     }
   }
+
   [data-home-image] {
     @apply flex h-fit flex-row-reverse;
   }
@@ -155,9 +159,13 @@ const { post, asCard = false } = Astro.props;
     }
   }
   .post-preview__title :global(code) {
-    @apply text-lg;
+    @apply sm:line-clamp-none landscape:line-clamp-3;
   }
   .post-preview__desc {
-    @apply line-clamp-2 hyphens-auto text-lg leading-6 landscape:line-clamp-3;
+    @apply line-clamp-2 hyphens-auto text-lg leading-6;
+  }
+  .fancyImage {
+    @apply relative z-10 transform rounded-lg object-cover opacity-0 shadow-none shadow-black/5 transition-transform-opacity duration-300
+     data-[loaded=true]:opacity-100 hover:scale-125 motion-reduce:transition-none;
   }
 </style>

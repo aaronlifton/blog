@@ -82,7 +82,6 @@ export const isActiveMenuItem = ({
                   href={item.pathname}
                   color={isActive ? "primary" : "secondary"}
                   {...(isActive && { "aria-current": "page" })}
-                  data-astro-reload
                 >
                   {item.name}
                 </a>
@@ -96,7 +95,7 @@ export const isActiveMenuItem = ({
 </aside>
 
 <script>
-  import "a11y-dialog";
+  import A11yDialog from "a11y-dialog";
 
   const DIALOG_BACKDROP_ANIMATION_DURATION = 300;
   const DIALOG_CONTENT_ANIMATION_DURATION = 300;
@@ -112,7 +111,7 @@ export const isActiveMenuItem = ({
     if (!dialogElement) {
       return;
     }
-
+    const dialog = new A11yDialog(dialogElement);
     const backdrop = dialogElement.querySelector<HTMLElement>(
       "[data-a11y-dialog-hide]"
     );
@@ -132,8 +131,6 @@ export const isActiveMenuItem = ({
       dialogElement.style.visibility = "hidden";
 
       document.body.style.overflowY = "visible";
-      // btn.classList.add("text-red bg-red");
-      // btn.classList.remove("hidden")
     };
 
     const showSidenav = () => {
@@ -161,6 +158,13 @@ export const isActiveMenuItem = ({
     dialogElement.addEventListener("hide", () => {
       hideSidenav();
     });
+
+    document
+      .querySelector("div[role=document]")
+      ?.addEventListener("click", () => {
+        console.log(dialog);
+        dialog.hide();
+      });
   })();
 
   // document.addEventListener("astro:page-load", () => {

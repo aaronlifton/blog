@@ -1,0 +1,46 @@
+---
+import { GET as getDeploys } from "$api/ops/render.ts";
+// import trpc from "$services/trpc"
+import { GET as getCommits } from "$/pages/api/ops/github.ts";
+import { GET_REPOS } from "$/pages/api/ops/github.ts";
+import { Debug } from "astro:components";
+
+const res = await getDeploys(Astro);
+const { deploys, numDeploysInPast7Days } = await res.json();
+const commits = await getCommits(Astro);
+console.log({commits})
+const repos = await GET_REPOS(Astro);
+console.log({ repos });
+
+// const commits = await trpc.gitCommits.query();
+// const recentCommits = await Promise.all(() =>
+//   Object.values(repos)
+//     .map((repo) => repo.commits)
+//     .sort(
+//       (a, b) =>
+//         new Date(b.commit.author.date).getTime() -
+//         new Date(a.commit.author.date).getTime()
+//     )
+// );
+
+// const fourMostRecentCommits = commits
+//   I.sort(
+//     (a, b) =>
+//       new Date(b.commit.author.date).getTime() -
+//       new Date(a.commit.author.date).getTime()
+//   )
+//   .slice(0, 4);
+
+---
+<Debug repos={repos}/>
+Num deploys total: {deploys?.length}
+Num deploys in past 7 days: {numDeploysInPast7Days}
+<!-- Last 4 commits: -->
+<!-- // List of [commit message truncated, repo, commit date, auth  -->
+<!-- <ul> -->
+<!--   {fourMostRecentCommits.map((commit) => ( -->
+<!--     <li> -->
+<!--       {commit.commit.message.slice(0, 40)} - {commit.repo} - {commit.commit.author.date} -->
+<!--     </li> -->
+<!--   ))} -->
+<!-- </ul> -->

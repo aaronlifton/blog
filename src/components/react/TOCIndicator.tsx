@@ -1,4 +1,4 @@
-import { activeHeading, lastActiveHeading } from "$state/BlogPostState";
+import { activeHeading, lastActiveHeading } from "$state/index";
 import {
   animate,
   motion,

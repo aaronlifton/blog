@@ -1,5 +1,5 @@
 .iconContainer {
-  @apply relative ml-[-5px] w-[30px] cursor-pointer;
+  @apply relative left-[-5px] w-[30px] cursor-pointer;
 
   svg {
     @apply stroke-amethyst-300 text-amethyst-300;

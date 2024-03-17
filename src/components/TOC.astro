@@ -115,7 +115,7 @@ if (minimumDepth > 1) {
 </details>
 
 <script>
-  import { activeHeading } from "$state/BlogPostState";
+  import { activeHeading } from "$state/index";
   document.addEventListener("astro:page-load", () => {
     const toc = document.querySelector<HTMLElement>("nav[data-toc-wrapper] ol");
 
