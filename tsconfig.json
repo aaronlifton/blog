@@ -11,7 +11,10 @@
 			"$layouts/*": ["src/layouts/*"],
 			"$prisma/*": ["prisma/*"],
 			"$services/*": ["src/services/*"],
-			"$rpc/*": ["rpc-server/*"]
+			"$rpc/*": ["rpc-server/*"],
+			"@/*": [
+							"./src/*"
+						]
 		},
 		"types": [
 			"astro/client", "astro/env", "mdast", "easing-coordinates",

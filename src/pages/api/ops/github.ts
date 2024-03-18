@@ -64,7 +64,6 @@ export async function getCurrentRateLimitRemaining() {
       repo: '.config',
     });
 
-    // Get the 'x-ratelimit-remaining' header from the response headers
     const rateLimitRemaining = response.headers['x-ratelimit-remaining'];
 
     console.log(`Rate limit remaining: ${rateLimitRemaining}`);
@@ -165,6 +164,21 @@ export const getCommits = async () => {
 //   }
 //   return { retryIn: 0 };
 // }
+
+const handleGithubRestRateLimitsFromHeaders = (req: Request | null) => {
+  const headerKeys = req?.headers?.keys() || {}
+  const rateLimitExceeded = 100
+  if (headerKeys["x-retry-after"]){
+    console.log(`Retry after ${headerKeys["x-retry-after"]}`)
+    const rateLimitExceeded = req?.headers.get("x-ratelimit-remaining") === "0";
+    const waitForReset = req?.headers.get("x-ratelimit-reset")
+    if (rateLimitExceeded) {
+      const retryIn = req.headers.get("x-ratelimit-reset") || 0;
+      return { retryIn };
+    }
+  }
+  return { retryIn: 0 };
+}
 
 export const GET: APIRoute = async (_state) => {
   try {

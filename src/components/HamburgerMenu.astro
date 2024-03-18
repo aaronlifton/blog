@@ -83,6 +83,7 @@ export const isActiveMenuItem = ({
                   color={isActive ? "primary" : "secondary"}
                   {...(isActive && { "aria-current": "page" })}
                 >
+                    const rateLimitRemaining = response.headers['x-ratelimit-remaining'];
                   {item.name}
                 </a>
               </li>

@@ -59,13 +59,16 @@ test! Seriously, don't try this at home.
 </video>
 \
 
+For another example, I ran 2 normal mode commands on the spot, when I was trying to convert colorspace function-less hsl colors from a shadcn install to oklch.
+I have an Apple Studio Display, which makes me really appreciate the brighter colorspace of oklch.
+
 I also found that recording macros often requires multiple tries, which distracts you from whatever you're working on.
    You won't be able to immediately use the macro, since you will have to go back and edit it.
    It's better to just write the normal mode command and use it immediately.
    Then type `let @q='<C-R>q'` and then edit the macro inside the quotes. I think it's better than polluting your buffers.
 
 Additionally, I had made several enjoyable macros, but forgot what they do and well, deciphering letters
-   takes more time than to just not use the macro. 
+   takes more time than to just not use the macro.
 
 ## Another example
 
@@ -136,7 +139,7 @@ which looked to be exactly what I wanted, but I had this need for everything to 
 using the Neovim Lua API, and not direct vim commands, and actually the plugin
 just did not work on my machine, so I searched Github until i found one that
 actually worked well — [telescope-macros](https://github.com). Adding a
-telescope finder is a clever and simple solution and I applaud the author  
+telescope finder is a clever and simple solution and I applaud the author
 an editable list is the only thing needed to manage a macro library.
 
 If I have a macro assigned to the `@l` register, using `telescope-macros`, I

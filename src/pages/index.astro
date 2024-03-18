@@ -1,17 +1,53 @@
 ---
+import { type CollectionEntry, getCollection } from "astro:content";
 import Layout from "$/layouts/Layout.astro";
-import { getCollection, type CollectionEntry } from "astro:content";
-import Prose from "$components/Prose.astro";
 import PostPreviewList from "$components/PostPreviewList.astro";
 import PostPreviewListFooter from "$components/PostPreviewListFooter.astro";
-import LatestCodeList from "$components/LatestCodeList.astro";
+import Prose from "$components/Prose.astro";
+// import LatestCodeList from "$components/LatestCodeList.astro";
+import LatestCodeList, { type Highlighter } from "$components/react/LatestCodeList.tsx"
+import { type CodeResults, getCodesFromMdx } from "$util/markdown";
+import {all, createStarryNight} from '@wooorm/starry-night'
+import { atom } from "nanostores";
 
 export const prerender = true;
+//
+// let posts: CollectionEntry<"blog">[] = await getCollection("blog");
+// posts = Array.from(posts)
+// 	.filter((post) => !post.data.draft)
+// 	.sort((a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf());
+//
+//
+// let allCodes: CodeResults = [];
+// const livePosts = posts.filter((post) => !post.data.draft);
+// let codes: CodeResults = [];
+//
+// for (const post of livePosts) {
+//   const codes = await getCodesFromMdx(post.body, { numLines: 6 });
+// }
+// codes = codes.map((code) => ({ ...code, post }));
+// allCodes = allCodes.concat(codesthPost);
 
-let posts: CollectionEntry<"blog">[] = await getCollection("blog");
-posts = Array.from(posts)
-	.filter((post) => !post.data.draft)
-	.sort((a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf());
+const posts: CollectionEntry<"blog">[] = await getCollection("blog");
+let allCodes: CodeResults = [];
+const livePosts = posts.filter((post) => !post.data.draft);
+for (const post of livePosts) {
+  const codes = await getCodesFromMdx(post.body, { numLines: 6 });
+  if (!codes) continue;
+
+  const codesWithPost: CodeResults = codes.map((code) => ({ ...code, post }));
+  allCodes = allCodes.concat(codesWithPost);
+}
+
+const highlighterInstance = atom<Highlighter | null>(null);
+
+let highlighter = highlighterInstance.get();
+if (!highlighter) {
+  const starryNight = await createStarryNight(all);
+  highlighterInstance.set(starryNight);
+  highlighter = starryNight;
+}
+
 ---
 
 <Layout>
@@ -23,10 +59,9 @@ posts = Array.from(posts)
     </div>
   </div>
   <div
-    class="flex flex-col gap-0 rounded-lg border border-2 border-card-border bg-card-bg bg-opacity-50 p-4
-    scrollbar-thin scrollbar-track-card-bg sm:flex-row sm:gap-6"
-  >
-    <LatestCodeList />
+    class="flex flex-col gap-0 rounded-lg border border-2 border-black bg-card-bg bg-opacity-50 p-4
+    scrollbar-thin scrollbar-track-card-bg sm:flex-row sm:gap-6">
+     <LatestCodeList client:load codes={allCodes} highlighter={highlighterInstance} />
   </div>
 
   <!-- <div class="flex flex-col"> -->

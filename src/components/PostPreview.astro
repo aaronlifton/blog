@@ -4,6 +4,7 @@ import { getMonthName, mobileUserAgent } from "$/util";
 import CodeText from "$components/CodeText.astro";
 import HomeImage from "$components/HomeImage.astro";
 import { getIsMobile } from "$/util";
+import { ReadMoreButton } from "$components/react/ReadMoreButton.tsx";
 
 const isMobile = getIsMobile(Astro);
 console.log(isMobile, mobileUserAgent);
@@ -66,6 +67,7 @@ const { post, asCard = false } = Astro.props;
     </div>
     <p class="post-preview__desc">
       <CodeText text={post.data.description} />
+      <ReadMoreButton client:load />
     </p>
     <div class="flex grow flex-row gap-2">
       <!-- <p style="color:oklab(83.9% -2.09 4.37)">Sample code:</p> -->
@@ -80,6 +82,7 @@ const { post, asCard = false } = Astro.props;
     </div>
   </div>
 </div>
+
 <style>
   .post-preview {
     @apply flex gap-6;
@@ -165,7 +168,7 @@ const { post, asCard = false } = Astro.props;
     @apply line-clamp-2 hyphens-auto text-lg leading-6;
   }
   .fancyImage {
-    @apply relative z-10 transform rounded-lg object-cover opacity-0 shadow-none shadow-black/5 transition-transform-opacity duration-300
+    @apply relative z-10 transform rounded-lg object-cover opacity-0 shadow-none shadow-black/5
      data-[loaded=true]:opacity-100 hover:scale-125 motion-reduce:transition-none;
   }
 </style>

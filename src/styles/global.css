@@ -5,18 +5,18 @@
  */
 /* @import "./base.css"; */
 /* @import url('https://fonts.googleapis.com/css2?family=Recursive:slnt,wght@-15,885&display=swap'); */
-@import url('https://fonts.googleapis.com/css2?family=Recursive:wght,MONO@385,0.5&display=swap');
+@import url("https://fonts.googleapis.com/css2?family=Recursive:wght,MONO@385,0.5&display=swap");
 /* @import url('https://fonts.googleapis.com/css2?family=Recursive:slnt,wght,CASL,CRSV,MONO@-15..0,885,0..1,0..1,1&display=swap'); */
 
 :root {
-  --accent: #2337ff;
-  --accent-dark: #000d8a;
+  --accent: oklch(49.6% 0.283 267);
+  --accent-dark: oklch(29.7% 0.191 264.2);
   --black: 15, 18, 25;
   --gray: 96, 115, 159;
   --gray-dark: 34, 41, 57;
   --box-shadow: 0 2px 6px rgba(var(--bg-gray), 25%),
     0 8px 24px rgba(#ffffff, 33%), 0 16px 32px rgba(#ffffff, 33%);
-  --bg-primary: #fff;
+  --bg-primary: oklch(100% 0 0);
   --horizontal-padding: 1rem;
   --content-max-width: 80rem;
   --nav-height: 5rem;
@@ -25,15 +25,7 @@
   --footer-margin-top: 2.5rem;
   --total-footer-height: calc(var(--footer-height) + var(--footer-margin-top));
   --vert-padding: 1rem;
-  --surface: var(--gray);
 
-  --primary: rgb(34, 41, 57);
-  --on-primary: oklch(94.72% 0.03 308.97);
-  --background: oklch(0.988281 0.0046875 300);
-  /* --on-background: hexToRgb(theme(colors.stone.800)); */
-  --on-background: var(--primary);
-  --disabled: var(--background);
-  --shadow: theme(colors.stone.600);
   /**/
   /* --bright-blue: oklch(51.01% .274 263.83); */
   /* --indigo-blue: oklch(51.64% .229 281.65); */
@@ -96,11 +88,110 @@
   /* --orange-to-pink-vertical-gradient: linear-gradient(0deg, var(--vivid-pink) 0%, var(--light-orange) 100%); */
   /* --page-bg-radial-gradient: radial-gradient(circle, white 0%, white 100%); */
   /* --soft-pink-radial-gradient: radial-gradient(circle at center bottom, var(--light-pink) 0%, white 80%); */
+
+
+  --primary: oklch(28.2% 0.031 266.1);
+  --on-primary: oklch(94.72% 0.03 308.97);
+  --on-background: var(--primary);
+  /*--background: oklch(0.988281 0.0046875 300);*/
+  --background: 0.988281 0.0046875 300;
+  --surface: var(--gray);
+  --shadow: theme(colors.stone.600);
+  --disabled: var(--background);
+
+
+  /* ShadCN */
+  /*--background: 0 0% 100%;*/
+  --background: 100% 0 0;
+  /*--foreground: oklch(13.71% 0.036 258.53);*/
+  /*--foreground: 13.71% 0.036 258.53;*/
+  --foreground: theme("colors.amethyst.100");
+
+  --card: 0% 0% 100;
+  --card-foreground: 13.71% 0.036 258.53;
+
+  --popover: 100% 0 0;
+  /*--popover-foreground: 13.71% 0.036 258.53;*/
+  --popover-foreground: theme("colors.amethyst.100");
+
+  --primary: 20.8% 0.04 265.7;
+  --primary-foreground: 98.4% 0.003 247.9;
+
+  --secondary: 96.8% 0.007 247.9;
+  --secondary-foreground: 20.8% 0.04 265.7;
+
+  --muted: 96.8% 0.007 247.9;
+  --muted-foreground: 55.5% 0.041 257.4;
+
+  --accent: 96.8% 0.007 247.9;
+  --accent-foreground: 20.8% 0.04 265.7;
+
+  --destructive: 63.7% 0.208 25.3;
+  --destructive-foreground: 98.4% 0.003 247.9);
+
+  --border: 92.9% 0.013 255.5;
+  --input: 92.9% 0.013 255.5;
+  --ring: 13.71% 0.036 258.53;
+
+  --radius: 0.5rem;
+}
+
+.dark {
+  --background: theme("colors.gray.900");
+  --foreground: 210 40% 98%;
+
+  --card: 13.71% 0.036 258.53;
+  --card-foreground: 210 40% 98%;
+
+  --popover: 13.71% 0.036 258.53;
+  --popover-foreground: 210 40% 98%;
+
+  /*--primary: 13.71% 0.036 258.53;*/
+  --primary: theme("colors.amethyst.50");
+  /*--primary-foreground: 20.79% 0.04 265.73;*/
+  --primary-foreground: theme("colors.amethyst.50");
+
+  --secondary: 28% 0.037 259.97;
+  --secondary-foreground: 98.38% 0.003 247.86;
+
+  --muted: 28% 0.037 259.97;
+  --muted-foreground: 71.07% 0.035 256.79;
+
+  --accent: 28% 0.037 259.97;
+  --accent-foreground: 98.38% 0.003 247.86;
+
+  /*still hsl*/
+  --destructive: 0 62.8% 30.6%;
+  --destructive-foreground: 210 40% 98%;
+
+  --border: 217.2 32.6% 17.5%;
+  --input: 217.2 32.6% 17.5%;
+  --ring: 212.7 26.8% 83.9%;
+
+  /* CrunchyData */
+  /*--bg-base: var(--gray-1100);*/
+  /*--bg-layer-1: var(--gray-1000);*/
+  /*--bg-layer-2: var(--gray-900);*/
+  /*--bg-border: var(--border-default);*/
+  /** RING **/
+  --ring-ghost: var(--gray-700);
 }
 
 @tailwind base;
 @tailwind utilities;
 @tailwind components;
+
+@layer base {
+  :root {
+    --background: oklch(0.988281 0.0046875 300);
+  }
+  * {
+    @apply border-border;
+  }
+  body {
+    @apply bg-background text-foreground;
+  }
+}
 
 .prose {
   --tw-prose-headings: var(--primary);
@@ -112,10 +203,10 @@
   }
 
   .card-none {
-    @apply bg-background rounded-none shadow-none;
+    @apply rounded-none bg-background shadow-none;
   }
 
-  .grid-cols-layout>* {
+  .grid-cols-layout > * {
     @apply col-content;
   }
 }
@@ -175,11 +266,11 @@ body {
   overflow-wrap: break-word;
   font-size: 1.25rem;
   line-height: 1.7;
-  @apply m-0 flex h-full flex-col p-0 text-left text-text-primary bg-purple-50;
+  @apply m-0 flex h-full flex-col bg-purple-50 p-0 text-left text-primary;
 }
 
 main {
-  @apply grid grid-cols-layout px-3 py-6;
+  @apply grid-cols-layout grid px-3 py-6;
 }
 
 dialog.welcome {
@@ -232,7 +323,7 @@ b {
 }
 
 a {
-  @apply text-fuchsia-300 text-primary underline decoration-dark-primary/0 decoration-2 underline-offset-2 subpixel-antialiased transition-colors duration-100 ease-in-out;
+  @apply decoration-purple-300 text-fuchsia-300 text-primary underline decoration-2 underline-offset-2 subpixel-antialiased transition-colors duration-100 ease-in-out;
 }
 
 a:hover {
@@ -245,7 +336,7 @@ p {
 }
 
 .prose {
-  @apply prose-slate max-w-none lg:prose-lg;
+  @apply prose-slate lg:prose-lg max-w-none;
   /* @apply prose-slate max-w-none dark:prose-invert lg:prose-lg; */
   /* light:prose-slate dark:prose-dark */
   /* Size Modifiers: https://github.com/tailwindlabs/tailwindcss-typography#size-modifiers */
@@ -298,7 +389,7 @@ img {
 }
 
 code {
-  @apply rounded-md border bg-bg-gray px-1 text-sm;
+  @apply bg-bg-gray rounded-md border px-1 text-sm;
   /* background-color: rgb(var(--gray-light)); */
 }
 
@@ -316,7 +407,7 @@ pre {
   /* font-variation-settings: var(--mono), var(--casl), var(--wght), var(--slnt), var(--CRSV); */
 }
 
-pre>code {
+pre > code {
   all: unset;
 }
 
@@ -366,9 +457,9 @@ hr {
 /* } */
 
 .bg-primary {
-  background-color: var(--bg-primary);
+  @apply bg-[var(--bg-primary)];
 }
 
 .emdash {
-  @apply mx-1 px-1 italic text-bg-gray;
+  @apply text-bg-gray mx-1 px-1 italic;
 }
