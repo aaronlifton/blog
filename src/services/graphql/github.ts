@@ -1,8 +1,8 @@
 
-import { graphql } from '@octokit/graphql';
+import { graphql, type GraphQlQueryResponseData } from '@octokit/graphql';
 
 const getLatestCommits = async () => {
-  const { repository } = await graphql(
+  const { repository }: GraphQlQueryResponseData = await graphql(
     `
       {
         repository(owner: "octokit", name: "graphql.js") {

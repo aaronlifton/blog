@@ -19,7 +19,7 @@ export const POST: APIRoute = async ({ params: _params, request }) => {
     stacktrace: data.stack,
   };
   console.log({ ErrorModel, errorObj });
-  return new Response({ status: 200 })
+  return new Response( "", { status: 200 })
   // const validatedError = ErrorModel.parse(errorObj);
 
   // try {
