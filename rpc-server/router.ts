@@ -1,25 +1,40 @@
-import { createHTTPServer } from '@trpc/server/adapters/standalone';
+import { initTRPC } from '@trpc/server';
 import { z } from 'zod';
 import { Context } from './context';
 import { getCommits } from './services/github';
-import { publicProcedure, router } from './trpc';
- 
-import { loadEnv } from "vite";
-// const env = loadEnv(process.env.NODE_ENV, process.cwd(), "");
+//
+// type User = {
+//   id: string;
+//   name: string;
+//   bio?: string;
+// };
+//
+// const users: Record<string, User> = {};
+//
 export const t = initTRPC.context<Context>().create();
-const appRouter = router({
-  gitCommits: publicProcedure.query(async () => {
-    const commits = await getCommits(); 
-    return commits;
+
+export const appRouter = t.router({
+  // getUserById: t.procedure.input(z.string()).query((opts) => {
+  //   return users[opts.input]; // input type is string
+  // }),
+  // createUser: t.procedure
+  //   // validate input with Zod
+  //   .input(
+  //     z.object({
+  //       name: z.string().min(3),
+  //       bio: z.string().max(142).optional(),
+  //     }),
+  //   )
+  //   .mutation((opts) => {
+  //     const id = Date.now().toString();
+  //     const user: User = { id, ...opts.input };
+  //     users[user.id] = user;
+  //     return user;
+  //   }),
+  getCommits: t.procedure.query(() => {
+    return getCommits();
   })
 });
- 
-// Export type router type signature,
-// NOT the router itself.
-export type AppRouter = typeof appRouter;
 
-const server = createHTTPServer({
-  router: appRouter,
-});
- 
-server.listen(4333);
+// export type definition of API
+export type AppRouter = typeof appRouter;

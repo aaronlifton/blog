@@ -2,6 +2,7 @@ import octokit from "$services/octokit";
 import type { RestEndpointMethodTypes } from "@octokit/plugin-rest-endpoint-methods";
 import type { EndpointOptions } from "@octokit/types";
 import type { APIRoute } from "astro";
+import { RequestError } from "octokit";
 
 const username = "aaronlifton";
 const options: Partial<EndpointOptions> = {
@@ -9,23 +10,25 @@ const options: Partial<EndpointOptions> = {
   pageCount: 1,
 };
 
-type RepoRes = RestEndpointMethodTypes["repos"]["listForAuthenticatedUser"]["response"];
-type CommitRes = RestEndpointMethodTypes["repos"]["listCommits"]["response"];
-type Commit = {
-    url: string;
-    sha: string;
-    node_id: string;
-    html_url: string;
-    comments_url: string;
-    commit: {
-        url: string;
-        author: {
-            name?: string | undefined;
-            email?: string | undefined;
-            date?: string | undefined;
-        } | null;
-    };
-}
+// type ReposResponse = RestEndpointMethodTypes["repos"]["listForAuthenticatedUser"]["response"];
+type ReposResponse = RestEndpointMethodTypes["repos"]["listForAuthenticatedUser"]["response"]["data"]
+type Repo = ReposResponse[0]
+type Commit = RestEndpointMethodTypes["repos"]["listCommits"]["response"]["data"][0];
+// type Commit = {
+//     url: string;
+//     sha: string;
+//     node_id: string;
+//     html_url: string;
+//     comments_url: string;
+//     commit: {
+//         url: string;
+//         author: {
+//             name?: string | undefined;
+//             email?: string | undefined;
+//             date?: string | undefined;
+//         } | null;
+//     };
+// }
 
 // const repoIter = octokit.paginate.iterator(
 //   octokit.rest.repos.listForAuthenticatedUser,
@@ -34,6 +37,25 @@ type Commit = {
 //     page: 1,
 //   },
 // );
+
+type CommitSort = (a: Commit, b: Commit) => number;
+const commitSort: CommitSort = (a, b) => {
+    const aCreatedAt = a.commit?.author?.date;
+    const bCreatedAt = b.commit?.author?.date;
+
+    if (!aCreatedAt && !bCreatedAt) {
+        return 0;
+    }
+    if (!aCreatedAt) {
+        return 1;
+    }
+    if (!bCreatedAt) {
+        return -1;
+    }
+    return bCreatedAt.localeCompare(aCreatedAt);
+}
+
+
 export async function getCurrentRateLimitRemaining() {
   try {
     // Make a request to any endpoint (e.g., get the authenticated user)
@@ -50,17 +72,32 @@ export async function getCurrentRateLimitRemaining() {
     console.error('Error occurred:', error);
   }
 }
+
+const repoSort = (a: Repo, b: Repo) => {
+  const aCreatedAt = a.created_at;
+  const bCreatedAt = b.created_at;
+  if (!aCreatedAt && !bCreatedAt) {
+    return -1;
+  }
+  if (!aCreatedAt) {
+    return 1;
+  }
+  if (!bCreatedAt) {
+    return -1;
+  }
+  return bCreatedAt?.localeCompare(aCreatedAt)
+ }
+
 export const getRepos = async () => {
   try {
     const allCommits: Partial<Commit>[]= [];
     const repos = await octokit.rest.repos.listForAuthenticatedUser(options); 
     // latest 4 repos
-    return Array.from(repos.data.sort((a, b) => new Date(b.created_at || Date(a.created_at).getTime())))
+    return repos.data.sort(repoSort)
   } catch (error) {
     console.error(error);  
   }
 }
-
 export const getCommits = async () => {
   try {
     const allCommits: Partial<Commit>[]= [];
@@ -68,10 +105,10 @@ export const getCommits = async () => {
     // latest 4 repos
     const sortedData = repos.data
       .filter(repo => repo.created_at)
-      .sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime())
+      .sort(repoSort)
       .slice(0, 1);
     // for (const repo of repos.data) {
-    for (const repo of sortedData) {
+    for (const repo of sortedData.slice(0, 1)) {
       const commitIter = octokit.paginate.iterator(
         octokit.rest.repos.listCommits,
         {
@@ -96,26 +133,38 @@ export const getCommits = async () => {
         url: commit.html_url,
       }))
   } catch (error) {
-    const rateLimitExceeded =  
+    const rateLimitExceeded =  true
     console.error(error);  
   }
 }
 
-const handleGithubRestRateLimitsFromHeaders = (req: Request | null) => {
-  const headerKeys = req?.headers?.keys().
+// const handleError = () => {
+//  if (error instanceof RequestError) {
+//     // handle Octokit error
+//     // error.message; // Oops
+//     // error.status; // 500
+//     // error.request; // { method, url, headers, body }
+//     // error.response; // { url, status, headers, data }
+//   } else {
+//     // handle all other errors
+//     throw error;
+//   }
+// }
 
-  const rateLimitExceeded: number = 100
-  if (headerKeys["x-retry-after"]){
-    console.log(`Retry after ${headerKeys["x-retry-after"]}`)
-    const rateLimitExceeded = req?.headers.get("x-ratelimit-remaining") === "0";
-    const waitForReset = req?.headers.get("x-ratelimit-reset")
-    if (rateLimitExceeded) {
-      const retryIn = req.headers.get("x-ratelimit-reset") || 0;
-      return { retryIn };
-    }
-  }
-  return { retryIn: 0 };
-}
+// const handleGithubRestRateLimitsFromHeaders = (req: Request | null) => {
+//   const headerKeys = req?.headers?.keys()
+//   const rateLimitExceeded = 100
+//   if (headerKeys["x-retry-after"]){
+//     console.log(`Retry after ${headerKeys["x-retry-after"]}`)
+//     const rateLimitExceeded = req?.headers.get("x-ratelimit-remaining") === "0";
+//     const waitForReset = req?.headers.get("x-ratelimit-reset")
+//     if (rateLimitExceeded) {
+//       const retryIn = req.headers.get("x-ratelimit-reset") || 0;
+//       return { retryIn };
+//     }
+//   }
+//   return { retryIn: 0 };
+// }
 
 export const GET: APIRoute = async (_state) => {
   try {
