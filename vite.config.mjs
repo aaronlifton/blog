@@ -33,4 +33,10 @@ export default {
         "./node_modules/@prisma/client/index-browser.js",
     },
   },
+  rollupOptions: {
+    external: ["./src/lib/tresitter"],
+  },
+  optimizeDeps: {
+    exclude: ["./src/lib/tresitter"],
+  },
 };

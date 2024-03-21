@@ -18,7 +18,7 @@
 		},
 		"types": [
 			"astro/client", "astro/env", "mdast", "easing-coordinates",
-			"@octokit/plugin-rest-endpoint-methods"
+			"@octokit/plugin-rest-endpoint-methods", "astro/types/shiki"
 		],
 		"jsx": "react-jsx",
 		"esModuleInterop": true

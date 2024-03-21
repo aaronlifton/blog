@@ -8,10 +8,8 @@ export const mobileUserAgent = (userAgent: string): boolean =>
 
 export function getIsMobile(backendState: Readonly<AstroGlobal>) {
   return () => {
-    console.log({ headers: backendState.request.headers });
-    return false;
-    // return mobileUserAgent(
-    //   backendState.request.headers.get("user-agent") ?? "",
-    // );
+    return mobileUserAgent(
+      backendState.request.headers.get("user-agent") ?? "",
+    );
   };
 }
