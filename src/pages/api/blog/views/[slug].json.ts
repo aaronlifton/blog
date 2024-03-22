@@ -7,12 +7,13 @@ import { getViewsBySlug } from "$/services/turso.js";
 // const getViewsFn = import.meta.env.PROD ? getViewsBySlug : inMemoryGetViews;
 const getViewsFn = getViewsBySlug;
 
-export async function getStaticPaths() {
-  const posts = await getCollection("blog");
-  return posts.map((post) => ({
-    params: { slug: post.slug },
-  }));
-}
+export const prerender = false;
+// export async function getStaticPaths() {
+//   const posts = await getCollection("blog");
+//   return posts.map((post) => ({
+//     params: { slug: post.slug },
+//   }));
+// }
 
 export const GET: APIRoute = async ({ params, request }) => {
   let views: Value | number = 0;

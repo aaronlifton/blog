@@ -1,5 +1,5 @@
 import path from "node:path";
-// import { loadEnv } from "vite";
+import { loadEnv } from "vite";
 
 // const env = loadEnv(process.env.NODE_ENV, process.cwd(), "");
 
