@@ -13,7 +13,7 @@ const { posts, heading, mode = "col", asCard = false } = Astro.props;
 // @ts-ignore
 const sortedPosts = posts.sort(
   (a, b) =>
-    new Date(a.data.pubDate).valueOf() - new Date(b.data.pubDate).valueOf()
+    new Date(b.data.pubDate).valueOf() - new Date(a.data.pubDate).valueOf()
 );
 ---
 
