@@ -10,7 +10,7 @@ export const client = createClient({
   authToken: import.meta.env.TURSO_DB_AUTH_TOKEN,
 });
 
-const isLocalhost = import.meta.env.mode == "development";
+const isLocalhost = import.meta.env.mode === "development";
 export const getViewsBySlug = async (slug: string, shouldIncrement = false) => {
   if (isLocalhost || !slug) {
     console.log("isLocalhost");

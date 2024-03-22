@@ -7,10 +7,10 @@ coverAlt: "An example of a component that 'for sure' needs memoization."
 tags: ["react", "performance", "optimization"]
 ---
 
-React uses something called **shallow prop comparison**. It's actually *quite* easy to understand and optimize, and 
-everyone should be aware of this, for it is absolutely essential to react performance.
+React uses something called **shallow prop comparison**. It's actually *quite* easy to understand and optimize, and
+everyone should be aware of this, for it is essential to react performance.
 
-So About those dependency arrays used as the 2nd argument in `useMemo`, `useCallback`, etc. — they are compared with their previous versions as follows:
+It's important to understand the dependency arrays used as the 2nd argument in hooks like `useMemo`, `useCallback`, etc. — they are compared with their previous versions via shallow equality checks:
 
 ```ts annotate
 // psuedo-code
@@ -21,11 +21,10 @@ function propHasChanged(prev, next) {
 }
 ```
 
-In other words, React compares old and new props by shallow equality; that is, it considers whether each *new* prop is **referentially equal** to the *old* prop.
-\
-\
-This means that if props or dependencies are _not_ primitive values. that is, they are **arrays**, **objects**, or **functions** (in Javascript, functions are objects too),
-even if they have the same value, each time the component is re-rendered, they will be considered unequal to their previous versions if they are not **memoized**.
+React compares old and new props by shallow equality; that is, it considers whether each *new* prop is **referentially equal** to the *old* prop.
+
+This means that if props or dependencies are *not* primitive values, like **arrays**, **objects**, or **functions** (in Javascript, functions are objects too),
+even if they have the same value, each time the component is re-rendered they will be considered unequal to their previous versions if they are not **memoized**.
 To avoid causing extra re-renders by having non-primitive props, [simplify props or memoize props in the parent component](https://react.dev/reference/react/memo#minimizing-props-changes).
 
 Be careful of using objects in state, or as props, as they are not primitive values. If you need to use objects, make sure to memoize them using `useMemo` or `useCallback` as necessary.
@@ -48,9 +47,9 @@ function MyFC({ obj }): React.FC<{ obj: { a: number, b: number } }> {
 }
 ```
 
-When you use `useMemo`, your component re-renders whenever any element of the dependency array is not shallowly equal to its previous value. 
-This means that React compares every prop in your component with its previous value using the Object.is comparison.
+For example, when you use `useMemo`, your component re-renders whenever any element of the dependency array is not shallowly equal to its previous value.
+This means that React compares every prop in your component with its previous value using the `Object.is` comparison.
 
 Therefore, all dependencies and props should be **PRIMITIVE VALUES**!
 \
-For example, `Object.is(3, 3)` is `true`, but `Object.is({}, {})` is `false`.
+Rememeber, `Object.is(3, 3)` is `true`, but `Object.is({}, {})` is `false`.

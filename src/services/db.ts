@@ -5,8 +5,6 @@ import { createClient } from "@libsql/client";
 export { BlogPostMetaModel } from "$prisma/zod/blogpostmeta";
 export { ErrorModel } from "$prisma/zod/error";
 
-console.log("meta", import.meta.env);
-
 export const libsql = createClient({
   url: import.meta.env.TURSO_DB_URL,
   authToken: import.meta.env.TURSO_DB_AUTH_TOKEN,

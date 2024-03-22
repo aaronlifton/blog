@@ -28,17 +28,15 @@ const {
 
 {
   src && (
-    <ZoomableImage dialogId={key || "dialog"}>
-      <Image
-        class={className}
-        src={src}
-        widths={[100, 240, 540, 720, src.width]}
-        sizes={`(max-width: 360px) 240px, (max-width: 720px) 540px, (max-width: 1600px) 720px, ${src.width}px`}
-        title={alt}
-        alt={`Go to the post titled "${postTitle}"`}
-        width={width}
-      />
-    </ZoomableImage>
+    <Image
+      class={className}
+      src={src}
+      widths={[100, 240, 540, 720, src.width]}
+      sizes={`(max-width: 360px) 240px, (max-width: 720px) 540px, (max-width: 1600px) 720px, ${src.width}px`}
+      title={alt}
+      alt={`Go to the post titled "${postTitle}"`}
+      width={width}
+    />
   )
 }
 
