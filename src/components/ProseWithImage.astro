@@ -1,0 +1,14 @@
+---
+import Prose from "$components/Prose.astro";
+interface Props {
+  className?: string;
+}
+const { className } = Astro.props;
+---
+
+<div class="mb-6 flex flex-col gap-6">
+  <Prose {className}>
+    <slot />
+  </Prose>
+  <slot name="image" />
+</div>

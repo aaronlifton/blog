@@ -4,211 +4,233 @@ import { Code } from "astro:components";
 import { getCollection, type CollectionEntry } from "astro:content";
 import PlayPause from "$components/react/PlayPause";
 
-const codeOrder = ["vim", "tsx", "jsx","ts","js", "typescript", "javascript","ruby", "go", "rust", "lua", "bash", "json", "shell", "html", "css"];
+const codeOrder = [
+	"vim",
+	"tsx",
+	"jsx",
+	"ts",
+	"js",
+	"typescript",
+	"javascript",
+	"ruby",
+	"go",
+	"rust",
+	"lua",
+	"bash",
+	"json",
+	"shell",
+	"html",
+	"css",
+];
 
 function codeSort(a: CodeResults[0], b: CodeResults[0]) {
-  if (a.lang === b.lang) return 0;
-  if (!a.lang) return 1;
-  if (!b.lang) return -1;
-  const aIndex = codeOrder.indexOf(a.lang);
-  const bIndex = codeOrder.indexOf(b.lang);
-  if (aIndex === -1) return 1;
-  if (bIndex === -1) return -1;
-  if (aIndex < bIndex) return -1;
-  if (aIndex > bIndex) return 1;
-  return 0;
+	if (a.lang === b.lang) return 0;
+	if (!a.lang) return 1;
+	if (!b.lang) return -1;
+	const aIndex = codeOrder.indexOf(a.lang);
+	const bIndex = codeOrder.indexOf(b.lang);
+	if (aIndex === -1) return 1;
+	if (bIndex === -1) return -1;
+	if (aIndex < bIndex) return -1;
+	if (aIndex > bIndex) return 1;
+	return 0;
 }
 
 const posts: CollectionEntry<"blog">[] = await getCollection("blog");
 let allCodes: CodeResults = [];
 const livePosts = posts.filter((post) => !post.data.draft);
 for (const post of livePosts) {
-  const codes = await getCodesFromMdx(post.body, { numLines: 6 });
-  if (!codes) continue;
+	const codes = await getCodesFromMdx(post.body, { numLines: 6 });
+	if (!codes) continue;
 
-  const codesWithPost: CodeResults = codes.map((code) => ({ ...code, post }));
-  allCodes = allCodes.concat(codesWithPost).sort(codeSort);
+	const codesWithPost: CodeResults = codes.map((code) => ({ ...code, post }));
+	allCodes = allCodes.concat(codesWithPost).sort(codeSort);
 }
 ---
 
 <style>
-  h5 {
-    @apply mb-0;
-  }
-  .codes-container {
-    @apply overflow-scroll scroll-smooth scrollbar-thin scrollbar-track-card-bg/0 scrollbar-thumb-amethyst-300;
-  }
-  .codes-container > div {
-    font-size: 0.7rem;
-  }
-  .codes-container pre.astro-code {
-    @apply scrollbar-thumb-amethyst-300;
-  }
-  .code {
-    @apply mx-4  min-w-[433px] max-w-[80ch] snap-start rounded-md border border-gray-200 p-0 p-4 transition-colors
+	h5 {
+		@apply mb-0;
+	}
+	.codes-container {
+		@apply overflow-scroll scroll-smooth scrollbar-thin scrollbar-track-card-bg/0 scrollbar-thumb-amethyst-300;
+	}
+	.codes-container > div {
+		font-size: 0.7rem;
+	}
+	.codes-container pre.astro-code {
+		@apply scrollbar-thumb-amethyst-300;
+	}
+	.code {
+		@apply mx-4  min-w-[433px] max-w-[80ch] snap-start rounded-md border border-gray-200 p-0 p-4 transition-colors
         duration-300 ease-in-out scrollbar-thin lg:min-w-min;
-  }
-  .code-container {
-    @apply scrollbar-track-card-bg/0 scrollbar-thumb-amethyst-300;
-  }
-  .code.active {
-    @apply border-amethyst-400;
-  }
+	}
+	.code-container {
+		@apply scrollbar-track-card-bg/0 scrollbar-thumb-amethyst-300;
+	}
+	.code.active {
+		@apply border-amethyst-400;
+	}
 </style>
 
 <div
-  class:list={[
-    "codes-header flex flex-col items-baseline md:flex-row landscape:flex-col",
-    "[&_~div]:portrait:translate-y-4",
-  ]}
+	class:list={[
+		"codes-header flex flex-col items-baseline md:flex-row landscape:flex-col",
+		"[&_~div]:portrait:translate-y-4",
+	]}
 >
-  <h5>Latest code</h5>
-  {/* @ts-ignore */}
-  <PlayPause client:load className="icon-container" />
-  <!-- <div class="output"></div> -->
+	<h5>Latest code</h5>
+	{/* @ts-ignore */}
+	<PlayPause client:load className="icon-container" />
+	<!-- <div class="output"></div> -->
 </div>
 <!-- if mobile needs more performance, use will-change-scroll -->
 <div
-  class="codes-container flex h-auto w-full snap-x snap-mandatory snap-always
+	class="codes-container flex h-auto w-full snap-x snap-mandatory snap-always
   overflow-auto"
 >
-  {
-    allCodes.map((code) => (
-      <div class="code">
-        <div class="code-header flex flex-row justify-between">
-          <h2 class="flex grow pr-3 text-xl font-bold">{code.lang}</h2>
-          {code.post && (
-            <div class="truncate text-sm">
-              <a href={`/blog/${code.post.slug}`}>{code.post.data.title}</a>
-            </div>
-          )}
-        </div>
-        {/* @ts-ignore */}
-        <Code
-          code={code.text}
-          lang={code.lang}
-          class="code-container"
-          style="font-size:13px;"
-        />
-      </div>
-    ))
-  }
+	{
+		allCodes.map((code) => (
+			<div class="code">
+				<div class="code-header flex flex-row justify-between">
+					<h2 class="flex grow pr-3 text-xl font-bold">{code.lang}</h2>
+					{code.post && (
+						<div class="truncate text-sm">
+							<a href={`/blog/${code.post.slug}`}>{code.post.data.title}</a>
+						</div>
+					)}
+				</div>
+				{/* @ts-ignore */}
+				<Code
+					code={code.text}
+					lang={code.lang}
+					class="code-container"
+					style="font-size:13px;"
+				/>
+			</div>
+		))
+	}
 </div>
 <script>
-  import { isPaused } from "$state/index";
+	import { isPaused } from "$state/index";
 
-  const onLoad = () => {
-    const codesContainer = document.querySelector(
-      ".codes-container"
-    ) as HTMLDivElement;
-    const codes: NodeListOf<HTMLDivElement> = document.querySelectorAll(
-      ".codes-container .code"
-    );
+	const onLoad = () => {
+		const codesContainer = document.querySelector(
+			".codes-container",
+		) as HTMLDivElement;
+		const codes: NodeListOf<HTMLDivElement> = document.querySelectorAll(
+			".codes-container .code",
+		);
 
-    let currentIndex = 0;
-    const intervalTime = 5000;
+		let currentIndex = 0;
+		const intervalTime = 5000;
 
-    const scrollNext = () => {
-      if (!codesContainer) return;
+		const scrollNext = () => {
+			if (!codesContainer) return;
 
-      if (!isPaused.get()) {
-        if (currentIndex >= codes.length) {
-          currentIndex = 0;
-        }
+			if (!isPaused.get()) {
+				if (currentIndex >= codes.length) {
+					currentIndex = 0;
+				}
 
-        codesContainer.scrollLeft =
-          codes[currentIndex].offsetLeft - codesContainer.offsetLeft;
-        // codes.forEach((code) => code.classList.remove("active"));
-        // codes[(currentIndex + 1) % codes.length].classList.add("active");
-        currentIndex++;
-      }
-    };
+				codesContainer.scrollLeft =
+					codes[currentIndex].offsetLeft - codesContainer.offsetLeft;
+				// codes.forEach((code) => code.classList.remove("active"));
+				// codes[(currentIndex + 1) % codes.length].classList.add("active");
+				currentIndex++;
+			}
+		};
 
-    setInterval(scrollNext, intervalTime);
+		setInterval(scrollNext, intervalTime);
 
-    // const mouseEventWithinRect = (event: MouseEvent, rect: DOMRect): boolean => {
-    //   return (
-    //     event.clientX >= rect.left &&
-    //     event.clientX <= rect.right &&
-    //     event.clientY >= rect.top &&
-    //     event.clientY <= rect.bottom
-    //   );
-    // };
+		// const mouseEventWithinRect = (event: MouseEvent, rect: DOMRect): boolean => {
+		//   return (
+		//     event.clientX >= rect.left &&
+		//     event.clientX <= rect.right &&
+		//     event.clientY >= rect.top &&
+		//     event.clientY <= rect.bottom
+		//   );
+		// };
 
-    function onManualScroll() {
-      if (!isPaused.get() || !codesContainer) return;
-      let minDiff = Infinity;
-      let closestIndex: number | undefined;
+		function onManualScroll() {
+			if (!isPaused.get() || !codesContainer) return;
+			let minDiff = Infinity;
+			let closestIndex: number | undefined;
 
-      const containerRect = codesContainer.getBoundingClientRect();
-      codes.forEach((code, index) => {
-        const rect = code.getBoundingClientRect();
-        const diff = Math.abs(rect.left - containerRect.left);
+			const containerRect = codesContainer.getBoundingClientRect();
+			codes.forEach((code, index) => {
+				const rect = code.getBoundingClientRect();
+				const diff = Math.abs(rect.left - containerRect.left);
 
-        if (diff < minDiff) {
-          minDiff = diff;
-          closestIndex = index;
-        }
-      });
-      if (closestIndex !== undefined) currentIndex = closestIndex;
-      if (
-        codes[codes.length - 1].getBoundingClientRect().right <=
-        containerRect.left + codesContainer.clientWidth
-      ) {
-        currentIndex = 0;
-      }
-      if (currentIndex >= codes.length - 1) {
-        currentIndex = 0;
-      }
-    }
+				if (diff < minDiff) {
+					minDiff = diff;
+					closestIndex = index;
+				}
+			});
+			if (closestIndex !== undefined) currentIndex = closestIndex;
+			if (
+				codes[codes.length - 1].getBoundingClientRect().right <=
+				containerRect.left + codesContainer.clientWidth
+			) {
+				currentIndex = 0;
+			}
+			if (currentIndex >= codes.length - 1) {
+				currentIndex = 0;
+			}
+		}
 
-    codesContainer?.addEventListener("touchstart", function () {
-      isPaused.set(true);
-    });
-    codesContainer?.addEventListener("touchend", function () {
-      if (!codesContainer) return;
+		codesContainer?.addEventListener(
+			"touchstart",
+			function () {
+				isPaused.set(true);
+			},
+			{ passive: true },
+		);
 
-      isPaused.set(false);
-      onManualScroll();
-    });
+		codesContainer?.addEventListener("touchend", function () {
+			if (!codesContainer) return;
 
-    codesContainer?.addEventListener("mouseenter", function () {
-      isPaused.set(true);
-    });
-    codesContainer?.addEventListener("mouseleave", function () {
-      if (!codesContainer) return;
+			isPaused.set(false);
+			onManualScroll();
+		});
 
-      isPaused.set(false);
-    });
-    codesContainer?.addEventListener("scroll", onManualScroll);
+		codesContainer?.addEventListener("mouseenter", function () {
+			isPaused.set(true);
+		});
+		codesContainer?.addEventListener("mouseleave", function () {
+			if (!codesContainer) return;
 
-    const iconContainer = document.querySelector("div[class*=_iconContainer]");
+			isPaused.set(false);
+		});
+		codesContainer?.addEventListener("scroll", onManualScroll);
 
-    iconContainer?.addEventListener("click", function () {
-      const isPausedVal = isPaused.get();
-      isPaused.set(!isPausedVal);
-    });
+		const iconContainer = document.querySelector("div[class*=_iconContainer]");
 
-    // const observer = new window.IntersectionObserver(
-    //   (entries) => {
-    //     entries.forEach(console.log);
-    //     const leftmostEntry = entries.reduce((leftmost, entry) =>
-    //       entry.intersectionRatio < leftmost.intersectionRatio ? entry : leftmost,
-    //     );
-    //     // add active class to leftmost element
-    //     // if (leftmostEntry.isIntersecting) {
-    //     codes.forEach((code) => code.classList.remove("active"));
-    //     leftmostEntry.target.classList.add("active");
-    //     // } else {
-    //     //   leftmostEntry.target.classList.remove("active");
-    //     // }
-    //   },
-    //   { threshold: 1 },
-    // );
-    //
-    // codes.forEach((code) => observer.observe(code));
-  }
+		iconContainer?.addEventListener("click", function () {
+			const isPausedVal = isPaused.get();
+			isPaused.set(!isPausedVal);
+		});
 
-  document.addEventListener("astro:page-load", onLoad)
-  onLoad()
+		// const observer = new window.IntersectionObserver(
+		//   (entries) => {
+		//     entries.forEach(console.log);
+		//     const leftmostEntry = entries.reduce((leftmost, entry) =>
+		//       entry.intersectionRatio < leftmost.intersectionRatio ? entry : leftmost,
+		//     );
+		//     // add active class to leftmost element
+		//     // if (leftmostEntry.isIntersecting) {
+		//     codes.forEach((code) => code.classList.remove("active"));
+		//     leftmostEntry.target.classList.add("active");
+		//     // } else {
+		//     //   leftmostEntry.target.classList.remove("active");
+		//     // }
+		//   },
+		//   { threshold: 1 },
+		// );
+		//
+		// codes.forEach((code) => observer.observe(code));
+	};
+
+	document.addEventListener("astro:page-load", onLoad);
+	onLoad();
 </script>

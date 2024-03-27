@@ -1,5 +1,5 @@
 import type { APIRoute } from "astro";
-import { getErrors, saveError } from "$/services/turso.js";
+import { getErrors, saveError } from "$services/turso.js";
 import { ErrorModel } from "$prisma/zod/error";
 
 export const GET: APIRoute = async ({ params, request }) => {
