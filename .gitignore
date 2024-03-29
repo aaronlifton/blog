@@ -46,3 +46,4 @@ logs/analytics/*
 /blob-report/
 /playwright/.cache/
 /data/
+bin/__py*
