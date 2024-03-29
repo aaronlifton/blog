@@ -47,3 +47,5 @@ logs/analytics/*
 /playwright/.cache/
 /data/
 bin/__py*
+src/pages/blog/[...slug].astro
+src/pages/blog/[...slug].astro
