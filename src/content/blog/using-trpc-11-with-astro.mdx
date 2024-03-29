@@ -1,0 +1,432 @@
+---
+title: Using TRPCv11 with Astro
+description:
+  "Learn how to call TRPC endpoints from Astro on the server and on the client "
+pubDate: Mar 24 2024
+cover: ./assets/screenshots/github-rest-api.jpg
+coverAlt: ""
+tags: [react, trpc, astro]
+---
+
+import { Image } from "astro:assets";
+import ZoomImage from "$components/ZoomImage.svelte";
+import image1 from "./assets/screenshots/octokit-response-type.png";
+
+# Using tRPC v11.1 with Astro, Prisma, and the Github API
+
+With over 32k stars on Github, TRPC has become a popular framework for building
+type-safe RPC APIs. Its type safety builds upon Zod, a TypeScript-first schema
+declaration and validation library. Compared to a REST API, a type-safe RPC
+server may include editor support for code completion, and saves the developer
+from having to deal with the implementation details of HTTP or REST. Instead of
+making a POST or PUT request to the server, RPCs typically involves more direct
+communication with the server. tRPC integrates with newer best practices like
+using React Query to hydrate the client with data from the server, instead of
+reimplementing the same logic in its own library. I had worked before in an
+environment that used GRPC, and there the GRPC definitions generated Ruby,
+Kotlin, and JS definitions so that each team worked with the exact same set of
+type definitions.
+
+For example, if we specified that on the RPC server, we require a
+`{name: string}` parameter for the `createUser` procedure, the client would not
+build without passing the correct typed parameter:
+
+```ts
+const router = router({
+  create: publicProcedure
+    .input(z.object({ name: z.string() }))
+    .mutation(async (opts) => {
+      const { input } = opts;
+      const user = await prisma.user.create({
+        data: {
+          name: input.name,
+        },
+      });
+      return user;
+    }),
+});
+```
+
+Today we'll build a React component that uses Suspense to render a loading state
+while the backend streams data from the Github API, via a tRPC procedure. This
+idea came from me wanting to display an auto-refreshing code snippets for other
+articles.
+
+## Installing trpc v11
+
+First, let's install v11 of tRPC.
+[tRPC v11](https://trpc.io/docs/migrate-from-v10-to-v11) packages have the
+`@next` release tag, and we can install them with the following command:
+
+```sh
+npm install @trpc/server@next @trpc/client@next @trpc/react-query@next @trpc/next@next @tanstack/react-query@latest @tanstack/react-query-devtools@latest
+```
+
+The tRPC team states that the `next` tag is
+[stable](https://trpc.io/docs/migrate-from-v10-to-v11#:~:text=stable%20and%20can%20be%20used%20in%20production).
+
+To accomplish this task, we need to set up tRPC and write a procedure that
+fetches a file from a github repository.
+
+## Building the tRPC server
+
+1. Create a new folder called `rpc-server` in the root of the project.
+
+1. First, we'll set up the ["context"](https://trpc.io/docs/server/context) for
+   our RPC requests. tRPC introduces the concept of inner and outer context.
+   Inner context provides context to all server-calls that don’t depend on a
+   request object being present, such as database queries. This enables us to
+   write integration tests for our procedures without having to set up mocks for
+   the HTTP request or response, as well as create server-side helpers where
+   tRPC's where `req` and `res` are not available (See more about
+   `createServerSideHelpers`). Inner context is always available in your
+   procedures.
+
+   Outer context depends on the request. This is useful for authentication,
+   because session information would be found in the request. This kind of
+   context is only available for procedures called via HTTP.
+
+1. We can implement both contexts by creating a file named 'context.ts' in the
+   `rpc-server` folder:
+
+```ts
+import prisma from "$services/db";
+// https://trpc.io/docs/server/adapters/fetch
+// If you're using Astro.js or other edge runtimes, use this adapter:
+import type { FetchCreateContextFnOptions } from "@trpc/server/adapters/fetch";
+// If you're using Next.js, you can use the following import instead:
+// import type { CreateNextContextOptions } from '@trpc/server/adapters/next';
+
+interface CreateInnerContextOptions
+  extends Partial<FetchCreateContextFnOptions> {}
+/**
+ * Inner context. Will always be available in your procedures, in contrast to the outer context.
+ * For example, if we use prisma as our ORM, we could store that in our inner
+ context.
+ * Also useful for:
+ * - testing, so you don't have to mock Next.js' `req`/`res`
+ * - tRPC's `createServerSideHelpers` where we don't have `req`/`res`
+ *
+ * @link https://trpc.io/docs/v11/context#inner-and-outer-context
+ */
+export async function createContextInner(opts?: CreateInnerContextOptions) {
+  return {
+    prisma,
+  };
+}
+
+// Outer context. This is a superset of the inner context.
+export async function createContext({
+  req,
+  resHeaders,
+}: FetchCreateContextFnOptions) {
+  const contextInner = await createContextInner({});
+  return { ...contextInner, req: req, resHeaders: resHeaders };
+}
+export type Context = Awaited<ReturnType<typeof createContext>>;
+```
+
+2. Create a file named 'server.ts' in the `rpc-server` folder:
+
+```ts
+import { initTRPC } from "@trpc/server";
+import { createHTTPServer } from "@trpc/server/adapters/standalone";
+import { appRouter } from "./router.ts";
+import { createContext } from "./context.ts";
+import cors from "cors";
+
+createHTTPServer({
+  middleware: cors(),
+  router: appRouter,
+  createContext,
+}).listen(3333);
+```
+
+Let's start by creating a new procedure call in a
+`rpc-server/services/github.ts` file that fetches the contents of a file from a
+GitHub repository. First, we'll cURL the Github API to see what the response
+looks like.
+
+```json
+{
+  body: {
+    status: 200,
+    url: 'https://api.github.com/repos/facebook/react/contents/packages%2Fshared%2FshallowEqual.js',
+    headers: {
+      // ...
+      'access-control-allow-origin': '*',
+      'cache-control': 'public, max-age=60, s-maxage=60',
+      'content-length': '1340',
+      'content-security-policy': "default-src 'none'",
+      server: 'GitHub.com',
+      'x-content-type-options': 'nosniff',
+      'x-frame-options': 'deny',
+      'x-github-api-version-selected': '2022-11-28',
+      'x-github-media-type': 'github.v3; format=json',
+      'x-github-request-id': '...',
+      'x-ratelimit-limit': '60',
+      'x-ratelimit-remaining': '59',
+      'x-ratelimit-reset': '1711322225',
+      'x-ratelimit-resource': 'core',
+      'x-ratelimit-used': '1',
+      'x-xss-protection': '0'
+    },
+    data: {
+      name: 'shallowEqual.js',
+      path: 'packages/shared/shallowEqual.js',
+      sha: '7c73b88c05c32ce1e2ff16a51498631939469050',
+      size: 1259,
+      url: 'https://api.github.com/repos/facebook/react/contents/packages/shared/shallowEqual.js?ref=main',
+      html_url: 'https://github.com/facebook/react/blob/main/packages/shared/shallowEqual.js',
+      git_url: 'https://api.github.com/repos/facebook/react/git/blobs/7c73b88c05c32ce1e2ff16a51498631939469050',
+      download_url: 'https://raw.githubusercontent.com/facebook/react/main/packages/shared/shallowEqual.js',
+      type: 'file',
+      content: 'LyoqCiAqIENvcHlyaWdodCAoYykgTWV0YSBQbGF0Zm9ybXMsIEluYy4gYW5k\n' +
+        'IGFmZmlsaWF0ZXMuCiAqCiAqIFRoaXMgc291cmNlIGNvZGUgaXMgbGljZW5z\n' +
+        'ZWQgdW5kZXIgdGhlIE1JVCBsaWNlbnNlIGZvdW5kIGluIHRoZQogKiBMSUNF\n' +
+        'TlNFIGZpbGUgaW4gdGhlIHJvb3QgZGlyZWN0b3J5IG9mIHRoaXMgc291cmNl\n' +
+        'IHRyZWUuCiAqCiAqIEBmbG93CiAqLwoKaW1wb3J0IGlzIGZyb20gJy4vb2Jq\n' +
+        'ZWN0SXMnOwppbXBvcnQgaGFzT3duUHJvcGVydHkgZnJvbSAnLi9oYXNPd25Q\n' +
+        'cm9wZXJ0eSc7CgovKioKICogUGVyZm9ybXMgZXF1YWxpdHkgYnkgaXRlcmF0\n' +
+        'aW5nIHRocm91Z2gga2V5cyBvbiBhbiBvYmplY3QgYW5kIHJldHVybmluZyBm\n' +
+        'YWxzZQogKiB3aGVuIGFueSBrZXkgaGFzIHZhbHVlcyB3aGljaCBhcmUgbm90\n' +
+        'IHN0cmljdGx5IGVxdWFsIGJldHdlZW4gdGhlIGFyZ3VtZW50cy4KICogUmV0\n' +
+        'dXJucyB0cnVlIHdoZW4gdGhlIHZhbHVlcyBvZiBhbGwga2V5cyBhcmUgc3Ry\n' +
+        'aWN0bHkgZXF1YWwuCiAqLwpmdW5jdGlvbiBzaGFsbG93RXF1YWwob2JqQTog\n' +
+        'bWl4ZWQsIG9iakI6IG1peGVkKTogYm9vbGVhbiB7CiAgaWYgKGlzKG9iakEs\n' +
+        'IG9iakIpKSB7CiAgICByZXR1cm4gdHJ1ZTsKICB9CgogIGlmICgKICAgIHR5\n' +
+        'cGVvZiBvYmpBICE9PSAnb2JqZWN0JyB8fAogICAgb2JqQSA9PT0gbnVsbCB8\n' +
+        'fAogICAgdHlwZW9mIG9iakIgIT09ICdvYmplY3QnIHx8CiAgICBvYmpCID09\n' +
+        'PSBudWxsCiAgKSB7CiAgICByZXR1cm4gZmFsc2U7CiAgfQoKICBjb25zdCBr\n' +
+        'ZXlzQSA9IE9iamVjdC5rZXlzKG9iakEpOwogIGNvbnN0IGtleXNCID0gT2Jq\n' +
+        'ZWN0LmtleXMob2JqQik7CgogIGlmIChrZXlzQS5sZW5ndGggIT09IGtleXNC\n' +
+        'Lmxlbmd0aCkgewogICAgcmV0dXJuIGZhbHNlOwogIH0KCiAgLy8gVGVzdCBm\n' +
+        'b3IgQSdzIGtleXMgZGlmZmVyZW50IGZyb20gQi4KICBmb3IgKGxldCBpID0g\n' +
+        'MDsgaSA8IGtleXNBLmxlbmd0aDsgaSsrKSB7CiAgICBjb25zdCBjdXJyZW50\n' +
+        'S2V5ID0ga2V5c0FbaV07CiAgICBpZiAoCiAgICAgICFoYXNPd25Qcm9wZXJ0\n' +
+        'eS5jYWxsKG9iakIsIGN1cnJlbnRLZXkpIHx8CiAgICAgIC8vICRGbG93Rml4\n' +
+        'TWVbaW5jb21wYXRpYmxlLXVzZV0gbG9zdCByZWZpbmVtZW50IG9mIGBvYmpC\n' +
+        'YAogICAgICAhaXMob2JqQVtjdXJyZW50S2V5XSwgb2JqQltjdXJyZW50S2V5\n' +
+        'XSkKICAgICkgewogICAgICByZXR1cm4gZmFsc2U7CiAgICB9CiAgfQoKICBy\n' +
+        'ZXR1cm4gdHJ1ZTsKfQoKZXhwb3J0IGRlZmF1bHQgc2hhbGxvd0VxdWFsOwo=\n',
+      encoding: 'base64',
+      _links: [Object]
+    }
+  }
+}
+18:17:05 [200] /api/ops/repo-content 385ms
+```
+
+As we can see, the endpoint returns base64-encoded content for the file we
+requested, along with rate-limit headers that will enable us to prevent hitting
+the rate limit. This is important for providing a smooth user experiences
+without interruptions.
+
+## Writing the `getRepoContents` procedure
+
+Let's create a `services` folder in the `rpc-server` folder, and create a
+`github.ts` file in that folder:
+
+```ts
+async (props: { owner: string; repo: string; path: string }) => {
+  const { owner, repo, path } = props;
+  try {
+    const body = await octokit.request(
+      "GET /repos/{owner}/{repo}/contents/{path}",
+      {
+        owner,
+        repo,
+        path,
+        headers: {
+          "X-GitHub-Api-Version": "2022-11-28",
+        },
+      },
+    );
+    if (body.status !== 200) {
+      throw new Error(`Invalid status code: ${body.status}`);
+    }
+    // sourcery skip: use-object-destructuring
+    const rateLimitRemaing = body.headers["x-ratelimit-remaining"];
+    const rateLimitReset = body.headers["x-ratelimit-reset"];
+    g;
+
+    const data = body.data;
+    // TODO: handle rate limit headers and parse data
+  } catch (error) {
+    console.error(error);
+    return new Response(JSON.stringify({ error }), { status: 500 });
+  }
+};
+```
+
+Regarding the rate limit headers, github gives us the number of requests we can
+have remaining during a give period, as well as when the limit resets.
+
+It's important to keep track of events like rate limit hits, so that we can
+better handle, and most importantly, avoid them.
+
+One nuanace of the Github API is that it returns an array of objects if the path
+is a directory, and a single object if the path is a file. We can handle this by
+giving the typescript compiler a hint, by returning early if the response is an
+array.
+
+<ZoomImage
+  link={image1.src}
+  alt={"Full-size neovim screenshot"}
+  caption="Neovim screenshot showing the Typescript type of an OctokitResponse"
+  client:load
+>
+  <Image
+    src={image1}
+    alt="Neovim screenshot showing the Typescript type of an OctokitResponse"
+  />
+</ZoomImage>
+
+```ts annotate
+async (props: { owner: string; repo: string; path: string }) => {
+  const { owner, repo, path } = props;
+  try {
+    const body = await octokit.request(
+      "GET /repos/{owner}/{repo}/contents/{path}",
+      {
+        owner,
+        repo,
+        path,
+        headers: {
+          "X-GitHub-Api-Version": "2022-11-28",
+        },
+      },
+    );
+    if (body.status !== 200) {
+      throw new Error(`Invalid status code: ${body.status}`);
+    }
+    // TODO: handle rate limit headers and parse data
+    const rateLimitRemaining = body.headers["x-ratelimit-remaining"];
+    const rateLimitReset = body.headers["x-ratelimit-reset"];
+    // handleRateLimit({ rateLimitRemaining, rateLimitReset });
+
+    const data = body.data;
+    if (Array.isArray(data)) {
+      //                   ^
+      //          [this scopes the type to the single object version]
+      throw new Error("No file found");
+    }
+
+    const downloadUrl = data.download_url;
+    if (!downloadUrl) {
+      throw new Error("No download url found");
+    }
+
+    const response = await fetch(downloadUrl);
+
+    if (!response.ok) {
+      throw new Error("Failed to download diff");
+    }
+
+    const decodedFileContents = await response.text();
+    const filePath = nodePath.resolve(`data/${data.path}`);
+    const folder = filePath.split("/").slice(0, -1).join("/");
+    await fs.mkdir(folder, { recursive: true });
+    await fs.writeFile(filePath, decodedFileContents);
+
+    const fileWrittenResponse = {
+      path: filePath,
+    };
+    return new Response(JSON.stringify(fileWrittenResponse));
+  } catch (error) {
+    console.error(error);
+    return new Response(JSON.stringify({ error }), { status: 500 });
+  }
+};
+```
+
+## Testing the server side call
+
+Now that we've wrote a function that fetches a file from a certain path in a
+github repository, let's finish hooking up the client to our backend rpc-server:
+
+In the `rpc-server` folder, create a file named `router.ts`:
+
+```ts
+import { initTRPC } from "@trpc/server";
+import { z } from "zod";
+import type { Context } from "./context";
+import { getCommits, getRepoContents } from "./services/github";
+//
+export const t = initTRPC.context<Context>().create();
+const { createCallerFactory, router } = t;
+export const publicProcedure = t.procedure;
+export const apiProcedure = publicProcedure.use((opts) => {
+  if (!opts.ctx.req || !opts.ctx.resHeaders) {
+    throw new Error("You are missing `req` or `res` in your call.");
+  }
+  return opts.next({
+    ctx: {
+      // We overwrite the context with the truthy `req` & `res`, which will also overwrite the types used in your procedure.
+      req: opts.ctx.req,
+      res: opts.ctx.resHeaders,
+    },
+  });
+});
+
+export const appRouter = t.router({
+  getFile: apiProcedure
+    .input(
+      z.object({
+        owner: z.string(),
+        repo: z.string(),
+        path: z.string(),
+      }),
+    )
+    .query(async (opts) => {
+      const response = await getRepoContents(opts.input);
+      return await response.json();
+    }),
+});
+
+// export type definition of API
+export type AppRouter = typeof appRouter;
+export const createCaller = createCallerFactory(appRouter);
+```
+
+Now our RPC server has a single procedure, `getFile`. Let's first call this
+procedure from another server-side endpoint. This involves creating a `caller`
+via the `createCallerFactory` function, as stated
+[here](https://trpc.io/docs/server/server-side-calls). hooked everything up to
+
+In my case, I'm using Astro.js, so I'll create a new endpoint in the `src/pages`
+directory called `api/ops/repo-content.ts`:
+
+```ts
+import trpc from "$services/trpc";
+import { createCaller } from "$rpc/router";
+import prisma from "$services/db";
+import type { APIRoute } from "astro";
+
+export const GET: APIRoute = async ({ params, request, cookies }) => {
+  const queryParams = new URLSearchParams(request.url.split("?")[1]);
+  const parsedParams = Object.fromEntries(queryParams.entries());
+  console.log({ parsedParams });
+  const { owner, repo, path } = parsedParams;
+  if (!owner || !repo || !path) {
+    return new Response(JSON.stringify({ error: "Missing params" }), {
+      status: 400,
+    });
+  }
+  const resHeaders = new Headers();
+  const caller = createCaller({
+    req: request,
+    resHeaders: new Headers(),
+    prisma: prisma,
+  });
+  const data = await caller.getFile({ owner, repo, path });
+
+  return new Response(JSON.stringify(data));
+};
+```
+
+Now, let's test it out. Make sure the astro server is running, and make a GET
+request to
+`http://localhost:3000/api/ops/repo-content?owner=facebook&repo=react&path=data/packages/shallowEqual.js`.
+In your repository, you should now see a new file called `shallowEqual.js` under
+the `data/packages` directory.

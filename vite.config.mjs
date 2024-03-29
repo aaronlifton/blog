@@ -1,10 +1,13 @@
 import path from "node:path";
 import { loadEnv } from "vite";
+import wasm from "vite-plugin-wasm";
+import topLevelAwait from "vite-plugin-top-level-await";
 
 // const env = loadEnv(process.env.NODE_ENV, process.cwd(), "");
 
 const __dirname = path.resolve();
 export default {
+  plugins: [wasm(), topLevelAwait()],
   ssr: {
     external: ["shikiji"],
     noExternal: [
@@ -16,7 +19,7 @@ export default {
     ],
   },
   // define: {
-  //   __APP_ENV__: JSON.stringify(process.env.APP_ENV),
+  // __APP_ENV__: JSON.stringify(process.env.APP_ENV),
   // },
   resolve: {
     alias: {

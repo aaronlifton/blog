@@ -41,3 +41,11 @@ prisma/dev.db*
 dev.db*
 **/*.bk*
 logs/analytics/*
+/test-results/
+/playwright-report/
+/blob-report/
+/playwright/.cache/
+/data/
+bin/__py*
+src/pages/blog/[...slug].astro
+src/pages/blog/[...slug].astro

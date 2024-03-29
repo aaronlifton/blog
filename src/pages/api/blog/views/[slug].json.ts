@@ -1,8 +1,8 @@
 import type { APIRoute } from "astro";
 import type { Value } from "@libsql/core/api";
 import { getCollection } from "astro:content";
-import { getViewsBySlug } from "$/services/turso.js";
-// import { getViewsBySlug as inMemoryGetViews } from "$/services/memory.ts";
+import { getViewsBySlug } from "$services/turso.js";
+// import { getViewsBySlug as inMemoryGetViews } from "$services/memory.ts";
 
 // const getViewsFn = import.meta.env.PROD ? getViewsBySlug : inMemoryGetViews;
 const getViewsFn = getViewsBySlug;

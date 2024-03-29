@@ -3,24 +3,43 @@
 	"compilerOptions": {
 		"baseUrl": "./",
 		"paths": {
-			"$/*": ["src/*"],
-			"$api/*": ["src/pages/api/*"],
-			"$util/*": ["src/util/*"],
-			"$components/*": ["src/components/*"],
-			"$state/*": ["src/components/state/*"],
-			"$layouts/*": ["src/layouts/*"],
-			"$prisma/*": ["prisma/*"],
-			"$services/*": ["src/services/*"],
-			"$rpc/*": ["rpc-server/*"]
+			"$/*": [
+				"src/*"
+			],
+			"$api/*": [
+				"src/pages/api/*"
+			],
+			"$util/*": [
+				"src/util/*"
+			],
+			"$components/*": [
+				"src/components/*"
+			],
+			"$state/*": [
+				"src/components/state/*"
+			],
+			"$layouts/*": [
+				"src/layouts/*"
+			],
+			"$prisma/*": [
+				"prisma/*"
+			],
+			"$services/*": [
+				"src/services/*"
+			],
+			"$rpc/*": [
+				"rpc-server/*"
+			]
 		},
-		"types": [
-			"astro/client", "astro/env", "mdast", "easing-coordinates",
-			"@octokit/plugin-rest-endpoint-methods"
-		],
 		"jsx": "react-jsx",
 		"esModuleInterop": true
 	},
-	"include": ["src/**/*", "plugins", "scripts", "tests"],
+	"include": [
+		"src/**/*",
+		"plugins",
+		"scripts",
+		"tests"
+	],
 	"exclude": [
 		"src/components/devicons",
 		"src/tmpscripts",

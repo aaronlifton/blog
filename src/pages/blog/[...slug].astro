@@ -6,28 +6,28 @@ import BlogPost from "$layouts/BlogPost.astro";
 
 export const prerender = true;
 export async function getStaticPaths() {
-  const posts = await getCollection("blog");
-  return posts
-    .filter((post) => !post.data.draft)
-    .map((post) => ({
-      params: { slug: post.slug },
-      props: post,
-    }));
+	const posts = await getCollection("blog");
+	return posts
+		.filter((post) => !post.data.draft)
+		.map((post) => ({
+			params: { slug: post.slug },
+			props: post,
+		}));
 }
 type Props = CollectionEntry<"blog">;
 
 const post = Astro.props;
-const { Content, headings } = await post.render();
+const { Content, headings, remarkPluginFrontmatter } = await post.render();
 
 let width = post.data.cover.width;
 let height = post.data.cover.height;
 if (post.data.cover.width > 1000) {
-  width /= 2;
-  height /= 2;
+	width /= 2;
+	height /= 2;
 }
 ---
 
-<BlogPost {...post.data} {headings}>
+<BlogPost {...post.data} {headings} {remarkPluginFrontmatter}>
   <div class="flex w-full flex-col gap-8 pb-4 transition-all md:flex-row">
     <ZoomImage
       src={post.data.cover.src}

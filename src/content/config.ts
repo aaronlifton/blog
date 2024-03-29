@@ -20,8 +20,10 @@ const blog = defineCollection({
 			coverAlt: z.string(),
 			tags: z.array(z.string()),
 			draft: z.boolean().optional(),
-			minutesRead: z.number().optional(),
+			minutesRead: z.string().optional(),
 		}),
 });
 
 export const collections = { blog };
+export const siteDescription =
+	"A developer blog focusing on Ruby on Rails, React, AstroJS, and Neovim.";
