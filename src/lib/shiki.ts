@@ -10,23 +10,27 @@ import cssLanguage from "shiki/langs/css.mjs";
 import rustLanguage from "shiki/langs/rust.mjs";
 import pythonLanguage from "shiki/langs/python.mjs";
 
-import highlighterWasm from "shiki/dist/onig.wasm?init";
+import highlighterWasm from "shiki/dist/onig.wasm?url";
 
 // import "../styles/shiki.css";
 
+// read highlighterWasm url into a buffer source
+const response = await fetch(highlighterWasm);
+const buffer = await response.arrayBuffer();
+const highlighterWasmBuffer = new Uint8Array(buffer);
 await loadWasm((importObject) =>
-WebAssembly.instantiate(highlighterWasm, importObject),
+  WebAssembly.instantiate(highlighterWasmBuffer, importObject),
 );
 
 const highlighter = await getHighlighterCore({
-themes: [oneDarkProTheme, githubLightTheme],
-langs: [
-typescriptLanguage,
-shellscriptLanguage,
-cssLanguage,
-rustLanguage,
-pythonLanguage,
-],
+  themes: [oneDarkProTheme, githubLightTheme],
+  langs: [
+    typescriptLanguage,
+    shellscriptLanguage,
+    cssLanguage,
+    rustLanguage,
+    pythonLanguage,
+  ],
 });
 
 export default highlighter;

@@ -1,6 +1,7 @@
 import path from "node:path";
 import { loadEnv } from "vite";
 import wasm from "vite-plugin-wasm";
+import topLevelAwait from "vite-plugin-top-level-await";
 
 // const env = loadEnv(process.env.NODE_ENV, process.cwd(), "");
 

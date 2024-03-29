@@ -1,8 +1,8 @@
 import type { APIRoute } from "astro";
-import { getErrors, saveError } from "$services/turso.js";
+import { getErrors } from "$services/turso.js";
 import { ErrorModel } from "$prisma/zod/error";
 
-export const GET: APIRoute = async ({ params, request }) => {
+export const GET: APIRoute = async () => {
   const errors = await getErrors();
   return new Response(
     JSON.stringify(
@@ -19,7 +19,7 @@ export const POST: APIRoute = async ({ params: _params, request }) => {
     stacktrace: data.stack,
   };
   console.log({ ErrorModel, errorObj });
-  return new Response( "", { status: 200 })
+  return new Response("", { status: 200 });
   // const validatedError = ErrorModel.parse(errorObj);
 
   // try {
