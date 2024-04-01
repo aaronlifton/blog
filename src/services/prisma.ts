@@ -1,16 +1,13 @@
 import { PrismaClient } from "@prisma/client";
 import { PrismaLibSQL } from "@prisma/adapter-libsql";
 import { createClient } from "@libsql/client";
+import { client as libsqlClient } from "$services/turso.ts"
 
 export { BlogPostMetaModel } from "$prisma/zod/blogpostmeta";
 export { ErrorModel } from "$prisma/zod/error";
 
-export const libsql = createClient({
-  url: import.meta.env.TURSO_DB_URL,
-  authToken: import.meta.env.TURSO_DB_AUTH_TOKEN,
-});
 
-const adapter = new PrismaLibSQL(libsql);
+const adapter = new PrismaLibSQL(libsqlClient);
 export const prisma = new PrismaClient({ adapter });
 
 export default prisma;

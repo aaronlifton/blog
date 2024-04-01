@@ -11,6 +11,7 @@ tags: [react, trpc, astro]
 import { Image } from "astro:assets";
 import ZoomImage from "$components/ZoomImage.svelte";
 import image1 from "./assets/screenshots/octokit-response-type.png";
+import CodeBlock from "$components/CodeBlock.astro";
 
 # Using tRPC v11.1 with Astro, Prisma, and the Github API
 
@@ -47,12 +48,32 @@ const router = router({
 });
 ```
 
+<CodeBlock
+  lang="ts"
+  code={`
+const router = router({
+  create: publicProcedure
+    .input(z.object({ name: z.string() }))  // [!code highlight]
+    .mutation(async (opts) => {
+      const { input } = opts;
+      const user = await prisma.user.create({
+        data: {
+          name: input.name,
+        },
+      });
+      return user;
+    }),
+});
+`}
+/>
+
 Today we'll build a React component that uses Suspense to render a loading state
 while the backend streams data from the Github API, via a tRPC procedure. This
 idea came from me wanting to display an auto-refreshing code snippets for other
-articles.
+articles. To accomplish this task, we need to set up tRPC and write a procedure
+that fetches a file from a github repository.
 
-## Installing trpc v11
+## Installing tRPC v11
 
 First, let's install v11 of tRPC.
 [tRPC v11](https://trpc.io/docs/migrate-from-v10-to-v11) packages have the
@@ -64,9 +85,6 @@ npm install @trpc/server@next @trpc/client@next @trpc/react-query@next @trpc/nex
 
 The tRPC team states that the `next` tag is
 [stable](https://trpc.io/docs/migrate-from-v10-to-v11#:~:text=stable%20and%20can%20be%20used%20in%20production).
-
-To accomplish this task, we need to set up tRPC and write a procedure that
-fetches a file from a github repository.
 
 ## Building the tRPC server
 
@@ -90,7 +108,7 @@ fetches a file from a github repository.
    `rpc-server` folder:
 
 ```ts
-import prisma from "$services/db";
+import prisma from "$services/prisma";
 // https://trpc.io/docs/server/adapters/fetch
 // If you're using Astro.js or other edge runtimes, use this adapter:
 import type { FetchCreateContextFnOptions } from "@trpc/server/adapters/fetch";
@@ -99,14 +117,8 @@ import type { FetchCreateContextFnOptions } from "@trpc/server/adapters/fetch";
 
 interface CreateInnerContextOptions
   extends Partial<FetchCreateContextFnOptions> {}
+
 /**
- * Inner context. Will always be available in your procedures, in contrast to the outer context.
- * For example, if we use prisma as our ORM, we could store that in our inner
- context.
- * Also useful for:
- * - testing, so you don't have to mock Next.js' `req`/`res`
- * - tRPC's `createServerSideHelpers` where we don't have `req`/`res`
- *
  * @link https://trpc.io/docs/v11/context#inner-and-outer-context
  */
 export async function createContextInner(opts?: CreateInnerContextOptions) {
@@ -142,10 +154,11 @@ createHTTPServer({
 }).listen(3333);
 ```
 
-Let's start by creating a new procedure call in a
-`rpc-server/services/github.ts` file that fetches the contents of a file from a
+Now that we have context, and a server, the last piece on the server side will
+be writing a procedure. Let's start by creating a new procedure call in a file
+named `rpc-server/services/github.ts` that fetches the contents of a file from a
 GitHub repository. First, we'll cURL the Github API to see what the response
-looks like.
+looks like so we know what to expect.
 
 ```json
 {
@@ -221,6 +234,8 @@ As we can see, the endpoint returns base64-encoded content for the file we
 requested, along with rate-limit headers that will enable us to prevent hitting
 the rate limit. This is important for providing a smooth user experiences
 without interruptions.
+
+## Wrriting a unit test
 
 ## Writing the `getRepoContents` procedure
 
@@ -400,7 +415,7 @@ directory called `api/ops/repo-content.ts`:
 ```ts
 import trpc from "$services/trpc";
 import { createCaller } from "$rpc/router";
-import prisma from "$services/db";
+import prisma from "$services/prisma";
 import type { APIRoute } from "astro";
 
 export const GET: APIRoute = async ({ params, request, cookies }) => {

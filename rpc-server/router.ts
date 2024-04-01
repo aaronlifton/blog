@@ -3,7 +3,9 @@ import { z } from "zod";
 import type { Context } from "./context";
 import { getCommits, getRepoContents } from "./services/github";
 //
-export const t = initTRPC.context<Context>().create();
+export const t = initTRPC.context<Context>().create({
+	allowOutsideOfServer: true,
+});
 const { createCallerFactory, router } = t;
 export const publicProcedure = t.procedure;
 export const apiProcedure = publicProcedure.use((opts) => {
@@ -37,6 +39,14 @@ export const appRouter = t.router({
 	//     users[user.id] = user;
 	//     return user;
 	//   }),
+	incrementViews: publicProcedure.mutation((resolver) => {
+		const { prisma } = resolver.ctx;
+		return {
+			id: "1",
+			title: "Buy milk",
+			completed: false,
+		};
+	}),
 	getCommits: publicProcedure.query(() => {
 		return getCommits();
 	}),

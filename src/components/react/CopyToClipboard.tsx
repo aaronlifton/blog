@@ -1,7 +1,11 @@
-import { useState } from "react";
+import { useState, type HTMLAttributes } from "react";
 import { CheckIcon, CopyIcon } from "lucide-react";
+import { twMerge } from "tailwind-merge";
 
-export default function CopyToClipboard({ code }: { code: string }) {
+interface Props extends Partial<HTMLAttributes<HTMLButtonElement>> {
+	code: string;
+}
+const CopyToClipboard: React.FC<Props> = ({ code, className }) => {
 	const [copied, setCopied] = useState(false);
 
 	const copyToClipboard = async () => {
@@ -22,9 +26,14 @@ export default function CopyToClipboard({ code }: { code: string }) {
 		<button
 			type="submit"
 			onClick={copyToClipboard}
-			className="text-[#646464] hover:text-[#c4c4c4] transition-colors duration-200 ease-in-out"
+			className={twMerge(
+				"text-[#646464] hover:text-[#c4c4c4] transition-colors duration-200 ease-in-out",
+				className,
+			)}
 		>
 			{copied ? <CheckIcon /> : <CopyIcon />}
 		</button>
 	);
-}
+};
+
+export default CopyToClipboard;

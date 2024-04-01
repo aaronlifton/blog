@@ -196,18 +196,18 @@ export default {
 					"linear-gradient( 140deg, var(--vivid-pink) 0%, var(--vivid-pink) 15%, color-mix(in srgb, var(--vivid-pink), var(--electric-violet) 50%) 25%, color-mix(in srgb, var(--vivid-pink), var(--electric-violet) 10%) 35%, color-mix(in srgb, var(--vivid-pink), var(--orange-red) 50%) 42%, color-mix(in srgb, var(--vivid-pink), var(--orange-red) 50%) 44%, color-mix(in srgb, var(--vivid-pink), var(--page-background) 70%) 47%, var(--electric-violet) 48%, var(--bright-blue) 60%",
 			},
 			typography: ({ theme }) => ({
-				dark: {
-					css: {
-						color: theme("colors.gray.200"),
-						blockquote: {
-							color: colors.dark.primary,
-							borderColor: colors.primary,
-						},
-						"blockquote > p::before, p::after": {
-							color: colors.primary,
-						},
-					},
-				},
+				// dark: {
+				// 	css: {
+				// 		color: theme("colors.gray.200"),
+				// 		blockquote: {
+				// 			color: colors.dark.primary,
+				// 			borderColor: colors.primary,
+				// 		},
+				// 		"blockquote > p::before, p::after": {
+				// 			color: colors.primary,
+				// 		},
+				// 	},
+				// },
 				DEFAULT: {
 					css: {
 						"--tw-prose-headings": theme("colors.pink[900]"),

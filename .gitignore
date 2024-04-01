@@ -49,3 +49,4 @@ logs/analytics/*
 bin/__py*
 src/pages/blog/[...slug].astro
 src/pages/blog/[...slug].astro
+bun.lockb
