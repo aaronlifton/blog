@@ -1,7 +1,7 @@
 import type { APIRoute } from "astro";
 import { getCollection } from "astro:content";
-import { getViews } from "$/services/turso.js";
-import { getViews as getViewsInMem } from "$/services/memory.ts";
+import { getViews } from "$services/turso.js";
+import { getViews as getViewsInMem } from "$services/memory.ts";
 
 export const prerender = false;
 export async function getStaticPaths() {

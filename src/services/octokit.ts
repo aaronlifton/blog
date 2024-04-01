@@ -1,4 +1,3 @@
-// import { Octokit } from "octokit";
 import { Octokit } from "octokit";
 
 const token = import.meta.env.GITHUB_AUTH_TOKEN;

@@ -1,15 +1,9 @@
 ---
 import { type CollectionEntry, getCollection } from "astro:content";
-import Layout from "$/layouts/Layout.astro";
+import { SITE_DESCRIPTION } from "$/consts";
 import PostPreviewList from "$components/PostPreviewList.astro";
 import PostPreviewListFooter from "$components/PostPreviewListFooter.astro";
-import Prose from "$components/Prose.astro";
-// import LatestCodeList from "$components/LatestCodeList.astro";
-import LatestCodeList, { type Highlighter } from "$components/react/LatestCodeList.tsx"
-import { type CodeResults, getCodesFromMdx } from "$util/markdown";
-import {all, createStarryNight} from '@wooorm/starry-night'
-import { atom } from "nanostores";
-
+import { all, createStarryNight } from "@wooorm/starry-night";
 export const prerender = true;
 //
 // let posts: CollectionEntry<"blog">[] = await getCollection("blog");
@@ -28,33 +22,45 @@ export const prerender = true;
 // codes = codes.map((code) => ({ ...code, post }));
 // allCodes = allCodes.concat(codesthPost);
 
-const posts: CollectionEntry<"blog">[] = await getCollection("blog");
-let allCodes: CodeResults = [];
-const livePosts = posts.filter((post) => !post.data.draft);
-for (const post of livePosts) {
-  const codes = await getCodesFromMdx(post.body, { numLines: 6 });
-  if (!codes) continue;
+let posts: CollectionEntry<"blog">[] = await getCollection("blog");
+posts = Array.from(posts).filter((post) => !post.data.draft);
 
-  const codesWithPost: CodeResults = codes.map((code) => ({ ...code, post }));
-  allCodes = allCodes.concat(codesWithPost);
+let allCodes: CodeResults = [];
+for (const post of posts) {
+	const codes = await getCodesFromMdx(post.body, { numLines: 6 });
+	if (!codes) continue;
+
+	const codesWithPost: CodeResults = codes.map((code) => ({ ...code, post }));
+	allCodes = allCodes.concat(codesWithPost);
 }
 
 const highlighterInstance = atom<Highlighter | null>(null);
 
 let highlighter = highlighterInstance.get();
 if (!highlighter) {
-  const starryNight = await createStarryNight(all);
-  highlighterInstance.set(starryNight);
-  highlighter = starryNight;
+	const starryNight = await createStarryNight(all);
+	highlighterInstance.set(starryNight);
+	highlighter = starryNight;
 }
-
 ---
 
-<Layout>
+<Layout
+  seo={{
+    extend: {
+      link: [
+        {
+          rel: "alternate",
+          type: "application/rss+xml",
+          href: "/posts/index.xml",
+        },
+      ],
+    },
+  }}
+>
   <div class="hero flex justify-center pb-vert-padding">
     <div class="hero__tagline flex justify-center">
       <Prose className="prose prose-base mb-3 text-center lg:prose-base">
-        A developer blog focusing on Ruby on Rails, React, AstroJS, and Neovim.
+        {SITE_DESCRIPTION}
       </Prose>
     </div>
   </div>

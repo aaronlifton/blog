@@ -4,17 +4,19 @@ import "../styles/global.css";
 // import "@fontsource/source-sans-pro/700.css";
 import "@fontsource/comic-mono";
 import { ViewTransitions } from "astro:transitions";
+import { format } from "date-fns";
 
 interface Props {
   title: string;
   description: string;
   cover?: string;
+  pubDate?: Date;
   // coverAlt: string;
 }
 
 const canonicalURL = new URL(Astro.url.pathname, Astro.site);
 
-const { title, description, cover } = Astro.props;
+const { title, description, cover, pubDate } = Astro.props;
 ---
 
 <!-- Global Metadata -->
@@ -62,4 +64,9 @@ const { title, description, cover } = Astro.props;
 {cover && <meta property="twitter:image" content={new URL(cover, Astro.url)} />}
 
 <meta name="theme-color" content="#fcfafe" />
+{
+  pubDate && (
+    <meta name="publish-date" content={format(pubDate, "yyyy-MM-dd")} />
+  )
+}
 <ViewTransitions />

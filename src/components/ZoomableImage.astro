@@ -20,21 +20,21 @@ const { dialogId, children, className } = Astro.props;
 ---
 
 <script>
-  import { atom } from "nanostores";
   import A11yDialog from "a11y-dialog";
-  const dialog = atom<A11yDialog | null>(null);
+  // const dialog = atom<A11yDialog | null>(null);
+  let dialog: A11yDialog | null;
 
   const dialogEl = document.querySelector("dialog");
   if (dialogEl) {
-    dialog.set(new A11yDialog(dialogEl));
-    console.log(dialog.get());
+    dialog = new A11yDialog(dialogEl);
+    console.log(dialog);
   }
   const trigger = document.querySelector("[data-a11y-dialog-trigger]");
   console.log({ trigger });
   trigger?.addEventListener("click", () => {
-    if (dialogEl) {
+    if (dialogEl && dialog) {
       dialogEl.style.visibility = "visible";
-      dialog.get()?.show();
+      dialog.show();
       console.log({ dialogEl, dialog });
     }
   });
@@ -49,8 +49,9 @@ const { dialogId, children, className } = Astro.props;
 </div>
 <dialog
   id={dialogId}
+	data-a11y-dialog={dialogId}
   class:list={[
-    "py-2 px-4 border rounded focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+    "z-50 fixed h-full w-full py-2 px-4 border rounded focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
   ]}
   style={"visibility:hidden"}
 >

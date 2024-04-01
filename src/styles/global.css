@@ -185,9 +185,11 @@
   :root {
     --background: oklch(0.988281 0.0046875 300);
   }
+
   * {
     @apply border-border;
   }
+
   body {
     @apply bg-background text-foreground;
   }
@@ -206,7 +208,7 @@
     @apply rounded-none bg-background shadow-none;
   }
 
-  .grid-cols-layout > * {
+  .grid-cols-layout>* {
     @apply col-content;
   }
 }
@@ -398,6 +400,7 @@ pre {
   -moz-font-smoothing: auto;
   padding: 1.5em;
   border-radius: 8px;
+
   /* font-family: 'Recursive', monospace; */
   /* font-size: 1.125em; */
   /* --mono: 1; */
@@ -405,9 +408,12 @@ pre {
   /* --wght: 884; */
   /* --slnt: 1; */
   /* font-variation-settings: var(--mono), var(--casl), var(--wght), var(--slnt), var(--CRSV); */
+  .language-id {
+    @apply hidden;
+  }
 }
 
-pre > code {
+pre>code {
   all: unset;
 }
 

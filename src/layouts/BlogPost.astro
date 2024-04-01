@@ -16,8 +16,12 @@ import type { CollectionEntry } from "astro:content";
 import "@radix-ui/themes/styles.css";
 import { getSlugFromPathname } from "$/util";
 import "$/styles/shaku.css";
+import { formatISO } from "date-fns";
 
-type Props = CollectionEntry<"blog">["data"] & { headings: MarkdownHeading[] };
+type Props = CollectionEntry<"blog">["data"] & {
+  headings: MarkdownHeading[];
+  remarkPluginFrontmatter: Record<string, any>;
+};
 const {
   title,
   description,
@@ -27,16 +31,52 @@ const {
   coverAlt,
   tags,
   headings,
+  remarkPluginFrontmatter,
 } = Astro.props;
 
 const slug = getSlugFromPathname(Astro.url.pathname);
 
+const ogImageUrl = `/posts/${slug}/og.png`;
 const tocEmpty = headings.length === 0;
 ---
 
-<Layout>
+<Layout
+  title={title}
+  description={description}
+  description={remarkPluginFrontmatter.summary}
+  seo={{
+    openGraph: {
+      basic: {
+        title: `${title}`,
+        image: ogImageUrl,
+        type: "article",
+      },
+      article: {
+        tags: tags,
+        publishedTime: formatISO(new Date(pubDate)),
+        authors: ["Aaron Lifton"],
+      },
+    },
+    twitter: {
+      card: "summary_large_image",
+    },
+    extend: {
+      meta: [
+        {
+          name: "twitter:image",
+          content: ogImageUrl,
+        },
+      ],
+    },
+  }}
+>
   <Fragment slot="head">
-    <BaseHead title={title} description={description} cover={cover.src} />
+    <BaseHead
+      title={title}
+      description={description}
+      cover={cover.src}
+      {pubDate}
+    />
   </Fragment>
   <Fragment slot="header">
     <Header />
@@ -172,7 +212,7 @@ const tocEmpty = headings.length === 0;
 <script>
   document.addEventListener("astro:page-load", () => {
     const blogPostContainer = document.querySelector(
-      "[data-blog-post-container]"
+      "[data-blog-post-container]",
     ) as HTMLElement;
     // const toggleTocButton = document.querySelector(
     //   "[data-toggle-toc]",

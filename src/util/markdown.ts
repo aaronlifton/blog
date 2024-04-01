@@ -86,6 +86,9 @@ const getCommentForLang = (lang: string): string => {
 		case "md":
 			output = `<!-- ${str}-->`;
 			break;
+    case "ruby":
+      output = `# ${str}`;
+      break;
 		case "vim":
 			output = `" ${str}`;
 			break;

@@ -1,0 +1,59 @@
+---
+import { Icon } from "astro-icon/components";
+
+interface Props {
+  type: "Note" | "Tip" | "Warning";
+  title?: string;
+  icon?: string;
+}
+const { type, icon: iconOverride }: Props = Astro.props;
+let title = Astro.props.title;
+let icon: string | null = null;
+if (!title) {
+  if (type === "Note") {
+    title = "Note";
+    icon = iconOverride || "tabler/bulb-light";
+  } else if (type === "Tip") {
+    title = "Tip";
+    icon = iconOverride || "tabler/bulb-light";
+  } else {
+    title = "Warning";
+    icon = iconOverride || "tabler/bulb-light";
+  }
+}
+---
+
+<div class:list={["admonition", `admonition-${type}`]}>
+  {icon && <Icon name={icon} />}
+  <h3>{title}</h3>
+  <blockquote><slot /></blockquote>
+</div>
+<style type="text/css">
+  .admonition {
+    h3 {
+      @apply mt-0;
+    }
+    blockquote {
+      @apply m-0;
+    }
+
+    @apply rounded-md border border-slate-200 p-4 shadow-admonition shadow-sm;
+
+    > .admonition-title {
+      @apply text-lg font-bold;
+    }
+
+    &.admonition-note,
+    &.admonition-tip {
+      @apply bg-amethyst-100/50 border-amethyst-400 text-gray-800;
+    }
+
+    &.admonition-subtle {
+      @apply bg-yellow-100 text-yellow-700;
+    }
+
+    &.admonition-warning {
+      @apply bg-red-100 text-red-700;
+    }
+  }
+</style>

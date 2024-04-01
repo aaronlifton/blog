@@ -21,8 +21,8 @@ export const isActiveMenuItem = ({
     isActive = currentPathname === menuItemPathname;
   }
 
-  if (currentPathname + "/" === rootPathname) {
-    isActive = currentPathname + "/" === menuItemPathname;
+  if (`${currentPathname}/` === rootPathname) {
+    isActive = `${currentPathname}/` === menuItemPathname;
   }
 
   return isActive;
