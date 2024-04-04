@@ -97,8 +97,7 @@ import { menuItems } from "$util/menu";
     }
     nav a {
       padding: 1em 0.5em;
-      /*color: var(--black);*/
-      @apply text-header-text decoration-card-link;
+      @apply text-header-text decoration-primary;
       border-bottom: 4px solid transparent;
     }
     h2 {
@@ -159,9 +158,10 @@ import { menuItems } from "$util/menu";
       }
     }
     nav .internal-links a {
-      @apply -translate-x-1/2 underline decoration-primary/0 underline-offset-8;
+      @apply -translate-x-1/2 underline decoration-primary underline-offset-8;
       &.active {
-        @apply decoration-purple-400;
+        /* @apply decoration-purple-400; */
+        @apply decoration-accent-foreground;
       }
     }
 

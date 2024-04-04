@@ -50,3 +50,4 @@ bin/__py*
 src/pages/blog/[...slug].astro
 src/pages/blog/[...slug].astro
 bun.lockb
+test.css

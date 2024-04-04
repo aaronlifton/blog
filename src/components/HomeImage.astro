@@ -1,49 +1,59 @@
 ---
 import { Image } from "astro:assets";
-import ZoomableImage from "$/components/ZoomableImage.astro";
+import { getImage } from "astro:assets";
+// import ZoomableImage from "$/components/ZoomableImage.astro";
+import ZoomableImage from "$components/react/ZoomableImage.tsx";
+import { Suspense } from "simple-stack-stream/components";
 
 interface Props {
-  link: string;
-  src: ImageMetadata;
-  alt: string;
-  postTitle: string;
-  postLink: string;
-  className?: string;
-  width?: number;
-  key?: string;
+	link: string;
+	src: ImageMetadata;
+	alt: string;
+	postTitle: string;
+	postLink: string;
+	className?: string;
+	width?: number;
+	key?: string;
 }
 
-const {
-  src,
-  alt,
-  width = 100,
-  postTitle,
-  postLink,
-  className = "",
-  key,
-} = Astro.props;
 // Alt should be the link purpose, not the image content:
 // https://www.w3.org/WAI/tutorials/images/functional/#example-1-image-used-alone-as-a-linked-logo
+const {
+	src,
+	alt,
+	width,
+	postTitle,
+	postLink,
+	className = "",
+	key,
+} = Astro.props;
+
+// const zoomImage = await getImage({
+// 	src,
+// 	width: Math.min(1000, src.width),
+// 	quality: 100,
+// 	formats: ["png"],
+// });
 ---
 
 {
-  src && (
-    <a href={postLink}>
-    <Image
-      class={className}
-      src={src}
-      widths={[100, 240, 540, 720, src.width]}
-      sizes={`(max-width: 360px) 240px, (max-width: 720px) 540px, (max-width: 1600px) 720px, ${src.width}px`}
-      title={alt}
-      alt={`Go to the post titled "${postTitle}"`}
-      width={width}
-    />
-    </a>
-  )
+	src && (
+		<ZoomableImage src={src} alt={alt} client:only="react">
+			<Image
+				class:list={[className]}
+				src={src}
+				widths={[240, 540]}
+				sizes={`(max-width: 360px) 240px, (max-width: 720px) 540px`}
+				title={alt}
+				alt={`Go to the post titled "${postTitle}"`}
+				width={width}
+			/>
+		</ZoomableImage>
+	)
 }
 
 <style>
-  img {
-    @apply brightness-150;
-  }
+	img {
+		@apply brightness-150;
+	}
 </style>

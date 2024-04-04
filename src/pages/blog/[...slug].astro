@@ -1,7 +1,9 @@
 ---
 import { Image } from "astro:assets";
-import { getCollection, type CollectionEntry } from "astro:content";
+import { type CollectionEntry, getCollection } from "astro:content";
+import CodeBlock from "$components/CodeBlock.astro";
 import ZoomImage from "$components/ZoomImage.svelte";
+import ZoomableImage from "$components/react/ZoomableImage.tsx";
 import BlogPost from "$layouts/BlogPost.astro";
 
 export const prerender = true;
@@ -29,8 +31,8 @@ if (post.data.cover.width > 1000) {
 
 <BlogPost {...post.data} {headings} {remarkPluginFrontmatter}>
   <div class="flex w-full flex-col gap-8 pb-4 transition-all md:flex-row">
-    <ZoomImage
-      src={post.data.cover.src}
+    <ZoomableImage
+      src={post.data.cover}
       alt={post.data.coverAlt}
       caption={post.data.coverAlt}
       client:load
@@ -38,5 +40,5 @@ if (post.data.cover.width > 1000) {
       <Image src={post.data.cover} {width} {height} alt={post.data.coverAlt} />
     </ZoomImage>
   </div>
-  <Content />
+  <Content components={{ pre: CodeBlock }}/>
 </BlogPost>

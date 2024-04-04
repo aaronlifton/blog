@@ -48,25 +48,6 @@ const router = router({
 });
 ```
 
-<CodeBlock
-  lang="ts"
-  code={`
-const router = router({
-  create: publicProcedure
-    .input(z.object({ name: z.string() }))  // [!code highlight]
-    .mutation(async (opts) => {
-      const { input } = opts;
-      const user = await prisma.user.create({
-        data: {
-          name: input.name,
-        },
-      });
-      return user;
-    }),
-});
-`}
-/>
-
 Today we'll build a React component that uses Suspense to render a loading state
 while the backend streams data from the Github API, via a tRPC procedure. This
 idea came from me wanting to display an auto-refreshing code snippets for other
@@ -160,13 +141,12 @@ named `rpc-server/services/github.ts` that fetches the contents of a file from a
 GitHub repository. First, we'll cURL the Github API to see what the response
 looks like so we know what to expect.
 
-```json
+```jsonc
 {
   body: {
     status: 200,
     url: 'https://api.github.com/repos/facebook/react/contents/packages%2Fshared%2FshallowEqual.js',
     headers: {
-      // ...
       'access-control-allow-origin': '*',
       'cache-control': 'public, max-age=60, s-maxage=60',
       'content-length': '1340',
@@ -227,8 +207,9 @@ looks like so we know what to expect.
     }
   }
 }
-18:17:05 [200] /api/ops/repo-content 385ms
 ```
+
+`18:17:05 [200] /api/ops/repo-content 385ms`
 
 As we can see, the endpoint returns base64-encoded content for the file we
 requested, along with rate-limit headers that will enable us to prevent hitting

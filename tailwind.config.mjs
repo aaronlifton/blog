@@ -1,19 +1,12 @@
-const { fontFamily } = require("tailwindcss/defaultTheme");
+const { fontFamily: twFontFamily } = require("tailwindcss/defaultTheme");
 const config = require("./src/styles/tailwind.theme2.config.cjs");
 const harmonyPalette = require("@evilmartians/harmony/tailwind");
+const { colors: angularColors } = require("./src/styles/angularColors.cjs");
 const {
 	withOpacityValue,
 	withOKLCHOpacityValue,
 } = require("./src/styles/util.cjs");
 const { colors } = config;
-
-function withOpacityValue(variable) {
-	return `rgb(var(${variable}) / <alpha-value>)`;
-}
-
-function withOKLCHOpacityValue(variable) {
-	return `oklch(var(${variable}) / <alpha-value>)`;
-}
 
 /** @type {import('tailwindcss').Config} */
 export default {
@@ -27,6 +20,7 @@ export default {
 		require("@tailwindcss/typography"),
 		require("@tailwindcss/forms"),
 		require("@tailwindcss/aspect-ratio"),
+		require("tailwindcss-animate"),
 		require("tailwind-scrollbar"),
 	],
 	theme: {
@@ -35,7 +29,7 @@ export default {
 			"toc-closed": 'toc="closed"',
 		},
 		fontFamily: {
-			sans: ["Fira Code", ...fontFamily.sans],
+			sans: ["Fira Code", ...twFontFamily.sans],
 		},
 		colors: { ...colors, ...harmonyPalette, ...angularColors },
 		extend: {
@@ -59,10 +53,10 @@ export default {
 			},
 			gridTemplateColumns: {
 				layout: `
-  		[full-start] 1fr
-  		[content-start] calc(min(var(--content-max-width), 100%) - var(--horizontal-padding) * 2) [content-end]
-  		1fr [full-end]
-  	`,
+					[full-start] 1fr
+					[content-start] calc(min(var(--content-max-width), 100%) - var(--horizontal-padding) * 2) [content-end]
+					1fr [full-end]
+				`.trim(),
 			},
 			gridColumn: {
 				content: "content",
@@ -212,32 +206,32 @@ export default {
 				// 	},
 				// },
 				DEFAULT: {
-					css: {
-						"--tw-prose-headings": theme("colors.pink[900]"),
-						a: {
-							color: colors.dark.primary,
-							"&:hover": {
-								color: colors.primary,
-							},
-						},
-						blockquote: {
-							color: colors.primary,
-							fontSize: theme("fontSize.2xl"),
-							borderColor: colors.dark.primary,
-						},
-						"blockquote > p::before, p::after": {
-							color: colors.dark.primary,
-						},
-						h1: {
-							color: colors.dark.secondary,
-						},
-						h2: {
-							color: colors.dark.secondary,
-						},
-						h3: {
-							color: colors.dark.secondary,
-						},
-					},
+					// css: {
+					// 	"--tw-prose-headings": theme("colors.pink[900]"),
+					// 	a: {
+					// 		color: colors.dark.primary,
+					// 		"&:hover": {
+					// 			color: colors.primary,
+					// 		},
+					// 	},
+					// 	blockquote: {
+					// 		color: colors.primary,
+					// 		fontSize: theme("fontSize.2xl"),
+					// 		borderColor: colors.dark.primary,
+					// 	},
+					// 	"blockquote > p::before, p::after": {
+					// 		color: colors.dark.primary,
+					// 	},
+					// 	h1: {
+					// 		color: colors.dark.secondary,
+					// 	},
+					// 	h2: {
+					// 		color: colors.dark.secondary,
+					// 	},
+					// 	h3: {
+					// 		color: colors.dark.secondary,
+					// 	},
+					// },
 				},
 			}),
 		},

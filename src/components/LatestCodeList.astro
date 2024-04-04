@@ -1,8 +1,10 @@
 ---
 import { getCodesFromMdx, type CodeResults } from "$util/markdown";
-import { Code } from "astro:components";
 import { getCollection, type CollectionEntry } from "astro:content";
 import PlayPause from "$components/react/PlayPause";
+import { codeToHtml } from "$/lib/highlighter.ts";
+import CodeBlock from "$components/CodeBlock.astro";
+import Styles from "$components/styles/LatestCode.module.css";
 
 const codeOrder = [
 	"vim",
@@ -46,32 +48,17 @@ for (const post of livePosts) {
 	const codesWithPost: CodeResults = codes.map((code) => ({ ...code, post }));
 	allCodes = allCodes.concat(codesWithPost).sort(codeSort);
 }
----
 
-<style>
-	h5 {
-		@apply mb-0;
-	}
-	.codes-container {
-		@apply overflow-scroll scroll-smooth scrollbar-thin scrollbar-track-card-bg/0 scrollbar-thumb-amethyst-300;
-	}
-	.codes-container > div {
-		font-size: 0.7rem;
-	}
-	.codes-container pre.astro-code {
-		@apply scrollbar-thumb-amethyst-300;
-	}
-	.code {
-		@apply mx-4  min-w-[433px] max-w-[80ch] snap-start rounded-md border border-gray-200 p-0 p-4 transition-colors
-        duration-300 ease-in-out scrollbar-thin lg:min-w-min;
-	}
-	.code-container {
-		@apply scrollbar-track-card-bg/0 scrollbar-thumb-amethyst-300;
-	}
-	.code.active {
-		@apply border-amethyst-400;
-	}
-</style>
+const codesWithRenderedHtml = allCodes
+	.filter((code) => !!code.text && !!code.lang)
+	.map((code) => {
+		const html = codeToHtml(code.text as string, code.lang as string);
+		return {
+			...code,
+			html,
+		};
+	});
+---
 
 <div
 	class:list={[
@@ -91,7 +78,7 @@ for (const post of livePosts) {
 >
 	{
 		allCodes.map((code) => (
-			<div class="code">
+			<div class:list={[Styles.code, "code"]}>
 				<div class="code-header flex flex-row justify-between">
 					<h2 class="flex grow pr-3 text-xl font-bold">{code.lang}</h2>
 					{code.post && (
@@ -101,11 +88,12 @@ for (const post of livePosts) {
 					)}
 				</div>
 				{/* @ts-ignore */}
-				<Code
+				<CodeBlock
 					code={code.text}
 					lang={code.lang}
 					class="code-container"
-					style="font-size:13px;"
+					codeStyles={["[&_code]:text-[16px]", "[&_code]:leading-[20px]"]}
+					header={false}
 				/>
 			</div>
 		))
@@ -234,3 +222,28 @@ for (const post of livePosts) {
 	document.addEventListener("astro:page-load", onLoad);
 	onLoad();
 </script>
+
+<style>
+	h5 {
+		@apply mb-0;
+	}
+	.codes-container {
+		@apply overflow-scroll scroll-smooth scrollbar-thin scrollbar-track-card/0 scrollbar-thumb-secondary-foreground;
+	}
+	.codes-container > div {
+		font-size: 0.7rem;
+	}
+	.codes-container pre.astro-code {
+		@apply scrollbar-thumb-secondary-foreground;
+	}
+	.code {
+		@apply mx-4  min-w-[433px] max-w-[80ch] snap-start rounded-md border p-0 p-4 transition-colors
+        duration-300 ease-in-out scrollbar-thin lg:min-w-min;
+	}
+	.code-container {
+		@apply scrollbar-track-card/0 scrollbar-thumb-secondary-foreground;
+	}
+	.code.active {
+		@apply border-amethyst-400;
+	}
+</style>

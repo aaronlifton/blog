@@ -15,12 +15,12 @@ import highlighterWasm from "shiki/dist/onig.wasm?url";
 // import "../styles/shiki.css";
 
 // read highlighterWasm url into a buffer source
-const response = await fetch(highlighterWasm);
-const buffer = await response.arrayBuffer();
-const highlighterWasmBuffer = new Uint8Array(buffer);
-await loadWasm((importObject) =>
-	WebAssembly.instantiate(highlighterWasmBuffer, importObject),
-);
+// const response = await fetch(highlighterWasm);
+// const buffer = await response.arrayBuffer();
+// const highlighterWasmBuffer = new Uint8Array(buffer);
+// await loadWasm((importObject) =>
+// 	WebAssembly.instantiate(highlighterWasmBuffer, importObject),
+// );
 
 const highlighter = await getHighlighterCore({
 	themes: [oneDarkProTheme, githubLightTheme],

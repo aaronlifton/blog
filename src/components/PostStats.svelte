@@ -27,6 +27,6 @@
 
 <style>
   .post-stats__views {
-    @apply mx-1 pr-1 italic text-accent-gray-mid;
+    @apply mx-1 pr-1 italic;
   }
 </style>

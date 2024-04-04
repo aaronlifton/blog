@@ -1,0 +1,34 @@
+services:
+  - type: web
+    name: blog
+    runtime: docker
+    plan: starter
+    domains:
+      - railsdev.dev
+    envVars:
+      - key: TURSO_DB_URL
+        value: libsql://devblog-aaronlifton.turso.io
+      - key: TURSO_DB_AUTH_TOKEN
+        sync: false
+      - key: GITHUB_AUTH_TOKEN
+        sync: false
+
+  # Create Redis service
+  - type: redis
+    name: ioredis-redis
+    ipAllowList: []
+
+  # Create background worker service
+  - type: worker
+    name: ioredis-worker
+    env: node
+    buildCommand: "yarn"
+    startCommand: "yarn run redis-url"
+    envVars:
+      # Set REDIS_URL environment variable
+      - key: REDIS_URL
+        fromService:
+          name: ioredis-redis
+          type: redis
+          # Use connectionString available from Redis service above
+          property: connectionString

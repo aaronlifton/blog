@@ -1,13 +1,13 @@
 ---
 import type { CollectionEntry } from "astro:content";
+import { Button } from "$/components/ui/button";
 import { getMonthName, mobileUserAgent } from "$/util";
-import CodeText from "$components/CodeText.astro";
-import HomeImage from "$components/HomeImage.astro";
 import { getIsMobile } from "$/util";
-import { ReadMoreButton } from "$components/react/ReadMoreButton.tsx";
+import CodeText from "$components/CodeText.astro";
+import ZoomableImage from "$components/react/ZoomableImage.tsx";
+import { Image } from "astro:assets";
 
 const isMobile = getIsMobile(Astro);
-console.log(isMobile, mobileUserAgent);
 
 interface Props {
 	post: CollectionEntry<"blog">;
@@ -28,59 +28,72 @@ const { post, asCard = false } = Astro.props;
 >
   <div class="post-preview__date-box">
     <div class="post-preview__date">
-      <span class="post-preview__date__day"
-        >{new Date(post.data.pubDate).getDate()}</span
-      >
-      <span class="post-preview__date__month-n-year"
-        >{
+      <span class="post-preview__date__day">
+        {new Date(post.data.pubDate).getDate()}
+      </span>
+      <span class="post-preview__date__month-n-year">
+        {
           `${getMonthName(post.data.pubDate)} ${new Date(post.data.pubDate).getFullYear()}`
-        }</span
-      >
+        }
+      </span>
     </div>
   </div>
   <div
     class:list={[
-			"lg:w-auto landscape:w-[300px]",
-			{ "w-[100px]": isMobile() },
-		]}>
-    <HomeImage
-      src={post.data.cover}
-      alt={post.data.coverAlt}
-      link={`/posts/${post.slug}`}
-      postTitle={post.data.title}
-      postLink={`/blog/${post.slug}`}
-      width={asCard ? 400 : 100}
-      key={post.id}
-      data-home-image
-    />
+      "relative lg:w-auto landscape:w-[300px]",
+      { "w-[100px]": isMobile() },
+    ]}
+  >
+    {
+      post.data.cover && (
+        <ZoomableImage
+          imageMetadata={post.data.cover}
+          alt={post.data.coverAlt}
+          postLink={`/blog/${post.slug}`}
+          client:only="react"
+        >
+          <Image
+            src={post.data.cover}
+            widths={[240, 540]}
+            sizes={`(max-width: 360px) 240px, (max-width: 720px) 540px`}
+            title={post.data.title}
+            alt={`Go to the post titled "${post.data.title}"`}
+            width={asCard ? 400 : 100}
+          />
+        </ZoomableImage>
+      )
+    }
   </div>
-  <div class="flex flex-1 flex-col">
+  <div class="flex w-full flex-col">
     <div class="post-preview__title space-apart flex">
       <a
         href={`/blog/${post.slug}`}
         title={post.data.title}
-        class="text-md grow
-        font-normal"
+        class="text-md font-normal"
       >
         <CodeText text={post.data.title} />
       </a>
     </div>
-    <p class="post-preview__desc">
-      <CodeText text={post.data.description} />
-      <ReadMoreButton client:load />
-    </p>
-    <div class="flex grow flex-row gap-2">
-      <!-- <p style="color:oklab(83.9% -2.09 4.37)">Sample code:</p> -->
-      <!-- <p style="lab(83.37% 1.51 -22.22)">Sample code:</p> -->
-      <!-- <p style="lab(86.96% 0.87 -16.77)">Sample code:</p> -->
-      <!-- oklch(89% 0.045 270.12) -->
-      <!-- oklch(86% 0.06 270.12) -->
-      <!-- oklch(86.5% 0.072 309.04) // French lilac -150 -->
-      <!-- oklch(81.5% 0.107 309.04) // French lilac -175<F19> -->
-      <!-- <SampleCode slug = {post.slug} /> -->
-      <!-- <ReadPostButton link={`/blog/${post.slug}`} /> -->
+    <div class="flex w-full w-full flex-grow flex-col">
+      <p class="post-preview__desc">
+        <CodeText text={post.data.description} />
+      </p>
     </div>
   </div>
+  <div class="r-0 b-0 relative flex flex-col-reverse">
+    <Button link={`/blog/${post.slug}`} client:load>Read more</Button>
+  </div>
+  <!-- <div class="flex grow flex-row gap-2"> -->
+  <!-- <p style="color:oklab(83.9% -2.09 4.37)">Sample code:</p> -->
+  <!-- <p style="lab(83.37% 1.51 -22.22)">Sample code:</p> -->
+  <!-- <p style="lab(86.96% 0.87 -16.77)">Sample code:</p> -->
+  <!-- oklch(89% 0.045 270.12) -->
+  <!-- oklch(86% 0.06 270.12) -->
+  <!-- oklch(86.5% 0.072 309.04) // French lilac -150 -->
+  <!-- oklch(81.5% 0.107 309.04) // French lilac -175<F19> -->
+  <!-- <SampleCode slug = {post.slug} /> -->
+  <!-- <ReadPostButton link={`/blog/${post.slug}`} /> -->
+  <!-- </div> -->
 </div>
 
 <style>
@@ -91,7 +104,7 @@ const { post, asCard = false } = Astro.props;
     @apply text-sm;
   }
   .post-preview--card {
-    @apply rounded-lg border border-2 border-card-border bg-card-bg bg-opacity-50 p-4 transition-colors
+    @apply rounded-lg border border-2 bg-card p-4 text-card-foreground shadow-sm transition-colors
     duration-300 ease-in-out;
 
     .post-preview__title a {
@@ -137,7 +150,7 @@ const { post, asCard = false } = Astro.props;
       @apply text-lg sm:text-4xl;
     }
     img {
-      @apply border border-2 border-card-img;
+      @apply border border-2;
     }
   }
 
@@ -150,10 +163,10 @@ const { post, asCard = false } = Astro.props;
     @apply flex w-full flex-col text-center;
   }
   .post-preview__date__day {
-    @apply text-6xl font-semibold text-gray-500;
+    @apply text-6xl text-[1.5rem] font-semibold leading-[1.5rem] text-gray-500;
   }
   .post-preview__date__month-n-year {
-    @apply text-gray-400;
+    @apply leading-[1.25rem] text-gray-400;
   }
   .post-preview__title {
     @apply mb-2 text-2xl font-semibold;
