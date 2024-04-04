@@ -1,16 +1,12 @@
-const { fontFamily } = require("tailwindcss/defaultTheme");
-const config = require("./src/styles/tailwind.theme.config.cjs");
+const { fontFamily: twFontFamily } = require("tailwindcss/defaultTheme");
+const config = require("./src/styles/tailwind.theme2.config.cjs");
 const harmonyPalette = require("@evilmartians/harmony/tailwind");
-const angularColors = require("./src/styles/angularColors.cjs");
+const { colors: angularColors } = require("./src/styles/angularColors.cjs");
+const {
+	withOpacityValue,
+	withOKLCHOpacityValue,
+} = require("./src/styles/util.cjs");
 const { colors } = config;
-
-function withOpacityValue(variable) {
-	return `rgb(var(${variable}) / <alpha-value>)`;
-}
-
-function withOKLCHOpacityValue(variable) {
-	return `oklch(var(${variable}) / <alpha-value>)`;
-}
 
 /** @type {import('tailwindcss').Config} */
 export default {
@@ -24,6 +20,7 @@ export default {
 		require("@tailwindcss/typography"),
 		require("@tailwindcss/forms"),
 		require("@tailwindcss/aspect-ratio"),
+		require("tailwindcss-animate"),
 		require("tailwind-scrollbar"),
 	],
 	theme: {
@@ -32,7 +29,7 @@ export default {
 			"toc-closed": 'toc="closed"',
 		},
 		fontFamily: {
-			sans: ["Fira Code", ...fontFamily.sans],
+			sans: ["Fira Code", ...twFontFamily.sans],
 		},
 		colors: { ...colors, ...harmonyPalette, ...angularColors },
 		extend: {
@@ -56,10 +53,10 @@ export default {
 			},
 			gridTemplateColumns: {
 				layout: `
-  		[full-start] 1fr
-  		[content-start] calc(min(var(--content-max-width), 100%) - var(--horizontal-padding) * 2) [content-end]
-  		1fr [full-end]
-  	`,
+					[full-start] 1fr
+					[content-start] calc(min(var(--content-max-width), 100%) - var(--horizontal-padding) * 2) [content-end]
+					1fr [full-end]
+				`.trim(),
 			},
 			gridColumn: {
 				content: "content",
@@ -196,45 +193,45 @@ export default {
 					"linear-gradient( 140deg, var(--vivid-pink) 0%, var(--vivid-pink) 15%, color-mix(in srgb, var(--vivid-pink), var(--electric-violet) 50%) 25%, color-mix(in srgb, var(--vivid-pink), var(--electric-violet) 10%) 35%, color-mix(in srgb, var(--vivid-pink), var(--orange-red) 50%) 42%, color-mix(in srgb, var(--vivid-pink), var(--orange-red) 50%) 44%, color-mix(in srgb, var(--vivid-pink), var(--page-background) 70%) 47%, var(--electric-violet) 48%, var(--bright-blue) 60%",
 			},
 			typography: ({ theme }) => ({
-				dark: {
-					css: {
-						color: theme("colors.gray.200"),
-						blockquote: {
-							color: colors.dark.primary,
-							borderColor: colors.primary,
-						},
-						"blockquote > p::before, p::after": {
-							color: colors.primary,
-						},
-					},
-				},
+				// dark: {
+				// 	css: {
+				// 		color: theme("colors.gray.200"),
+				// 		blockquote: {
+				// 			color: colors.dark.primary,
+				// 			borderColor: colors.primary,
+				// 		},
+				// 		"blockquote > p::before, p::after": {
+				// 			color: colors.primary,
+				// 		},
+				// 	},
+				// },
 				DEFAULT: {
-					css: {
-						"--tw-prose-headings": theme("colors.pink[900]"),
-						a: {
-							color: colors.dark.primary,
-							"&:hover": {
-								color: colors.primary,
-							},
-						},
-						blockquote: {
-							color: colors.primary,
-							fontSize: theme("fontSize.2xl"),
-							borderColor: colors.dark.primary,
-						},
-						"blockquote > p::before, p::after": {
-							color: colors.dark.primary,
-						},
-						h1: {
-							color: colors.dark.secondary,
-						},
-						h2: {
-							color: colors.dark.secondary,
-						},
-						h3: {
-							color: colors.dark.secondary,
-						},
-					},
+					// css: {
+					// 	"--tw-prose-headings": theme("colors.pink[900]"),
+					// 	a: {
+					// 		color: colors.dark.primary,
+					// 		"&:hover": {
+					// 			color: colors.primary,
+					// 		},
+					// 	},
+					// 	blockquote: {
+					// 		color: colors.primary,
+					// 		fontSize: theme("fontSize.2xl"),
+					// 		borderColor: colors.dark.primary,
+					// 	},
+					// 	"blockquote > p::before, p::after": {
+					// 		color: colors.dark.primary,
+					// 	},
+					// 	h1: {
+					// 		color: colors.dark.secondary,
+					// 	},
+					// 	h2: {
+					// 		color: colors.dark.secondary,
+					// 	},
+					// 	h3: {
+					// 		color: colors.dark.secondary,
+					// 	},
+					// },
 				},
 			}),
 		},

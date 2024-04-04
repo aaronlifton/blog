@@ -15,22 +15,38 @@ import highlighterWasm from "shiki/dist/onig.wasm?url";
 // import "../styles/shiki.css";
 
 // read highlighterWasm url into a buffer source
-const response = await fetch(highlighterWasm);
-const buffer = await response.arrayBuffer();
-const highlighterWasmBuffer = new Uint8Array(buffer);
-await loadWasm((importObject) =>
-  WebAssembly.instantiate(highlighterWasmBuffer, importObject),
-);
+// const response = await fetch(highlighterWasm);
+// const buffer = await response.arrayBuffer();
+// const highlighterWasmBuffer = new Uint8Array(buffer);
+// await loadWasm((importObject) =>
+// 	WebAssembly.instantiate(highlighterWasmBuffer, importObject),
+// );
 
 const highlighter = await getHighlighterCore({
-  themes: [oneDarkProTheme, githubLightTheme],
-  langs: [
-    typescriptLanguage,
-    shellscriptLanguage,
-    cssLanguage,
-    rustLanguage,
-    pythonLanguage,
-  ],
+	themes: [oneDarkProTheme, githubLightTheme],
+	langs: [
+		typescriptLanguage,
+		shellscriptLanguage,
+		cssLanguage,
+		rustLanguage,
+		pythonLanguage,
+		// "bash",
+		// "fish",
+		// "go",
+		// "html",
+		// "javascript",
+		// "json",
+		// "jsonc",
+		// "jsx",
+		// "lua",
+		// "ruby",
+		// "sh",
+		// "ts",
+		// "ts",
+		// "tsx",
+		// "typescript",
+		// "vim",
+	],
 });
 
 export default highlighter;

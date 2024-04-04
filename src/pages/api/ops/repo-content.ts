@@ -1,6 +1,6 @@
 import trpc from "$services/trpc";
 import { createCaller } from "$rpc/router";
-import prisma from "$services/db";
+import prisma from "$services/prisma";
 import type { APIRoute } from "astro";
 
 export const GET: APIRoute = async ({ params, request, cookies }) => {

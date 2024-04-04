@@ -3,61 +3,61 @@ import { Icon } from "astro-icon/components";
 import { iconForTag } from "$/util";
 
 interface Props {
-  tags: string[];
+	tags: string[];
 }
 const { tags }: Props = Astro.props;
 ---
 
 <div class="mb-4 text-center">
-  <slot name="header" />
-  <ul class="tag-list">
-    {
-      tags.map((tag) => (
-        <li>
-          <a
-            class="tag"
-            href={`/tags/${tag}/1`}
-            title={`View posts tagged under "${tag}"`}
-            transition:animate="slide"
-            style="display: inline-block;"
-          >
-            {iconForTag(tag) && <Icon name={iconForTag(tag)} />}
-            <span>{tag}</span>
-          </a>
-        </li>
-      ))
-    }
-  </ul>
+	<slot name="header" />
+	<ul class="tag-list">
+		{
+			tags.map((tag) => (
+				<li>
+					<a
+						class="tag"
+						href={`/tags/${tag}/1`}
+						title={`View posts tagged under "${tag}"`}
+						transition:animate="slide"
+						style="display: inline-block;"
+					>
+						{iconForTag(tag) && <Icon name={iconForTag(tag)} />}
+						<span>{tag}</span>
+					</a>
+				</li>
+			))
+		}
+	</ul>
 </div>
 
 <style>
-  .tag-list {
-    @apply mb-4 flex list-none flex-wrap justify-center gap-2;
-    .tag {
-      @apply inline-block rounded-full bg-dark-primary px-4 py-1 text-xl text-primary transition-all 
-          hover:bg-primary hover:text-amethyst-100 hover:no-underline;
-      svg {
-        display: inline-block;
-        @apply stroke-primary text-primary;
-        g {
-          @apply stroke-primary;
-        }
-        * {
-          @apply bg-red-400 fill-red-300 stroke-primary;
-        }
-      }
-      &:hover {
-        * {
-          @apply text-amethyst-200;
-        }
-        span {
-          @apply underline decoration-amethyst-300 underline-offset-2;
-        }
-        svg,
-        g {
-          @apply stroke-amethyst-200;
-        }
-      }
-    }
-  }
+	.tag-list {
+		@apply mb-4 flex list-none flex-wrap justify-center gap-2;
+		.tag {
+			@apply inline-block rounded-full bg-muted px-4 py-1 text-xl text-primary no-underline 
+          ring ring-ring transition-all hover:bg-primary hover:text-accent-foreground hover:no-underline;
+			svg {
+				display: inline-block;
+				@apply stroke-primary text-primary;
+				g {
+					@apply stroke-primary;
+				}
+				* {
+					@apply bg-red-400 fill-red-300 stroke-primary;
+				}
+			}
+			&:hover {
+				* {
+					@apply text-secondary-foreground;
+				}
+				span {
+					@apply underline decoration-secondary-foreground underline-offset-2;
+				}
+				svg,
+				g {
+					@apply stroke-secondary-foreground;
+				}
+			}
+		}
+	}
 </style>

@@ -16,16 +16,16 @@ export const prerender = false;
 // }
 
 export const GET: APIRoute = async ({ params, request }) => {
-  let views: Value | number = 0;
-  const searchParams = new URL(request.url).searchParams;
-  const shouldIncrement = searchParams.get("increment") == "true";
-  if (params.slug) {
-    views = await getViewsFn(params.slug, shouldIncrement);
-  }
-  return new Response(
-    JSON.stringify(
-      { views },
-      (key, value) => (typeof value === "bigint" ? value.toString() : value), // return everything else unchanged
-    ),
-  );
+	let views: Value | number = 0;
+	const { searchParams } = new URL(request.url);
+	const shouldIncrement = searchParams.get("increment") === "true";
+	if (params.slug) {
+		views = await getViewsFn(params.slug, shouldIncrement);
+	}
+	return new Response(
+		JSON.stringify(
+			{ views },
+			(_, value) => (typeof value === "bigint" ? value.toString() : value), // return everything else unchanged
+		),
+	);
 };

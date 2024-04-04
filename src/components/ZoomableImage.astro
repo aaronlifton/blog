@@ -1,84 +1,19 @@
 ---
-import A11yDialog from "a11y-dialog";
-import {
-	IconZoomIn,
-	IconZoomOut,
-	IconZoomScan,
-	IconZoomScanFilled
-} from "@tabler/icons-react";
-import { twMerge } from "tailwind-merge";
-import IconButton from "$components/react/IconButton.tsx";
-import Styles from "./ZoomableImage.module.css";
+import ReactZoomableImage from "$components/react/ZoomableImage.tsx";
 
 interface Props {
-	dialogId: string;
-	children: React.ReactElement;
-  className?: string
+  src?: string;
+  alt?: string;
+  caption?: string;
+  // dialogId: string;
+  children: React.ReactElement;
+  className?: string;
 }
 
-const { dialogId, children, className } = Astro.props;
+const { children, className } = Astro.props;
+const zoomProps = ({ src, alt, caption } = Astro.props);
 ---
 
-<script>
-  import A11yDialog from "a11y-dialog";
-  // const dialog = atom<A11yDialog | null>(null);
-  let dialog: A11yDialog | null;
-
-  const dialogEl = document.querySelector("dialog");
-  if (dialogEl) {
-    dialog = new A11yDialog(dialogEl);
-    console.log(dialog);
-  }
-  const trigger = document.querySelector("[data-a11y-dialog-trigger]");
-  console.log({ trigger });
-  trigger?.addEventListener("click", () => {
-    if (dialogEl && dialog) {
-      dialogEl.style.visibility = "visible";
-      dialog.show();
-      console.log({ dialogEl, dialog });
-    }
-  });
-</script>
-
-<div class={twMerge("block relative", className)}>
-  <IconButton data-a11y-dialog-show={dialogId} data-a11y-dialog-trigger
-  		variant="inset">
-    <IconZoomScan />
-  </IconButton>
+<ReactZoomableImage {...zoomProps} client:load>
   <slot />
-</div>
-<dialog
-  id={dialogId}
-	data-a11y-dialog={dialogId}
-  class:list={[
-    "z-50 fixed h-full w-full py-2 px-4 border rounded focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
-  ]}
-  style={"visibility:hidden"}
->
-  <div
-    data-backdrop
-    class="pointer-events-none fixed inset-0 z-[999] grid h-screen w-screen place-items-center bg-black bg-opacity-60 opacity-0 backdrop-blur-sm transition-opacity duration-300"
-  >
-  </div>
-  <div role="document"></div>
-
-  <div class={Styles.content}>
-    <button
-      data-a11y-dialog-close-trigger
-      type="button"
-      data-a11y-dialog-hide={dialogId}
-      aria-label="Close the dialog"
-      class={Styles.close}
-    >
-      <IconZoomIn />
-    </button>
-    <p>Some content for the dialog.</p>
-  </div>
-</dialog>
-<style>
-  dialog {
-    @apply pointer-events-none fixed inset-0 z-[999] m-auto h-screen w-screen place-items-center bg-black/60 backdrop-blur-sm transition-[in-dialog_240ms]
-    transition-opacity duration-300;
-    transform: translate3d(0, 0, 0);
-  }
-</style>
+</ReactZoomableImage>

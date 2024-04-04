@@ -26,7 +26,7 @@
     @apply my-4 flex w-full justify-center;
   }
   a {
-    @apply mx-1 rounded-lg px-3 py-1 text-accent-gray-dark;
+    @apply mx-1 rounded-lg px-3 py-1;
   }
 
   a.selected {

@@ -1,0 +1,92 @@
+---
+title: "Making button variants with CVA"
+description: "How to make button variants with CVA in React."
+pubDate: "Apr 1 2024"
+cover: "./assets/screenshots/cva-button.jpg"
+coverAlt:
+  "Neovim screenshot of a button component in React using CVA and Tailwind CSS"
+tags: ["react", "tailwind", "css"]
+---
+
+The best way to make button variants in React when you're using a non CSS-in-JS
+solution, is to use CVA, a library that makes it easy to create and manage
+variants for your components. In this tutorial, we'll show you how to make
+button variants with CVA in React.
+
+Here's a simple example of how you can use CVA to create button variants in
+React:
+
+```tsx
+import * as React from "react";
+import { Slot } from "@radix-ui/react-slot";
+import { cva, type VariantProps } from "class-variance-authority";
+
+import { cn } from "$/lib/utils";
+
+const buttonVariants = cva(
+  "inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50",
+  {
+    variants: {
+      variant: {
+        default: "bg-primary text-primary-foreground hover:bg-primary/90",
+        destructive:
+          "bg-destructive text-destructive-foreground hover:bg-destructive/90",
+        outline:
+          "border border-input bg-background hover:bg-accent hover:text-accent-foreground",
+        secondary:
+          "bg-secondary text-secondary-foreground hover:bg-secondary/80",
+        ghost: "hover:bg-accent hover:text-accent-foreground",
+        link: "text-primary underline-offset-4 hover:underline",
+      },
+      size: {
+        default: "h-10 px-4 py-2",
+        sm: "h-9 rounded-md px-3",
+        lg: "h-11 rounded-md px-8",
+        icon: "h-10 w-10",
+      },
+    },
+    defaultVariants: {
+      variant: "default",
+      size: "default",
+    },
+  },
+);
+```
+
+Next, let's create the Typescript interface for the button props:
+
+```tsx
+export interface ButtonProps
+  extends React.ButtonHTMLAttributes<HTMLButtonElement>,
+    VariantProps<typeof buttonVariants> {
+  asChild?: boolean;
+}
+```
+
+Let's now create the Button component:
+
+```tsx
+const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
+  ({ className, variant, size, asChild = false, ...props }, ref) => {
+    const Comp = asChild ? Slot : "button";
+    return (
+      <Comp
+        className={cn(buttonVariants({ variant, size, className }))}
+        ref={ref}
+        {...props}
+      />
+    );
+  },
+);
+Button.displayName = "Button";
+
+export { Button, buttonVariants };
+```
+
+And we're done! Now you can use the `Button` component in your React app, with
+several different variants and sizes:
+
+- `variant`
+  - `default`, `destructive`, `outline`, `secondary`, `ghost`, `link`
+- `size`
+  - `default`, `sm`, `lg`, `icon`

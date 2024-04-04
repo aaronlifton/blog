@@ -15,7 +15,7 @@
     if (!dialogOpen) {
       dialogEl?.showModal();
     } else {
-      console.log("closing")
+      console.log("closing");
       dialogEl?.close();
     }
     dialogOpen = !dialogOpen;
@@ -25,11 +25,14 @@
       dialogOpen = false;
       dialogEl?.close();
     }
-  }
+  };
   const handleClick = (event: MouseEvent) => {
     if (!dialogOpen) return;
 
-    if (event.target instanceof HTMLDialogElement === false && event.target instanceof HTMLButtonElement === false) {
+    if (
+      event.target instanceof HTMLDialogElement === false &&
+      event.target instanceof HTMLButtonElement === false
+    ) {
       console.log({ dialogEl });
     }
   };
@@ -73,7 +76,7 @@
 
 <style>
   dialog {
-    @apply transition-all duration-300 delay-150 ease-in-out bg-slate-100 z-1;
+    @apply z-1 bg-slate-100 transition-all delay-150 duration-300 ease-in-out;
   }
   dialog::backdrop {
     transition: backdrop 0.5s ease-in-out;
@@ -90,10 +93,10 @@
     @apply mb-2;
   }
   .dialog-prose {
-    @apply mb-2 text-accent-gray-dark;
+    @apply mb-2;
   }
   svg {
-    @apply absolute right-0 bottom-0;
+    @apply absolute bottom-0 right-0;
     color: black;
     g {
       color: black;

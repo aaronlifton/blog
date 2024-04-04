@@ -1,5 +1,7 @@
 const colors = require("tailwindcss/colors");
 const harmonyPalette = require("@evilmartians/harmony/tailwind");
+const themeColors = require("./themeColors.cjs");
+const { amethyst } = themeColors;
 
 const amethyst = {
 	50: "oklch(97.68% 0.01 308.30 / <alpha-value>)",

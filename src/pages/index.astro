@@ -1,11 +1,14 @@
 ---
+import { type CollectionEntry, getCollection } from "astro:content";
+import { SITE_DESCRIPTION } from "$/consts";
 import Layout from "$/layouts/Layout.astro";
-import { getCollection, type CollectionEntry } from "astro:content";
-import Prose from "$components/Prose.astro";
 import PostPreviewList from "$components/PostPreviewList.astro";
 import PostPreviewListFooter from "$components/PostPreviewListFooter.astro";
+import { getCodesFromMdx, type CodeResults } from "$util/markdown";
+import Prose from "$/components/Prose.astro";
 import LatestCodeList from "$components/LatestCodeList.astro";
-import { SITE_DESCRIPTION } from "$/consts";
+import FrontpageStats from "$components/react/FrontpageStats.tsx";
+
 export const prerender = true;
 
 let posts: CollectionEntry<"blog">[] = await getCollection("blog");
@@ -13,41 +16,41 @@ posts = Array.from(posts).filter((post) => !post.data.draft);
 ---
 
 <Layout
-  seo={{
-    extend: {
-      link: [
-        {
-          rel: "alternate",
-          type: "application/rss+xml",
-          href: "/posts/index.xml",
-        },
-      ],
-    },
-  }}
+	seo={{
+		extend: {
+			link: [
+				{
+					rel: "alternate",
+					type: "application/rss+xml",
+					href: "/posts/index.xml",
+				},
+			],
+		},
+	}}
 >
-  <div class="hero flex justify-center pb-vert-padding">
-    <div class="hero__tagline flex justify-center">
-      <Prose className="prose prose-base mb-3 text-center lg:prose-base">
-        {SITE_DESCRIPTION}
-      </Prose>
-    </div>
-  </div>
-  <div
-    class="flex flex-col gap-0 rounded-lg border border-2 border-card-border bg-card-bg bg-opacity-50 p-4
-    scrollbar-thin scrollbar-track-card-bg sm:flex-row sm:gap-6"
-  >
-    <LatestCodeList />
-  </div>
+	<div class="hero flex justify-center pb-vert-padding">
+		<div class="hero__tagline flex justify-center">
+			<Prose className="prose prose-base mb-3 text-center lg:prose-base">
+				{SITE_DESCRIPTION}
+			</Prose>
+		</div>
+	</div>
+	<FrontpageStats client:load />
+	<div
+		class="bg-gradient scrollbar-track-card-bg flex flex-col gap-0 rounded-lg border border-2 bg-card p-4 text-card-foreground scrollbar-thin sm:flex-row sm:gap-6"
+	>
+		<LatestCodeList />
+	</div>
 
-  <!-- <div class="flex flex-col"> -->
-  <!--   <div -->
-  <!--     class="my-4 flex w-1/2 flex-col gap-0 rounded-lg border border-2 border-card-border bg-card-bg bg-opacity-50 p-4" -->
-  <!--   > -->
-  <!--     <DeployWatch /> -->
-  <!--   </div> -->
-  <!-- </div> -->
-  <PostPreviewList posts={posts} heading="Recent posts" asCard />
-  <!-- <PostPreviewList posts={po {deploys.map((deploy) => (
+	<!-- <div class="flex flex-col"> -->
+	<!--   <div -->
+	<!--     class="my-4 flex w-1/2 flex-col gap-0 rounded-lg border border-2 border-card-border bg-card-bg bg-opacity-50 p-4" -->
+	<!--   > -->
+	<!--     <DeployWatch /> -->
+	<!--   </div> -->
+	<!-- </div> -->
+	<PostPreviewList posts={posts} heading="Recent posts" asCard />
+	<!-- <PostPreviewList posts={po {deploys.map((deploy) => (
 
     <ul>
       <h2>Deploy ID: {deploy.deploy.id}</h2>
@@ -58,5 +61,5 @@ posts = Array.from(posts).filter((post) => !post.data.draft);
       <li>Finished At: {deploy.deploy.finishedAt}</li>
     </ul>
   ))}sts} heading="Recent posts" /> -->
-  <PostPreviewListFooter />
+	<PostPreviewListFooter />
 </Layout>

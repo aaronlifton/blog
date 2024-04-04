@@ -1,17 +1,84 @@
 ---
 import { default as InnerZoomImage } from "./ZoomImage.svelte";
 import { Icon } from "astro-icon/components";
-
-// const html = await Astro.slots.render("default");
+import {
+	Dialog,
+	DialogContent,
+	DialogDescription,
+	DialogHeader,
+	DialogTitle,
+	DialogTrigger,
+} from "$/components/ui/dialog";
+import Prose from "./Prose.astro";
 
 interface Props {
-  src: string;
-  alt: string;
-  caption: string;
+	src: string;
+	alt: string;
+	caption: string;
+	hero?: boolean;
 }
-const props: Props = Astro.props;
+const { src, alt, caption, hero, ...imageProps }: Props = Astro.props;
 ---
 
-<InnerZoomImage {...props} src={props.src} client:load>
-  <Fragment slot="icon"><Icon name="zoom-scan" /></Fragment>
-</InnerZoomImage>
+<Dialog>
+	<figure class="bg-surface my-8 rounded-md py-1">
+		<slot />
+		{
+			caption && !hero && (
+				<Prose
+					className={
+						"prose-gray mb-2 max-w-content text-center text-base italic"
+					}
+				>
+					<figcaption>{caption}</figcaption>
+				</Prose>
+			)
+		}
+	</figure>
+	<DialogTrigger aria-label="Open full-size image">
+		Open <Icon name="zoom-scan" />
+	</DialogTrigger>
+	<DialogContent>
+		<DialogHeader>
+			<DialogTitle>Are you absolutely sure?</DialogTitle>
+			<DialogDescription>
+				<figure class="bg-surface rounded-md py-1">
+					<img {src} {alt} />
+					<Prose className={"prose-gray mb-2"}>
+						<figcaption>{caption}</figcaption>
+					</Prose>
+				</figure>
+			</DialogDescription>
+		</DialogHeader>
+	</DialogContent>
+</Dialog>
+
+<style>
+	dialog {
+		@apply z-1 bg-slate-100 transition-all delay-150 duration-300 ease-in-out;
+	}
+	dialog::backdrop {
+		transition: backdrop 0.5s ease-in-out;
+		background: rgba(0, 0, 0, 0.3);
+	}
+	dialog[open] {
+		@apply bg-gray-50;
+	}
+
+	dialog img {
+		@apply mb-4;
+	}
+	dialog img + span {
+		@apply mb-2;
+	}
+	.dialog-prose {
+		@apply mb-2;
+	}
+	svg {
+		@apply absolute bottom-0 right-0;
+		color: black;
+		g {
+			color: black;
+		}
+	}
+</style>

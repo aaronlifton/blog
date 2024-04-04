@@ -1,38 +1,21 @@
-import { getHighlighter, type Highlighter } from "shiki";
-import "shiki/dist/themes/material-theme-darker.mjs";
-// setCDN("https://unpkg.com/shiki/");
+import { all, createStarryNight } from "@wooorm/starry-night";
+import type { Root } from "hast";
+import { toHtml } from "hast-util-to-html";
+const starryNight = await createStarryNight(all);
 
-let highlighter: Promise<Highlighter>;
-
-export const getShiki = () => {
-	if (highlighter) {
-		return highlighter;
+export type Transformer = (root: Root) => void;
+export const codeToHtml = (
+	code: string,
+	lang: string,
+	transformers: Transformer[] = [],
+): string | null => {
+	const scope = starryNight.flagToScope(lang);
+	if (!scope) {
+		return null;
 	}
-	highlighter = getHighlighter({
-		// theme: "dracula-soft",
-		themes: ["material-theme-darker"],
-		langs: [
-			"astro",
-			"bash",
-			"fish",
-			"go",
-			"html",
-			"javascript",
-			"json",
-			"jsonc",
-			"jsx",
-			"lua",
-			"markdown",
-			"md",
-			"mdx",
-			"ruby",
-			"sh",
-			"svelte",
-			"ts",
-			"tsx",
-			"typescript",
-			"vim",
-		],
-	});
-	return highlighter;
+	const root = starryNight.highlight(code, scope);
+	for (const t of transformers) {
+		t(root);
+	}
+	return toHtml(root);
 };

@@ -12,32 +12,32 @@ const isMobile = getIsMobile(Astro);
 
 // @ts-ignore ts-nocheck
 export async function getStaticPaths({ paginate }) {
-  const allPosts = await getCollection("blog");
-  const filteredPosts = allPosts.filter((post) => !post.data.draft);
+	const allPosts = await getCollection("blog");
+	const filteredPosts = allPosts.filter((post) => !post.data.draft);
 
-  const allTags = new Set<string>();
-  filteredPosts.forEach((post) => {
-    post.data.tags && post.data.tags.forEach((tag) => allTags.add(tag));
-  });
+	const allTags = new Set<string>();
+	filteredPosts.forEach((post) => {
+		post.data.tags && post.data.tags.forEach((tag) => allTags.add(tag));
+	});
 
-  return Array.from(allTags).flatMap((tag) => {
-    const postsWithTag = allPosts.filter((post) =>
-      post.data.tags.includes(tag)
-    );
-    return paginate(postsWithTag, {
-      params: { page: 1, tag },
-      props: { allTags },
-      pageSize: PAGE_SIZE,
-    });
-  });
+	return Array.from(allTags).flatMap((tag) => {
+		const postsWithTag = allPosts.filter((post) =>
+			post.data.tags.includes(tag),
+		);
+		return paginate(postsWithTag, {
+			params: { page: 1, tag },
+			props: { allTags },
+			pageSize: PAGE_SIZE,
+		});
+	});
 }
 
 type Props = {
-  page: {
-    data: CollectionEntry<"blog">[];
-    currentPage: number;
-    lastPage: number;
-  };
+	page: {
+		data: CollectionEntry<"blog">[];
+		currentPage: number;
+		lastPage: number;
+	};
 };
 type Params = { tag: string; page: number };
 
@@ -50,9 +50,7 @@ const { tag } = Astro.params as Params;
     <HeadingWithIcon text={tag} {tag} className="mr-2" />
     <span class="emdash">—</span>
     <span
-      class="relative top-[-0.1ch] text-center italic leading-4
-      text-accent-gray-dark"
-    >
+      class="relative top-[-0.1ch] text-center italic leading-4">
       Page {page.currentPage}
     </span>
   </div>
