@@ -1,5 +1,6 @@
 # build output
 dist/
+
 # generated types
 .astro/
 
@@ -11,15 +12,19 @@ npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 pnpm-debug.log*
-
+logs/analytics/*
 
 # environment variables
 .env
-*.local
 .env.production
+*.local
 
 # testing output
 .playwright-report/
+playwright/.cache/
+test-results/
+tests_output/
+blob-report/
 
 # custom folders
 tests-examples/
@@ -28,25 +33,12 @@ experimental/
 
 .DS_Store
 .yarn/
-test-results/
-playwright-report/
-blob-report/
-playwright/.cache/
-tests_output/
-tests_output/
-.vercel2
+bun.lockb
 
 # prisma
 prisma/dev.db*
 dev.db*
-**/*.bk*
-logs/analytics/*
-/test-results/
-/playwright-report/
-/blob-report/
-/playwright/.cache/
+
 /data/
 bin/__py*
-src/pages/blog/[...slug].astro
-src/pages/blog/[...slug].astro
-bun.lockb
+**/*.bk*

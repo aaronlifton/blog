@@ -5,8 +5,10 @@ interface Props {
   type: "Note" | "Tip" | "Warning";
   title?: string;
   icon?: string;
+  isQuote?: boolean;
+  date?: string;
 }
-const { type, icon: iconOverride }: Props = Astro.props;
+const { type, icon: iconOverride, isQuote, date }: Props = Astro.props;
 let title = Astro.props.title;
 let icon: string | null = null;
 if (!title) {
@@ -23,17 +25,24 @@ if (!title) {
 }
 ---
 
-<div class:list={["admonition", `admonition-${type}`]}>
+<div class:list={["admonition", `admonition-${type}` ]}>
   {icon && <Icon name={icon} />}
-  <h3>{title}</h3>
-  <blockquote><slot /></blockquote>
+  <h3 class="mb-0 leading-0">{title}</h3>
+  {date && <span class="text-sm text-gray-500">{date}</span>}
+  <div class="flex flex-row justify-between items-center [&_*]:m-0 [&_*]:p-0">
+    {isQuote ? <blockquote><slot /></blockquote>  : <div class="message"><slot /></div>}
+    <slot name="image" />
+  </div>
 </div>
 <style type="text/css">
   .admonition {
     h3 {
-      @apply mt-0;
+      @apply mt-0 mb-0 pb-0;
     }
-    blockquote {
+    blockquote, .message {
+      @apply text-base text-black m-0;
+    }
+    img,p {
       @apply m-0;
     }
 

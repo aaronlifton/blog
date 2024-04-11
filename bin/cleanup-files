@@ -1,0 +1,2 @@
+#!/bin/sh
+fd -ut f --glob "*.bk" --glob "!*blog/*" . | xargs -I {} mv {} ./tmp/

@@ -1,5 +1,0 @@
-declare namespace _default {
-    export { hexToRgb };
-}
-export default _default;
-declare function hexToRgb(hex: any): string;

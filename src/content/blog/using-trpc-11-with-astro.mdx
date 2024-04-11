@@ -50,7 +50,7 @@ const router = router({
 ```ts
 const router = router({
   create: publicProcedure
-    .input(z.object({ name: z.string() }))  // [!code highlight]
+    .input(z.object({ name: z.string() })) // [!code highlight]
     .mutation(async (opts) => {
       const { input } = opts;
       const user = await prisma.user.create({
@@ -228,33 +228,38 @@ looks like so we know what to expect.
 
 As we can see, the endpoint returns base64-encoded content for the file we
 requested, along with rate-limit headers that will enable us to prevent hitting
-the rate limit. With the right combination of logic based on the headers, the rate limit should never be reached.
-Let's add a metric so we can confirm our prediction after this gets deployed:
+the rate limit. With the right combination of logic based on the headers, the
+rate limit should never be reached. Let's add a metric so we can confirm our
+prediction after this gets deployed:
 
 Let's create a new file in the `rpc-server` folder called `types.ts`:
+
 ```ts
 import { IncrementMetricInput } from "./types";
 ```
 
 Then, let's create a route in the tRPC router that will accept input of that
 type, so we can take advantage of type safety in both the client and server.
-```
+
+```ts
 const router = router({
-	incrementMetric: publicProcedure.input(
-		z.enum(["views", "gh_ratelimit_errors"])
-	).mutation((resolver) => {
-		const { prisma } = resolver.ctx;
-		return {
-			id: "1",
-			title: "Buy milk",
-			completed: false,
-		};
-	})
+  incrementMetric: publicProcedure
+    .input(z.enum(["views", "gh_ratelimit_errors"]))
+    .mutation((resolver) => {
+      const { prisma } = resolver.ctx;
+      return {
+        id: "1",
+        title: "Buy milk",
+        completed: false,
+      };
+    }),
 });
 ```
 
-Nice! Now our API only allows incrementing of the `views` and `gh_ratelimit_errors` metrics can be incremented, similiar to how one would use StatsD metrics.
-And the best part? **The type restriction is enforced at compile time.**
+Nice! Now our API only allows incrementing of the `views` and
+`gh_ratelimit_errors` metrics can be incremented, similar to how one would use
+StatsD metrics. And the best part? **The type restriction is enforced at compile
+time.**
 
 ## Writing a unit test
 
@@ -301,7 +306,7 @@ have remaining during a give period, as well as when the limit resets.
 It's important to keep track of events like rate limit hits, so that we can
 better handle, and most importantly, avoid them.
 
-One nuanace of the Github API is that it returns an array of objects if the path
+One nuance of the Github API is that it returns an array of objects if the path
 is a directory, and a single object if the path is a file. We can handle this by
 giving the typescript compiler a hint, by returning early if the response is an
 array.
@@ -378,7 +383,7 @@ async (props: { owner: string; repo: string; path: string }) => {
 
 ## Testing the server side call
 
-Now that we've wrote a function that fetches a file from a certain path in a
+Now that we've written a function that fetches a file from a certain path in a
 github repository, let's finish hooking up the client to our backend rpc-server:
 
 In the `rpc-server` folder, create a file named `router.ts`:
@@ -428,10 +433,8 @@ export const createCaller = createCallerFactory(appRouter);
 Now our RPC server has a single procedure, `getFile`. Let's first call this
 procedure from another server-side endpoint. This involves creating a `caller`
 via the `createCallerFactory` function, as stated
-[here](https://trpc.io/docs/server/server-side-calls). hooked everything up to
-
-In my case, I'm using Astro.js, so I'll create a new endpoint in the `src/pages`
-directory called `api/ops/repo-content.ts`:
+[here](https://trpc.io/docs/server/server-side-calls). We'll put this endpoint
+in the `src/pages` directory called `api/ops/repo-content.ts`.
 
 ```ts
 import trpc from "$services/trpc";
@@ -466,3 +469,11 @@ request to
 `http://localhost:3000/api/ops/repo-content?owner=facebook&repo=react&path=data/packages/shallowEqual.js`.
 In your repository, you should now see a new file called `shallowEqual.js` under
 the `data/packages` directory.
+
+## Testing with Vitest
+
+It took me some time to figure out how to test tRPC, but I'm adding this note to
+this article to say that a new post covering how to test tRPC and Astro with
+Vitest is coming soon. I've noticed that some companies on github don't mock
+Prisma in the test environment, and now that I've tested tRPC with Vitest mocks,
+I'm working on setting up a Rails-like test database setup.

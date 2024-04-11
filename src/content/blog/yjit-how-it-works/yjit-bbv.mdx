@@ -1,0 +1,127 @@
+---
+title: How does the YJIT Ruby Compiler work?
+description:
+  "YJIT is a unique compiler based on the idea of Basic Block Versioning.  A
+  deep dive into the simple concept that makes this JIT compiler unique: BBV
+  (Basic Block Versioning)."
+url: https://blog.discourse.org/2024/02/ruby-now-produces-machine-code-on-the-fly/
+
+pubDate: Feb 5, 2024
+cover: ../assets/yjit-discourse.png
+coverAlt:
+  An example of very popular sites switching their app entirely over to the new
+  YJIT Ruby.
+tags: [ruby, rails, performance, compilers]
+draft: true
+slug: ruby-now-produces-machine-code-on-the-fly
+---
+
+import yjitDiscourse from "./yjit.png";
+
+# Ruby now produces machine code on-the-fly
+
+This is also known as a JIT compiler.
+
+Ruby has received a significant performance boost by being lazily compiled into
+bytecode by a JIT compiler, producing machine code executed by the CPU, rather
+than the way it's been traditionally run – as a fairly slow interpreted
+language.
+
+## Understanding YJIT in Ruby
+
+The JIT compiler that powers YJIT incorporates the idea of Basic Block
+Versioning (BBV), a JIT architecture introduced in the PhD thesis of the lead
+YJIT engineer, Maxime Chevalier-Boisvert
+([source](https://arxiv.org/pdf/1411.0352v1)). A JIT architecture lazily
+compiles code, on demand, into bytecode that gets processed directly by the CPU,
+rather than a VM or interpreter, with CPU instructions being the fastest
+execution path of the three.
+
+BBV provides an optimization path for a dynamically typed language like Ruby, by
+generating and caching paths of type-specialized machine code on-the-fly,
+without undergoing separate type analysis or speculative optimization phases –
+these paths are generated at runtime based on actual type information being
+passed into methods. This is a great idea for Ruby, since it is dynamically
+typed and cannot be easily statically analyzed. In other words, Lazy Basic Block
+Versioning (LBBV), allows the execution of a program itself to dictate the
+generation of type-specialized code, rather than speculatively
+([source](https://docs.ruby-lang.org/en/master/yjit/yjit_md.html)).
+
+To illustrate, consider a code block in Ruby where a variable `num` might be an
+integer or a floating-point number:
+
+```ruby
+def calculate(num)
+    return num * 2
+end
+```
+
+During execution, the JIT compiler would create two versions of this basic code
+block. First, if `num` is an integer during a particular execution, the compiler
+generates and caches a version optimized for handling integers. Secondly, if
+`num` is a floating-point number in another execution, the compiler produces a
+separate version optimized for floating-point computations. Finally, in a
+most-likely rare case, if num is a string, the compiler would then produce a
+third specialized branch for strings. Once these code paths have been visited,
+future method calls would use the optimized versions of the code blocks,
+resulting in faster execution.
+
+In other words, depending on the type of `num`, the JIT compiler will select the
+matching optimized block for execution, given that the blocks were compiled from
+previous code execution already. This makes tons of sense for server
+applications like Ruby on Rails where endpoints are called thousands of times,
+each of which may have different bytecode patterns cached based on different
+request types.
+
+Since the YJIT compiler generates and uses machine code customized for specific
+data types based on actual execution patterns, we should err on the side of
+caution when writing metaprogramming or overly-generalized code
+([source](https://www-labs.iro.umontreal.ca/~feeley/papers/SaleilFeeleyVMIL18.pdf)).
+
+To summarize, BBV is the most important part of why YJIT is the most performant
+JIT Ruby implementation so far. In essence, a basic block is a sequence of
+instructions with a single entry and exit points. The versions of a basic block
+accommodate different execution paths for Ruby methods passed different types,
+resulting in efficient bytecote generation for a dynamically typed language like
+Ruby.
+
+## Object shapes and the Ruby GC
+
+YJIT also included an improvement to Ruby's internal object representation.
+Object shapes, which capture the layout of an object's attributes and types, are
+used to help optimize memory layouts of ruby objects, which in turns unlocks GC
+performance improvements.
+([source](https://rubykaigi.org/2021-takeout/data/slides/Maxime-YJIT-RubyKaigi-2021-slides.pdf)).
+The Ruby GC can now free memory in a more targeted way, given that the object's
+shape is known. These object shapes are stored in a heap, so it essential for
+Ruby's memory layouts to be optimized, given Ruby's server applications.
+Interestingly, the GC has always been extremely simple, and has never before
+been optimized. This is another win for server applications, as storing memory
+in a more efficient layout unlocks optimized performance, and can potentially
+save memory usage
+([source](https://rubykaigi.org/2023/presentations/maximecb.html)).
+
+## Summary
+
+YJIT has been a fascinating example of how JIT compilation can be used to speed
+up a dynamic runtime language like Ruby, by generating efficient bytecode
+without the need for strong types, in a manner that makes sense for web
+applications that have code paths that follow the same execution patterns for
+thousands of requests. I believe combined with Sorbet, even more efficient
+bytecode can be created by YJIT, given the fact that the type information would
+be already known.
+
+In a follow-up article, I plan on exploring how Sorbet can be used to further
+speed up YJIT Ruby, and how it can be used to further optimize the Ruby GC.
+
+References:
+
+- [Shopify Engineering](https://shopify.engineering/ruby-yjit-is-production-ready)
+
+- [Ruby Official Documentation](https://docs.ruby-lang.org/en/master/yjit/yjit_md.html)
+
+- [Shopify YJIT GitHub Repo](https://github.com/Shopify/yjit)
+
+- [RubyKaigi 2021](https://rubykaigi.org/2021-takeout/data/slides/Maxime-YJIT-RubyKaigi-2021-slides.pdf)
+
+- [RubyKaigi 2023](https://rubykaigi.org/2023/presentations/maximecb.html)

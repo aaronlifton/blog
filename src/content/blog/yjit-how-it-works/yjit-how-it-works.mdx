@@ -1,5 +1,5 @@
 ---
-title: Ruby now produces machine code on-the-fly
+title: Ruby now produces machine code on-the-fly2
 description: An introduction to how YJIT Ruby's new JIT compiler works
 url: https://blog.discourse.org/2024/02/ruby-now-produces-machine-code-on-the-fly/
 
@@ -10,7 +10,7 @@ coverAlt:
   YJIT Ruby.
 tags: [ruby, rails, performance, compilers]
 draft: true
-slug: ruby-now-produces-machine-code-on-the-fly
+slug: ruby-now-produces-machine-code-on-the-fly2
 ---
 
 import yjitDiscourse from "./yjit.png";
@@ -19,14 +19,14 @@ import yjitDiscourse from "./yjit.png";
 
 This is also known as a JIT compiler.
 
-Ruby has finally received a significant performance boost by being lazily
-compiled into bytecode by a JIT compiler, producing machine code executed by the
-CPU, rather than the way it's been traditionally run – as a fairly slow
-interpreted language.
+Ruby has received a significant performance boost by being lazily compiled into
+bytecode by a JIT compiler, producing machine code executed by the CPU, rather
+than the way it's been traditionally run – as a fairly slow interpreted
+language.
 
 ## Understanding YJIT in Ruby
 
-YJIT is powered by a JIT compiler that incorporates the idea of Basic Block
+The JIT compiler that powers YJIT incorporates the idea of Basic Block
 Versioning (BBV), a JIT architecture introduced in the PhD thesis of the lead
 YJIT engineer, Maxime Chevalier-Boisvert
 ([source](https://arxiv.org/pdf/1411.0352v1)). A JIT architecture lazily
@@ -35,13 +35,107 @@ rather than a VM or interpreter, with CPU instructions being the fastest
 execution path of the three.
 
 BBV provides an optimization path for a dynamically typed language like Ruby, by
-generating and caching paths of type-specialized machine code on-the-fly,
-without undergoing separate type analysis or speculative optimization phases –
-these paths are generated at runtime based on actual type information being
-passed into methods. This is a great idea for Ruby, since it is dynamically
-typed and cannot be easily statically analyzed. In other words, Lazy Basic Block
-Versioning (LBBV), allows the execution of a program itself to dictate the
-generation of type-specialized code, rather than speculatively
+generating and caching paths of type-specialized machine code on-the-fly. These
+paths are generated at runtime based on actual type information being passed
+into methods. This is a great idea for Ruby, since it is dynamically typed and
+cannot be easily statically analyzed unless you've adopted Sorbet. I can
+definitely envision a future JIT Ruby Compiler that gets type information from
+Sorbet. This is the same optimization that TruffleRuby applied years ago.
+
+### About TruffleRuby
+
+TruffleRuby is currently the fastest Ruby implementation, based on
+[these benchmarks](https://eregon.me/blog/2022/01/06/benchmarking-cruby-mjit-yjit-jruby-truffleruby.html).
+TruffleRuby is quite complicated, and based on the benchmarks, it really doesn't
+seem likely that any Ruby will be faster than it is, ever. It uses a very highly
+self-optimizing JIT compiler, and has performance tweaks all over the place,
+including its String inplmentation, which is called "Ropes". Shopify has
+sponsored TruffleRuby development for quite some time, and one of the
+researchers at Oracle who worked on TruffleRuby now works at Shopify.
+
+I do see the need for a a non-Grall, non-JVM JIT compiler for Ruby, and I wonder
+if it's possible without reimplementing most of the GraalVM.
+
+<blockquote>
+  Ropes are an immutable data structure for representing character strings via a
+  binary tree of operation-labeled nodes. Ropes were designed to perform well
+  with large strings, and in particular, concatenation of large strings. We
+  present our finding that Ropes are a good choice for strings of any length
+</blockquote>
+
+[source](https://eregon.me/blog/assets/research/specializing-ropes-for-ruby.pdf)
+
+I need to do more research into how it works, but I've read some of the source
+code and it's fascinating that this Ruby has optimized Truffle strings, and a
+very highly optimized JIT compiler, which
+
+<blockquote>
+YJIT relies on the promotion of run-time values to implement a mechanism that is
+functionally similar to polymorphic inline caches. When generating code for an
+instance variable read instruction, we peek at the run-time value and determine
+its class, so that we can generate specialized machine code for reading the
+requested property on the class that was encountered
+
+</blockquote>
+
+This is what TruffleRuby does as well
+[(source)](https://github.com/truffleruby/truffleruby/blob/8e6b9f7f5c9a3a0e8e7a0e5a0e6e7a0e6e7a0e5/src/truffle/bytecode/bytecode_generator.rb#L110-L129).
+
+## So, what is a basic block?
+
+A basic block a straight-line sequence of code with no internal branches. These
+blocks are _versioned_ in YJIT: they get tailored to specific type or value
+assumptions that hold true within a particular execution path.
+
+Since Ruby is a dynamically typed language, the JIT compiler has to be careful
+when it comes to type-specialized code. Simply put, there is only so much
+opimization that can take place without type analysis, and that's the key
+takeaway of YJIT for me: My beloved language, Ruby, now lives in a world where
+scaling up to millions of requests per second is commonplace, and in order to be
+a viable backend language in the future, further optimizations are absolutely
+necessary. Besides type information, the JIT compiler would also benefit from
+already-optimized code. I was listening to a talk by one of the YHIT engineers,
+and one of their strategies to understand how to optimize Ruby was to generate a
+syntax call tree of the Ruby code, and then JIT compile Ruby, and compare the
+tree with the machine code version. It's truly amazing how much faster it is.
+
+## Ruby faster than C? Only with a JIT compiler!
+
+Suppose you're processing a large array of numbers in Ruby. A C extension might
+be the traditional performance choice, and as of late Rust has been used for FFI
+extensions as well.
+
+However, with YJIT:
+
+If the array consistently holds integers, YJIT can optimize for integer
+calculations directly. If only a small part of the array manipulation is a
+performance bottleneck, YJIT can focus on that section, because YJIT analyzes
+its performance as it runs, and it can optimize for that. In these scenarios
+optimized Ruby code might outperform the C solution, especially considering the
+overhead of calling into C.
+
+In Summary
+
+Ruby with YJIT challenges the traditional C dominance in certain scenarios due
+to:
+
+Runtime analysis and optimization by YJIT The overhead of switching between Ruby
+and C YJIT's ability to optimize pure Ruby code in ways difficult with
+statically compiled C
+
+##
+
+As seen in discussions between the YHIT team and Matsuhiko Matsumoto, Ruby faces
+
+## The future
+
+Ruby's speed also depends on important libraries implemented in C, iHowever,
+I've been following attempts to create ffi bindings for Ruby via Rust and Zig,
+and w Railseventually use Sorbet to provide type information to the JIT
+compiler, we can LBBV is the name of the JIT compiler's optimization path.
+
+LBBV is the name of the JIT compiler's optimization path. program itself to
+dictate the generation of type-specialized code, rather than speculatively
 ([source](https://docs.ruby-lang.org/en/master/yjit/yjit_md.html)).
 
 To illustrate, consider a code block in Ruby where a variable `num` might be an
@@ -94,7 +188,7 @@ shape is known. These object shapes are stored in a heap, so it essential for
 Ruby's memory layouts to be optimized, given Ruby's server applications.
 Interestingly, the GC has always been extremely simple, and has never before
 been optimized. This is another win for server applications, as storing memory
-in a more efficient layout unlocks optimized performance, and can potentialy
+in a more efficient layout unlocks optimized performance, and can potentially
 save memory usage
 ([source](https://rubykaigi.org/2023/presentations/maximecb.html)).
 
@@ -105,7 +199,7 @@ up a dynamic runtime language like Ruby, by generating efficient bytecode
 without the need for strong types, in a manner that makes sense for web
 applications that have code paths that follow the same execution patterns for
 thousands of requests. I believe combined with Sorbet, even more efficient
-bytecote can be created by YJIT, given the fact that the type information would
+bytecode can be created by YJIT, given the fact that the type information would
 be already known.
 
 In a follow-up article, I plan on exploring how Sorbet can be used to further

@@ -60,32 +60,35 @@ describe("appRouter", () => {
     vi.restoreAllMocks();
   });
 
-  it("should increment views", async () => {
-    const upsertReturnValue = {
-      id: "a1b2c3d4",
-      postSlug: "hello world",
-      metricType: "views",
-      value: BigInt(1),
-    };
-    prismaMock.metric.upsert.mockResolvedValue(upsertReturnValue);
-    const ctx = await createContext({ prisma: prismaMock });
-    const caller = appRouter.createCaller(ctx);
+  describe("incrementMetric", () => {
+    it("should increment views", async () => {
+      const upsertReturnValue = {
+        id: "a1b2c3d4",
+        postSlug: "hello world",
+        metricType: "views",
+        value: BigInt(1),
+      };
+      prismaMock.metric.upsert.mockResolvedValue(upsertReturnValue);
+      const ctx = await createContext({ prisma: prismaMock });
+      const caller = appRouter.createCaller(ctx);
 
-    // vi.spyOn(caller, "incrementMetric");
-    const result = await caller.incrementMetric({
-      slug: "hello world",
-      metricType: "views",
+      // vi.spyOn(caller, "incrementMetric");
+      const result = await caller.incrementMetric({
+        slug: "hello world",
+        metricType: "views",
+      });
+      // remove id from the object
+      const expectedReturnValue = Object.keys(upsertReturnValue).reduce(
+        (acc, key) => {
+          if (key !== "id") {
+            acc[key] = upsertReturnValue[key];
+          }
+          return acc;
+        },
+        {},
+      );
+      expect(result).toMatchObject(expectedReturnValue);
     });
-    const expectedReturnValue = Object.keys(upsertReturnValue).reduce(
-      (acc, key) => {
-        if (key !== "id") {
-          acc[key] = upsertReturnValue[key];
-        }
-        return acc;
-      },
-      {},
-    );
-    expect(result).toMatchObject(expectedReturnValue);
   });
 
   it("should call the Github API", async () => {

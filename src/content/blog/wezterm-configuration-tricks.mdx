@@ -1,23 +1,47 @@
 ---
 title: Wezterm workspace switcher API
-description: How to make keybindings for a preset list of workspaces, and generate and switch to new workspaces on the fly.
+description:
+  How to make keybindings for a preset list of workspaces, and generate and
+  switch to new workspaces on the fly.
 pubDate: Feb 2, 2024
 cover: ./assets/wezterm.png
 coverAlt: Wezterm configuration file with workspaces switcher keybindings.
 tags: [wezterm, terminal, productivity]
 draft: false
 ---
-import wezVideo2 from "./assets/videos/wezterm2.webm"
 
-You can do some pretty cool stuff with the Wezterm API. Here is an example to get you started.
-Here, we are defining a list of workspaces that the user can switch to. Using `InputSelector`, the user is then prompted to select a workspace
-from the list, causing the terminal to switch to that workspace upon selection.
-A really cool thing to not about workspaces is that each workspace has its own
-set of tabs.
+import { Image } from "astro:assets";
+import wezVideo2 from "./assets/videos/wezterm2.webm";
+import Admonition from "$components/Admonition.astro";
+
+<Admonition type="tip" isQuote={false} title="Note" date={"Apr 11, 2024"}>
+  Does Neovim run slow in your terminal? I've since switched to the Kitty
+  terminal to make Neovim faster, and I've been loving it. Besides session
+  functionality, Kitty + `smart-splits.nvim` replaces the need for a terminal
+  multiplexer like tmux, besides saving sessions, which no modern terminal has
+  implemented yet. Removing the need for terminal multiplexers is important
+  because Neovim runs fastest when directly interfacing with its client, and
+  multiplexers involve the use of pseudoterminals, which adds additional lag
+  between Neovim and...your keyboard!
+  <Fragment slot="image">
+    <Image
+      inferSize={true}
+      src={
+        "https://res.cloudinary.com/disod51fp/image/upload/v1712857822/kitty-logo_wiiemx.svg"
+      }
+      alt="Kitty terminal logo"
+    />
+  </Fragment>
+</Admonition>
+
+You can do some pretty cool stuff with the Wezterm API. Here is an example to
+get you started. Here, we are defining a list of workspaces that the user can
+switch to. Using `InputSelector`, the user is then prompted to select a
+workspace from the list, causing the terminal to switch to that workspace upon
+selection. Each workspace has its own set of panes, windows, and tabs.
 
 Here we use the `InputSelector` action to create a list of workspaces that
-wezterm will use to prompt the user to select from a list of items.
-
+wezterm will then use to prompt the user to select from it:
 
 ```lua
 {
@@ -28,10 +52,10 @@ wezterm will use to prompt the user to select from a list of items.
 
 		local home = wezterm.home_dir
 		local workspaces = {
-			{ id = home, label = "Home" },
-			{ id = home .. "/Code", label = "Work" },
+			{ id = home,                 label = "Home"     },
+			{ id = home .. "/Code",      label = "Work"     },
 			{ id = home .. "/Documents", label = "Personal" },
-			{ id = home .. "/.config", label = "Config" },
+			{ id = home .. "/.config",   label = "Config"   },
 		}
 
 		window:perform_action(
@@ -66,23 +90,27 @@ wezterm will use to prompt the user to select from a list of items.
 }
 ```
 
+## Video demo
+
 <video src={wezVideo2} autoplay loop controls />
 
+## Adding a shortcut to create workspaces on the fly
+
 Want to make new workspaces on the fly? Try this:
+
 ```lua
 {
 			key = "N",
 			mods = "CTRL|SHIFT",
 			action = a.PromptInputLine({
 				description = wezterm.format({
-					{ Attribute = { Intensity = "Bold" } },
+					{ Attribute  = { Intensity = "Bold"    } },
 					{ Foreground = { AnsiColor = "Fuchsia" } },
-					{ Text = "Enter name for new workspace" },
+					{ Text = "Enter name for new workspace"  },
 				}),
 				action = wezterm.action_callback(function(window, pane, line)
-					-- line will be `nil` if they hit escape without entering anything
-					-- An empty string if they just hit enter
-					-- Or the actual line of text they wrote
+					-- `line` will be `nil` if user hits <ESC> without entering anything.
+					-- If enter is pressed, line will be the text they wrote; otherwise "".
 					if line then
 						window:perform_action(
 							a.SwitchToWorkspace({
@@ -96,6 +124,6 @@ Want to make new workspaces on the fly? Try this:
 		}
 ```
 
-Now, you can easily toggle between 2 folders. While you may already be
-using tabs for this, using Wezterm workspaces can be more efficient when
-extensively and cleverly scripted.
+The final step is, as you might have done already, to reload your Wezterm
+configuration! Now, you can toggle between personal and work tabs, or seperate
+tabs and panes by project.

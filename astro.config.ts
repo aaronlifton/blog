@@ -83,27 +83,27 @@ export default defineConfig({
       // @ts-expect-error - This is a valid plugin that returns a Transformer,
       // but the type definition is not compatible with the expected [unified.Plugin, string[]] type.
       [
-      remarkShakuCodeAnnotate,
-      {
-        fallbackToShiki: true,
-        theme: "material-theme-darker",
-        langs: [
-          "bash",
-          "fish",
-          "go",
-          "html",
-          "javascript",
-          "json",
-          "jsonc",
-          "jsx",
-          "lua",
-          "ruby",
-          "sh",
-          "ts",
-          "ts",
-          "tsx",
-          "typescript",
-          "vim",
+        remarkShakuCodeAnnotate,
+        {
+          fallbackToShiki: true,
+          theme: "material-theme-darker",
+          langs: [
+            "bash",
+            "fish",
+            "go",
+            "html",
+            "javascript",
+            "json",
+            "jsonc",
+            "jsx",
+            "lua",
+            "ruby",
+            "sh",
+            "ts",
+            "ts",
+            "tsx",
+            "typescript",
+            "vim",
           ],
         },
       ],
@@ -171,6 +171,7 @@ export default defineConfig({
   },
   image: {
     service: squooshImageService(),
+    domains: ["cloudinary.com"],
   },
   redirects: {
     "/blog": {
