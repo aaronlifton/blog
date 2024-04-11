@@ -193,7 +193,7 @@ export const GET_REPOS: APIRoute = async (_state) => {
 	}
 };
 
-export const getRepoContents = async (props: {
+const getRepoContents = async (props: {
 	owner: string;
 	repo: string;
 	path: string;
@@ -249,3 +249,6 @@ export const getRepoContents = async (props: {
 		return new Response(JSON.stringify({ error }), { status: 500 });
 	}
 };
+
+const service = { getRepoContents, getCommits, getRepos }
+export default service

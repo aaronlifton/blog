@@ -1,20 +1,20 @@
 ---
 // import { codeToHtml } from "shiki";
-import highlighter from "$/lib/shiki.ts";
+import highlighter from "$/lib/shiki.ts.bk";
 import CopyToClipboard from "$components/react/CopyToClipboard.tsx";
 import {
-	transformerNotationDiff,
-	transformerNotationErrorLevel,
-	transformerNotationHighlight,
-	transformerNotationWordHighlight,
+  transformerNotationDiff,
+  transformerNotationErrorLevel,
+  transformerNotationHighlight,
+  transformerNotationWordHighlight,
 } from "@shikijs/transformers";
 import { getShakuHighlighters } from "shaku-code-annotate-shiki";
 import { CopyIcon, FileIcon } from "lucide-react";
 
 interface Props {
-	isInline?: boolean;
-	lang: string;
-	code: string;
+  isInline?: boolean;
+  lang: string;
+  code: string;
 }
 
 const { isInline, lang, code } = Astro.props;
@@ -23,57 +23,57 @@ const filteredCode = code.replace(/^\n/g, "");
 // const highlighters = await getShakuHighlighters(options);
 
 const html = highlighter.codeToHtml(filteredCode, {
-	lang: lang,
-	theme: "material-theme-darker",
-	transformers: [
-		transformerNotationDiff(),
-		transformerNotationErrorLevel(),
-		transformerNotationHighlight(),
-		transformerNotationWordHighlight(),
-	],
+  lang: lang,
+  theme: "material-theme-darker",
+  transformers: [
+    transformerNotationDiff(),
+    transformerNotationErrorLevel(),
+    transformerNotationHighlight(),
+    transformerNotationWordHighlight(),
+  ],
 });
 ---
 
 {
-	isInline ? (
-		<span class="font-mono rounded-md border border-[#c4c4c4] bg-[#d8d8d8] px-1 py-0.5 text-black dark:border-[#3b3b3b] dark:bg-[#272727]">
-			<slot />
-		</span>
-	) : (
-		<div class="overflow-hidden rounded-lg border border-[#343434]">
-			<header class="flex h-10 flex-row items-center justify-between bg-[#212121] p-2">
-				<FileIcon width={16} height={16} class="text-[#646464]" />
-				<p class="font-mono ml-[5px] mr-auto translate-y-[1px] text-xs font-light leading-4 text-[#646464]">
-					.{lang}
-				</p>
-				<CopyToClipboard {code} />
-			</header>
-			<section
-				class:list={[
-					"border-t border-[#343434]",
-					"[&>pre]:overflow-x-auto",
-					"[&>pre]:m-0",
-					"[&>pre]:rounded-none",
-					"[&>pre]:p-4",
-					"[&_code]:block",
-					"[&_code]:w-full",
-					"[&_code]:min-w-full",
-					"[&_span]:w-full",
-					"[&_span.highlighted]:bg-[#343434]",
-				]}
-				set:html={html}
-			/>
-		</div>
-	)
+  isInline ? (
+    <span class="font-mono rounded-md border border-[#c4c4c4] bg-[#d8d8d8] px-1 py-0.5 text-black dark:border-[#3b3b3b] dark:bg-[#272727]">
+      <slot />
+    </span>
+  ) : (
+    <div class="overflow-hidden rounded-lg border border-[#343434]">
+      <header class="flex h-10 flex-row items-center justify-between bg-[#212121] p-2">
+        <FileIcon width={16} height={16} class="text-[#646464]" />
+        <p class="font-mono ml-[5px] mr-auto translate-y-[1px] text-xs font-light leading-4 text-[#646464]">
+          .{lang}
+        </p>
+        <CopyToClipboard {code} />
+      </header>
+      <section
+        class:list={[
+          "border-t border-[#343434]",
+          "[&>pre]:overflow-x-auto",
+          "[&>pre]:m-0",
+          "[&>pre]:rounded-none",
+          "[&>pre]:p-4",
+          "[&_code]:block",
+          "[&_code]:w-full",
+          "[&_code]:min-w-full",
+          "[&_span]:w-full",
+          "[&_span.highlighted]:bg-[#343434]",
+        ]}
+        set:html={html}
+      />
+    </div>
+  )
 }
 
 <style>
-	:global(code) {
-		.line {
-			@apply w-full;
-			&.highlighted {
-				@apply bg-[#343434];
-			}
-		}
-	}
+  :global(code) {
+    .line {
+      @apply w-full;
+      &.highlighted {
+        @apply bg-[#343434];
+      }
+    }
+  }
 </style>

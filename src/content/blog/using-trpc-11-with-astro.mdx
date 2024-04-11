@@ -11,7 +11,6 @@ tags: [react, trpc, astro]
 import { Image } from "astro:assets";
 import ZoomImage from "$components/ZoomImage.svelte";
 import image1 from "./assets/screenshots/octokit-response-type.png";
-import CodeBlock from "$components/CodeBlock.astro";
 
 # Using tRPC v11.1 with Astro, Prisma, and the Github API
 
@@ -48,9 +47,7 @@ const router = router({
 });
 ```
 
-<CodeBlock
-  lang="ts"
-  code={`
+```ts
 const router = router({
   create: publicProcedure
     .input(z.object({ name: z.string() }))  // [!code highlight]
@@ -64,8 +61,7 @@ const router = router({
       return user;
     }),
 });
-`}
-/>
+```
 
 Today we'll build a React component that uses Suspense to render a loading state
 while the backend streams data from the Github API, via a tRPC procedure. This
@@ -232,10 +228,35 @@ looks like so we know what to expect.
 
 As we can see, the endpoint returns base64-encoded content for the file we
 requested, along with rate-limit headers that will enable us to prevent hitting
-the rate limit. This is important for providing a smooth user experiences
-without interruptions.
+the rate limit. With the right combination of logic based on the headers, the rate limit should never be reached.
+Let's add a metric so we can confirm our prediction after this gets deployed:
 
-## Wrriting a unit test
+Let's create a new file in the `rpc-server` folder called `types.ts`:
+```ts
+import { IncrementMetricInput } from "./types";
+```
+
+Then, let's create a route in the tRPC router that will accept input of that
+type, so we can take advantage of type safety in both the client and server.
+```
+const router = router({
+	incrementMetric: publicProcedure.input(
+		z.enum(["views", "gh_ratelimit_errors"])
+	).mutation((resolver) => {
+		const { prisma } = resolver.ctx;
+		return {
+			id: "1",
+			title: "Buy milk",
+			completed: false,
+		};
+	})
+});
+```
+
+Nice! Now our API only allows incrementing of the `views` and `gh_ratelimit_errors` metrics can be incremented, similiar to how one would use StatsD metrics.
+And the best part? **The type restriction is enforced at compile time.**
+
+## Writing a unit test
 
 ## Writing the `getRepoContents` procedure
 

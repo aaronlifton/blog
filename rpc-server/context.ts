@@ -1,6 +1,7 @@
 import prisma from "$services/prisma";
 import type { FetchCreateContextFnOptions } from "@trpc/server/adapters/fetch";
 // import type { CreateNextContextOptions } from '@trpc/server/adapters/next';
+import githubService from "./services/github";
 
 interface CreateInnerContextOptions
 	extends Partial<FetchCreateContextFnOptions> {}
@@ -16,6 +17,7 @@ interface CreateInnerContextOptions
 export async function createContextInner(opts?: CreateInnerContextOptions) {
 	return {
 		prisma,
+		githubService,
 	};
 }
 

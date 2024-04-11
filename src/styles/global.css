@@ -266,6 +266,9 @@ p {
   @apply max-w-prose;
 }
 
+.animate-fill-forwards {
+  -webkit-animation-fill-mode: forwards !important;
+}
 /* .prose p.mb-0 { */
 /*   margin-bottom: 0; */
 /* } */

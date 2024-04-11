@@ -9,8 +9,8 @@ const isMobile = getIsMobile(Astro);
 console.log(isMobile, mobileUserAgent);
 
 interface Props {
-	post: CollectionEntry<"blog">;
-	asCard?: boolean;
+  post: CollectionEntry<"blog">;
+  asCard?: boolean;
 }
 
 const { post, asCard = false } = Astro.props;
@@ -38,10 +38,8 @@ const { post, asCard = false } = Astro.props;
     </div>
   </div>
   <div
-    class:list={[
-			"lg:w-auto landscape:w-[300px]",
-			{ "w-[100px]": isMobile() },
-		]}>
+    class:list={["lg:w-auto landscape:w-[300px]", { "w-[100px]": isMobile() }]}
+  >
     <HomeImage
       src={post.data.cover}
       alt={post.data.coverAlt}
@@ -125,7 +123,7 @@ const { post, asCard = false } = Astro.props;
       }
     }
     .post-preview__date-box {
-      @apply flex text-lg sm:block sm:text-inherit;
+      @apply flex min-w-[140px] text-lg sm:block sm:text-inherit;
     }
     .post-preview__date {
       @apply flex flex-row gap-1 text-left;

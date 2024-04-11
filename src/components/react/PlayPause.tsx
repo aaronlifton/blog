@@ -1,11 +1,11 @@
 import React, {
-	useState,
-	useCallback,
-	useEffect,
-	useMemo,
-	type PropsWithChildren,
+    useCallback,
+    useEffect,
+    useMemo,
+    useState,
+    useRef,
+    type PropsWithChildren,
 } from "react";
-import Styles from "$components/styles/PlayPause.module.css";
 // @ts-ignore
 import Play from "$/icons/tabler/play.svg?react";
 // @ts-ignore
@@ -14,7 +14,9 @@ import PlayFilled from "$/icons/tabler/play-filled.svg?react";
 import Pause from "$/icons/tabler/pause.svg?react";
 // @ts-ignore
 import PauseFilled from "$/icons/tabler/pause-filled.svg?react";
-import { isPaused, isManuallyPaused } from "$state/index";
+import { isManuallyPaused, isPaused } from "$state/index";
+import clsx from "clsx";
+import Styles from "$components/styles/PlayPause.module.css";
 
 interface Props extends PropsWithChildren {
 	className: string;
@@ -33,6 +35,7 @@ type IconState =
 	| typeof pauseHoverStatus;
 
 const PlayPause: React.FC<Props> = ({ className: _className, onClick }) => {
+  const button = useRef()
 	const [status, setStatus] = useState<IconState>(pauseStatus);
 	const isPlayStatus = useMemo(
 		() => status === playStatus || status === playHoverStatus,
@@ -62,6 +65,7 @@ const PlayPause: React.FC<Props> = ({ className: _className, onClick }) => {
 
 	return (
 		<div
+      ref={button}
 			onClick={handleClick}
 			onKeyDown={(e) =>
 				e.key === "Enter" && setStatus(isPlayStatus ? pauseStatus : playStatus)
@@ -70,10 +74,23 @@ const PlayPause: React.FC<Props> = ({ className: _className, onClick }) => {
 				setStatus(isPlayStatus ? playHoverStatus : pauseHoverStatus)
 			}
 			onMouseLeave={() => setStatus(isPlayStatus ? playStatus : pauseStatus)}
-			className={Styles.iconContainer}
+			className={clsx([
+        "mt-4 relative left-[-5px] w-auto flex flex-row cursor-pointer",
+        "h-10 px-2 rounded-md justify-center border border-border",
+        "[&_svg]:stroke-amethyst-300 [&_svg]:text-amethyst-300",
+        "transition-all duration-150 ease-in [&_*]:leading-snug",
+        isPlayStatus ? "opacity-0" : "opacity-100",
+      ])}
 		>
 			{/* @ts-ignore */}
-			<IconComponent width={30} />
+			<PauseFilled width={17} className="relative top-[-1px]" />
+      <span data-state={isPlayStatus ? null : "paused"}
+        class={clsx([
+          "data-[state=paused]:animate-pingOnce animate-fill-forwards absolute",
+          "inline-flex h-full w-full rounded-full bg-gray-200 opacity-66",
+          Styles.ping,
+        ])}></span>
+      <div className="text-sm items-center flex">Paused</div>
 		</div>
 	);
 };

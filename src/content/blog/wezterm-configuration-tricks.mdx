@@ -5,18 +5,19 @@ pubDate: Feb 2, 2024
 cover: ./assets/wezterm.png
 coverAlt: Wezterm configuration file with workspaces switcher keybindings.
 tags: [wezterm, terminal, productivity]
-draft: false 
+draft: false
 ---
 import wezVideo2 from "./assets/videos/wezterm2.webm"
 
 You can do some pretty cool stuff with the Wezterm API. Here is an example to get you started.
-Here, we are defining a list of workspaces that the user can switch to. Using `InputSelector`, the user is then prompted to select a workspace 
+Here, we are defining a list of workspaces that the user can switch to. Using `InputSelector`, the user is then prompted to select a workspace
 from the list, causing the terminal to switch to that workspace upon selection.
 A really cool thing to not about workspaces is that each workspace has its own
 set of tabs.
-```lua
+
 Here we use the `InputSelector` action to create a list of workspaces that
-wezter at at will use `to prompt the user to select from a list of items.
+wezterm will use to prompt the user to select from a list of items.
+
 
 ```lua
 {
@@ -62,7 +63,7 @@ wezter at at will use `to prompt the user to select from a list of items.
 			pane
 		)
 	end),
-},
+}
 ```
 
 <video src={wezVideo2} autoplay loop controls />
@@ -94,7 +95,7 @@ Want to make new workspaces on the fly? Try this:
 			}),
 		}
 ```
-\
+
 Now, you can easily toggle between 2 folders. While you may already be
 using tabs for this, using Wezterm workspaces can be more efficient when
 extensively and cleverly scripted.

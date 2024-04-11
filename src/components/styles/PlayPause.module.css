@@ -1,7 +1,11 @@
-.iconContainer {
-  @apply relative left-[-5px] w-[30px] cursor-pointer;
+.ping{
+  animation: ping 1s cubic-bezier(0, 0, 0.2, 1);
+}
 
-  svg {
-    @apply stroke-amethyst-300 text-amethyst-300;
+@keyframes ping {
+  75%,
+  100% {
+    transform: scale(2);
+    opacity: 0;
   }
 }

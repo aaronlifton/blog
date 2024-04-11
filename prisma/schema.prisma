@@ -29,10 +29,17 @@ generator zod {
 //  draft       Boolean  @default(false)
 //}
 
-model BlogPostMeta {
+// Turso/Sqlite doesn't support Prisma enums...
+// enum MetricType {
+//   VIEW
+//   GH_RATE_LIMIT
+// }
+// So we will use a string for now until we switch to a better DB
+model Metric {
   id       String @default(uuid())
   postSlug String @id
-  numViews BigInt @default(0)
+  value BigInt @default(0)
+  metricType String // MetricType
 }
 
 model Error {

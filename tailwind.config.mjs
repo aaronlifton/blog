@@ -152,6 +152,7 @@ export default {
 				},
 			},
 			animation: {
+        pingOnce: "ping 1s cubic-bezier(0, 0, 0.2, 1) 1",
 				dialogBounceIn: "dialogAnimateIn 300ms cubic-bezier(0.19, 1, 0.22, 1)",
 				dialogAnimateIn: "dialogAnimateIn 300ms cubic-bezier(0.19, 1, 0.12, 1)",
 				dialogAnimateOut:

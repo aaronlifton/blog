@@ -1,67 +1,75 @@
 import { initTRPC } from "@trpc/server";
 import { z } from "zod";
 import type { Context } from "./context";
-import { getCommits, getRepoContents } from "./services/github";
-//
+import { IncrementMetricInput } from "./types";
+import type { MetricModel } from "$prisma/zod/metric";
+
 export const t = initTRPC.context<Context>().create({
-	allowOutsideOfServer: true,
+  allowOutsideOfServer: true,
 });
 const { createCallerFactory, router } = t;
 export const publicProcedure = t.procedure;
 export const apiProcedure = publicProcedure.use((opts) => {
-	if (!opts.ctx.req || !opts.ctx.resHeaders) {
-		throw new Error("You are missing `req` or `res` in your call.");
-	}
-	return opts.next({
-		ctx: {
-			// We overwrite the context with the truthy `req` & `res`, which will also overwrite the types used in your procedure.
-			req: opts.ctx.req,
-			res: opts.ctx.resHeaders,
-		},
-	});
+  if (!opts.ctx.req || !opts.ctx.resHeaders) {
+    throw new Error("You are missing `req` or `res` in your call.");
+  }
+  return opts.next({
+    ctx: {
+      // We overwrite the context with the truthy `req` & `res`, which will also overwrite the types used in your procedure.
+      req: opts.ctx.req,
+      res: opts.ctx.resHeaders,
+    },
+  });
 });
 
 export const appRouter = t.router({
-	// getUserById: t.procedure.input(z.string()).query((opts) => {
-	//   return users[opts.input]; // input type is string
-	// }),
-	// createUser: t.procedure
-	//   // validate input with Zod
-	//   .input(
-	//     z.object({
-	//       name: z.string().min(3),
-	//       bio: z.string().max(142).optional(),
-	//     }),
-	//   )
-	//   .mutation((opts) => {
-	//     const id = Date.now().toString();
-	//     const user: User = { id, ...opts.input };
-	//     users[user.id] = user;
-	//     return user;
-	//   }),
-	incrementViews: publicProcedure.mutation((resolver) => {
-		const { prisma } = resolver.ctx;
-		return {
-			id: "1",
-			title: "Buy milk",
-			completed: false,
-		};
-	}),
-	getCommits: publicProcedure.query(() => {
-		return getCommits();
-	}),
-	getFile: apiProcedure
-		.input(
-			z.object({
-				owner: z.string(),
-				repo: z.string(),
-				path: z.string(),
-			}),
-		)
-		.query(async (opts) => {
-			const response = await getRepoContents(opts.input);
-			return await response.json();
-		}),
+  incrementMetric: publicProcedure
+    .input(IncrementMetricInput)
+    .mutation(async (resolver) => {
+      const { prisma } = resolver.ctx;
+      const { metricType, slug } = resolver.input;
+      const upsert = async () =>
+        prisma.metric.upsert({
+          where: {
+            postSlug: slug,
+          },
+          create: {
+            postSlug: slug,
+            metricType,
+            value: 1,
+          },
+          update: {
+            value: {
+              increment: 1,
+            },
+          },
+          select: {
+            postSlug: true,
+            value: true,
+            metricType: true,
+          },
+        });
+      const metric = await upsert();
+      return metric;
+    }),
+  getCommits: publicProcedure.query((resolver) => {
+    const { githubService } = resolver.ctx;
+    return githubService.getCommits();
+  }),
+  // publicProcedure because it's only called on server side
+  getFile: publicProcedure
+    .input(
+      z.object({
+        owner: z.string(),
+        repo: z.string(),
+        path: z.string(),
+      }),
+    )
+    .query(async (resolver) => {
+      const { githubService } = resolver.ctx;
+      const response = await githubService.getRepoContents(resolver.input);
+      return await response.json();
+    }),
 });
 
 // export type definition of API

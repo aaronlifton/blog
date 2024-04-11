@@ -1,5 +1,5 @@
 -- CreateTable
-CREATE TABLE "BlogPostMeta" (
+CREATE TABLE "Metric" (
     "id" TEXT NOT NULL,
     "postSlug" TEXT NOT NULL PRIMARY KEY,
     "numViews" BIGINT NOT NULL DEFAULT 0

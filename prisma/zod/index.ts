@@ -1,2 +1,2 @@
-export * from "./blogpostmeta";
+export * from "./metric";
 export * from "./error";
