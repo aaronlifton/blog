@@ -67,7 +67,7 @@ export const getViewsBySlug = async (slug: string, shouldIncrement = false) => {
         metric = await upsert();
       }
     }
-    return metric;
+    return metric.value;
   } catch (e) {
     if ((e as PrismaClientKnownRequestError).code === "P2002") {
       // https://www.prisma.io/docs/concepts/components/prisma-client/handling-errors
