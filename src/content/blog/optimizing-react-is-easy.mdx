@@ -1,16 +1,20 @@
 ---
 title: "Optimizing React is Easy"
-description: "Follow one simple rule to know where to apply memoization, the single most important performance utility in React."
+description:
+  "Follow one simple rule to know where to apply memoization, the single most
+  important performance utility in React."
 pubDate: "Dec 19 2023"
-cover: "./assets/bad-component.png"
-coverAlt: "An example of a component that 'for sure' needs memoization."
+cover: "./assets/screenshots/react-shallow-equal.png"
+coverAlt: "The source code for React's shallow prop comparison."
 tags: ["react", "performance", "optimization"]
 ---
-import Admonition from '$components/Admonition.astro'
-import ProseWithImage from '$components/ProseWithImage.astro'
 
-React uses something called **shallow prop comparison**. It's actually *quite* easy to understand and optimize, and
-everyone should be aware of this, for it is the #1 tool to prevent unnecessary re-renders in React.
+import Admonition from "$components/Admonition.astro";
+import ProseWithImage from "$components/ProseWithImage.astro";
+
+React uses something called **shallow prop comparison**. It's actually _quite_
+easy to understand and optimize, and everyone should be aware of this, for it is
+the #1 tool to prevent unnecessary re-renders in React.
 
 <ProseWithImage>
 Methods like `useMemo` and `useCallback` take a dependency arrray as a 2nd argument. Each element of this dependency array gets compared
@@ -30,13 +34,21 @@ function propHasChanged(prev, next) {
   </Fragment>
 </ProseWithImage>
 
-In other words, React compares old and new props by shallow equality; that is, it considers whether each *new* prop is **referentially equal** to the *old* prop.
+In other words, React compares old and new props by shallow equality; that is,
+it considers whether each _new_ prop is **referentially equal** to the _old_
+prop.
 
-This means that if props or dependencies are *not* primitive values. that is, they are **arrays**, **objects**, or **functions** (in Javascript, functions are objects too),
-even if they have the same value, each time the component is re-rendered, they will be considered unequal to their previous versions if they are not **memoized**.
-To avoid causing extra re-renders by having non-primitive props, [simplify props or memoize props in the parent component](https://react.dev/reference/react/memo#minimizing-props-changes).
+This means that if props or dependencies are _not_ primitive values. that is,
+they are **arrays**, **objects**, or **functions** (in Javascript, functions are
+objects too), even if they have the same value, each time the component is
+re-rendered, they will be considered unequal to their previous versions if they
+are not **memoized**. To avoid causing extra re-renders by having non-primitive
+props,
+[simplify props or memoize props in the parent component](https://react.dev/reference/react/memo#minimizing-props-changes).
 
->Be careful of using objects, arrays, or functions in state, or as props, as they are not primitive values. If you need to use objects, make sure to memoize them using `useMemo` or `useCallback` as necessary.
+> Be careful of using objects, arrays, or functions in state, or as props, as
+> they are not primitive values. If you need to use objects, make sure to
+> memoize them using `useMemo` or `useCallback` as necessary.
 
 ## The actual source code
 
@@ -62,15 +74,17 @@ function MyFC({ obj }): React.FC<{ obj: { a: number, b: number } }> {
 }
 ```
 
-When you use `useMemo`, your component re-renders whenever any element of the dependency array is not shallowly equal to its previous value.
-This means that React compares every prop in your component with its previous value using the Object.is comparison.
+When you use `useMemo`, your component re-renders whenever any element of the
+dependency array is not shallowly equal to its previous value. This means that
+React compares every prop in your component with its previous value using the
+Object.is comparison.
 
 Therefore, all dependencies and props should be **PRIMITIVE VALUES**!
 
 For example, `Object.is(3, 3)` is `true`, but `Object.is({}, {})` is `false`.
 
-The problem
-Let me walk you through a simplified example I encountered while working on a coding task.
+The problem Let me walk you through a simplified example I encountered while
+working on a coding task.
 
 ```tsx
 function useGetProducts(filters: Record<string, string>) {
@@ -93,11 +107,13 @@ function ProductList() {
 }
 ```
 
-Now, at first glance, this looks all fine. However, using the params object as a dependency of the useEffect is problematic.
+Now, at first glance, this looks all fine. However, using the params object as a
+dependency of the useEffect is problematic.
 
 Can you see it?
 
-Have a look at how we pass the filters object from the ProductList component to theuseGetProducts hook.
+Have a look at how we pass the filters object from the ProductList component to
+theuseGetProducts hook.
 
 ```tsx
 function ProductList() {
@@ -105,14 +121,17 @@ function ProductList() {
   ...
 ```
 
-During each render, this object is created from scratch. The useEffect internally compares the dependencies by reference. And since the reference to the filters object is different for each render, the effect would be run with every render as well.
+During each render, this object is created from scratch. The useEffect
+internally compares the dependencies by reference. And since the reference to
+the filters object is different for each render, the effect would be run with
+every render as well.
 
 The useEffect runs on every render
 
 This is less than ideal, but not that easy to spot.
 
-Approach 1: Spread object values
-A simple solution is to spread all values of this object as dependencies.
+Approach 1: Spread object values A simple solution is to spread all values of
+this object as dependencies.
 
 ```tsx
 function useGetProducts(filters: Record<string, string>) {
@@ -124,14 +143,18 @@ function useGetProducts(filters: Record<string, string>) {
 }
 ```
 
-Technically, this isn't problematic, because the effect is run whenever one of the values of the params object changes. But we get a lint warning, and would have to disable it to commit our code.
+Technically, this isn't problematic, because the effect is run whenever one of
+the values of the params object changes. But we get a lint warning, and would
+have to disable it to commit our code.
 
 Missing dependency warning
 
-While disabling warnings isn't necessarily a huge problem, this could lead us to forget about a missing dependency later if we, for example, add another filter. This could then lead to a hard-to-find bug.
+While disabling warnings isn't necessarily a huge problem, this could lead us to
+forget about a missing dependency later if we, for example, add another filter.
+This could then lead to a hard-to-find bug.
 
-Approach 2: Manually pass each value
-Another approach is to destructure each filter and pass it as a separate dependency.
+Approach 2: Manually pass each value Another approach is to destructure each
+filter and pass it as a separate dependency.
 
 ```tsx
 function useGetProducts(filters: Record<string, string>) {
@@ -144,10 +167,14 @@ function useGetProducts(filters: Record<string, string>) {
 }
 ```
 
-But this is a bit tedious, and we might forget to add a new parameter if new filters are introduced. Also, in our case, this doesn’t really work as the filters object could contain any string as key.
+But this is a bit tedious, and we might forget to add a new parameter if new
+filters are introduced. Also, in our case, this doesn’t really work as the
+filters object could contain any string as key.
 
-Approach 3: Third-party useDeepCompareEffect hook
-Another approach is using this useDeepCompareEffect created by Kent C. Dodds. This hook is similar to the native useEffect, but instead of comparing the dependencies by reference, it makes a deep comparison of all values inside an object.
+Approach 3: Third-party useDeepCompareEffect hook Another approach is using this
+useDeepCompareEffect created by Kent C. Dodds. This hook is similar to the
+native useEffect, but instead of comparing the dependencies by reference, it
+makes a deep comparison of all values inside an object.
 
 Let's give it a try. First, we install the dependency.
 
@@ -155,7 +182,9 @@ Let's give it a try. First, we install the dependency.
 npm i use-deep-compare-effect
 ```
 
-Then, we replace the useEffect with a new useDeepCompareEffect hook. We can now simply pass the filters object as a dependency, and the effect won't be run on every render anymore.
+Then, we replace the useEffect with a new useDeepCompareEffect hook. We can now
+simply pass the filters object as a dependency, and the effect won't be run on
+every render anymore.
 
 ```tsx
 function useGetProducts(filters: Record<string, string>) {
@@ -167,14 +196,16 @@ function useGetProducts(filters: Record<string, string>) {
 }
 ```
 
-The problem with this hook? When we remove a required dependency like the params object, we don't get a lint warning about missing dependencies.
+The problem with this hook? When we remove a required dependency like the params
+object, we don't get a lint warning about missing dependencies.
 
 No missing dependency warning with useDeepCompareEffect
 
 So, this isn't really better than our destructuring approach before.
 
-Approach 4: Stringifying the object
-A final approach that I saw Dan Abramov recommend somewhere is stringifying the object and parsing it again inside the useEffect.
+Approach 4: Stringifying the object A final approach that I saw Dan Abramov
+recommend somewhere is stringifying the object and parsing it again inside the
+useEffect.
 
 ```tsx
 function useGetProducts(filters: Record<string, string>) {
@@ -188,9 +219,14 @@ function useGetProducts(filters: Record<string, string>) {
 }
 ```
 
-This works well with small and not too deeply nested objects that don't contain function values. Honestly, it doesn't look that great, but combines all of the advantages: It decreases the risk of forgetting to add filters and the risk of forgetting to add a dependency in the future. All while keeping the ESLint check intact.
+This works well with small and not too deeply nested objects that don't contain
+function values. Honestly, it doesn't look that great, but combines all of the
+advantages: It decreases the risk of forgetting to add filters and the risk of
+forgetting to add a dependency in the future. All while keeping the ESLint check
+intact.
 
-The main problem with this approach is that we lose the type of the filters object inside the useEffect.
+The main problem with this approach is that we lose the type of the filters
+object inside the useEffect.
 
 Type of filters is any
 

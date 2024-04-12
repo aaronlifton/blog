@@ -1,12 +1,17 @@
+import mdx from "@astrojs/mdx";
 import path, { dirname } from "node:path";
 import { fileURLToPath } from "node:url";
-import mdx from "@astrojs/mdx";
 // import solid from "@astrojs/solid-js";
 import node from "@astrojs/node";
 import react from "@astrojs/react";
 import sitemap from "@astrojs/sitemap";
 import svelte from "@astrojs/svelte";
 import tailwind from "@astrojs/tailwind";
+import {
+  transformerNotationDiff,
+  transformerNotationHighlight,
+  transformerNotationWordHighlight,
+} from "@shikijs/transformers";
 import { transformerTwoslash } from "@shikijs/twoslash";
 import icon from "astro-icon";
 import robotsTxt from "astro-robots-txt";
@@ -18,11 +23,6 @@ import svgr from "vite-plugin-svgr";
 import customImageResizer from "./bin/processImages.mjs";
 import { remarkReadingTime } from "./src/plugins/remark-reading-time";
 import { remarkSummary } from "./src/plugins/remark-summary";
-import {
-  transformerNotationDiff,
-  transformerNotationHighlight,
-  transformerNotationWordHighlight,
-} from "@shikijs/transformers";
 // import {
 // transformerNotationDiff,
 // transformerNotationErrorLevel,
@@ -104,6 +104,8 @@ export default defineConfig({
             "tsx",
             "typescript",
             "vim",
+            "yaml",
+            "toml",
           ],
         },
       ],

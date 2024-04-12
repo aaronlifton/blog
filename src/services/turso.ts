@@ -1,9 +1,8 @@
-import { createClient } from "@libsql/client";
+import * as models from "$prisma/zod";
 import prisma from "$services/prisma";
+import { createClient } from "@libsql/client";
 import type { PrismaClientKnownRequestError } from "@prisma/client/runtime/library";
-import { ErrorModel } from "$prisma/zod/error";
 
-console.log({ env: import.meta.env });
 export const client = createClient({
   url: import.meta.env.TURSO_DB_URL,
   authToken: import.meta.env.TURSO_DB_AUTH_TOKEN,
@@ -33,6 +32,7 @@ export const getViewsBySlug = async (slug: string, shouldIncrement = false) => {
         },
       },
       select: {
+        id: true,
         postSlug: true,
         value: true,
         metricType: true,
@@ -50,6 +50,7 @@ export const getViewsBySlug = async (slug: string, shouldIncrement = false) => {
         metricType: "views",
       },
       select: {
+        id: true,
         postSlug: true,
         metricType: true,
         value: true,
@@ -57,7 +58,7 @@ export const getViewsBySlug = async (slug: string, shouldIncrement = false) => {
     });
 
   try {
-    let metric: MetricModel | null;
+    let metric: Zod.infer<typeof models.MetricModel> | null;
     if (shouldIncrement) {
       metric = await upsert();
     } else {
@@ -66,7 +67,7 @@ export const getViewsBySlug = async (slug: string, shouldIncrement = false) => {
         metric = await upsert();
       }
     }
-    return metric.numViews;
+    return metric;
   } catch (e) {
     if ((e as PrismaClientKnownRequestError).code === "P2002") {
       // https://www.prisma.io/docs/concepts/components/prisma-client/handling-errors
@@ -90,14 +91,17 @@ export const getViews = async () => {
   }
   try {
     const results = await prisma.metric.findMany({
+      where: {
+        metricType: "views",
+      },
       select: {
         postSlug: true,
-        numViews: true,
+        value: true,
       },
     });
     const views: { [key: string]: bigint } = {};
     for (const result of results) {
-      views[result.postSlug] = result.numViews;
+      views[result.postSlug] = result.value;
     }
     return views;
   } catch (e) {
@@ -106,7 +110,7 @@ export const getViews = async () => {
   }
 };
 
-export const saveError = async (evt: Zod.infer<typeof ErrorModel>) => {
+export const saveError = async (evt: Zod.infer<typeof models.ErrorModel>) => {
   if (!evt) {
     return;
   }
@@ -115,7 +119,7 @@ export const saveError = async (evt: Zod.infer<typeof ErrorModel>) => {
       message: evt.message,
       stackTrace: evt.stackTrace,
     };
-    const validatedError = ErrorModel.parse(errorObj);
+    const validatedError = models.ErrorModel.parse(errorObj);
     const savedError = prisma.error.create({ data: validatedError });
     console.log("Saved error", savedError);
     return savedError;
@@ -126,8 +130,7 @@ export const saveError = async (evt: Zod.infer<typeof ErrorModel>) => {
 
 export const getErrors = async () => {
   try {
-    const errors = await prisma.error.findMany();
-    return errors;
+    return await prisma.error.findMany();
   } catch (e) {
     console.error(e);
     return [];

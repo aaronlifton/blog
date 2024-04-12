@@ -2,7 +2,6 @@ import { initTRPC } from "@trpc/server";
 import { z } from "zod";
 import type { Context } from "./context";
 import { IncrementMetricInput } from "./types";
-import type { MetricModel } from "$prisma/zod/metric";
 
 export const t = initTRPC.context<Context>().create({
   allowOutsideOfServer: true,
@@ -49,8 +48,7 @@ export const appRouter = t.router({
             metricType: true,
           },
         });
-      const metric = await upsert();
-      return metric;
+      return await upsert();
     }),
   getCommits: publicProcedure.query((resolver) => {
     const { githubService } = resolver.ctx;

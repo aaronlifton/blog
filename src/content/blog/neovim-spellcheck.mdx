@@ -1,49 +1,79 @@
 ---
 title: Neovim spellcheck - quick tips
-description: How to fix those pesky spelling mistakes in Neovim, and add custom spelling suggestions.
+description:
+  How to fix those pesky spelling mistakes in Neovim, and add custom spelling
+  suggestions.
 pubDate: Jan 30 2024
 cover: ./assets/screenshots/neovim-spellfile.png
-coverAlt: Neovim spellcheck
+coverAlt:
+  Neovim shortcut to add to spell suggestions, and a Conform+NvimLint
+  configuration for cspell, with a custom keybinding to add the <cword> to the
+  cspell dictionary.
 tags: ["neovim", "quick tips"]
 ---
 
-import { Image } from "astro:assets"
-import ZoomImage from "$components/ZoomImage.svelte"
+import { Image } from "astro:assets";
+import ZoomImage from "$components/ZoomImage.svelte";
 import image1 from "./assets/screenshots/neovim-spellfile.png";
+import image2 from "./assets/vale-diagnostics-sample_qgdcfz_c_pad,h_300,e_sharpen.png";
+import Admonition from "$components/Admonition.astro";
+
+<Admonition type="tip" isQuote={false} title="Note" date={"Apr 11, 2024"}>
+  After using the built-in spellchecker for a while, I decided to try one that
+  would throw less false positives and also help improve grammar and writing
+  style. I've added a new section at the bottom to set up Vale, which checks my
+  writing for style and grammar. When I write these articles now, a combination
+  of WriteGood and Vale rules help me create better content!
+  <Fragment slot="image">
+    <Image
+      inferSize={true}
+      src={image2}
+      alt="Kitty terminal logo"
+      style={"width: 400px;"}
+    />
+  </Fragment>
+</Admonition>
 
 In neovim, when a word is marked as misspelled, you can add it to the dictionary
-by typing <kbd>zg</kbd> while the cursor is on the word. To correct a word from a list of
-suggestions, you can type <kbd>z=</kbd>. This is great, but what if you want to add a
-custom spelling suggestion? For example, I want to add the word `neovim` to the
-dictionary, but I don't want to add it to the dictionary as `neovim`, I want to
-add it as `Neovim`, with a capital `N`.
+by typing <kbd>zg</kbd> while the cursor is on the word. To correct a word from
+a list of suggestions, you can type <kbd>z=</kbd>. This is great, but what if
+you want to add a custom spelling suggestion? For example, I want to add the
+word `neovim` to the dictionary, but I don't want to add it to the dictionary as
+`neovim`, I want to add it as `Neovim`, with a capital `N`.
 
 ## Configuration
+
 Here's how you do it:
 
 1. Create a custom spelling suggestion file in your neovim configuration
    directory. I called mine `~/.config/nvim/spell/sugg`. You might notice files
-   in that folder that end in `.add` — the words in these files are
-   ignored by spellcheck.
+   in that folder that end in `.add` — the words in these files are ignored by
+   spellcheck.
 
    ```js annotate
-   neovim/Neovim
+   neovim / Neovim;
    //------<<
    ```
 
-   If `Neovim` is marked as a misspelled word, type <kbd>zg</kbd> to add it to the
-   dictionary.
-   \
-   **Note**: If the word to the right of the `/` is mispelled, the suggestion
-   will be ignored by neovim. Make sure all words on the right are added as
-   "goodwords".
+   If `Neovim` is marked as a misspelled word, type <kbd>zg</kbd> to add it to
+   the dictionary. \
+   **Note**: If the word to the right of the `/` is mispelled, the suggestion will
+   be ignored by neovim. Make sure all words on the right are added as "goodwords".
 
    The file should now look like this:
-   <ZoomImage link={image1.src} alt={"Full-size neovim screenshot"} caption="Neovim screenshot showing a custom spelling suggestion file" client:load>
-     <Image src={image1} width="720"
+
+   <ZoomImage
+     link={image1.src}
+     alt={"Full-size neovim screenshot"}
+     caption="Neovim screenshot showing a custom spelling suggestion file"
+     client:load
+   >
+     <Image
+       src={image1}
+       width="720"
        alt="Neovim screenshot showing a custom spelling suggestion file"
-      class="max-h-full max-w-full m-0"
-      />
+       class="m-0 max-h-full max-w-full"
+     />
    </ZoomImage>
 
 1. Add the following to your vim options:
@@ -53,9 +83,11 @@ vim.opt.sps = "file:/Users/aaron/.config/nvim/spell/sugg,best"
 ```
 
 Now, when editing a file, if `neovim` is marked as a misspelled word, typing
+
 <kbd>z=</kbd> will show `Neovim` as the first suggestion.
 
 ## Disabling for syntax
+
 Another thing to note is that there is a configuration option for spellchecking
 syntax. Generally, we do not want to spell check function and class names, etc -
 the whole page would start to turn red! To ignore certain syntax, add the
@@ -64,3 +96,57 @@ following to your vim options:
 ```lua
 vim.cmd("set spell syntax=off")
 ```
+
+## Setting up Vale
+
+Here's how you do it:
+
+1. On osx, `brew install vale`.
+2. Create a `.vale.ini` file in your project root. Many projects on github have
+   great examples of vale configurations tailored for technical writing. Here's
+   mine for some inspiration. with the following content:
+
+```toml
+StylesPath = .vale/styles
+MinAlertLevel = suggestion
+Packages = write-good, proselint, Microsoft # `vale sync` will download these packages for you.
+Vocab = Me
+
+[*]
+IgnoredScopes = code, tt, table, tr, td # ignore HTML
+BlockIgnores = (?s) *({< output >}.*?{< ?/ ?output >}), \
+(?s) *({< highlight .* >}.*?{< ?/ ?highlight >})[*md]
+BasedOnStyles = Vale, Microsoft, write-good # also check out `proselint`
+; Vale.Spelling = NO
+Vale.Spelling=warning
+Vale.Terms = NO
+write-good.E-Prime = NO # E-prime is too aggressive and not best suited for blog or tutorial writing.
+write-good.ThereIs = suggestion
+# I've sen many configs that disable these, but I'm still testing them out. If i
+# update my vale configuration, I can reload the file in Neovim with `:e` to
+# refresh the diagnostics.
+; write-good.TooWordy = NO
+; write-good.Weasel = NO
+Microsoft.GeneralURL = NO
+Microsoft.HeadingAcronyms = NO
+Microsoft.Auto = NO
+Microsoft.Acronyms = NO
+Microsoft.Wordiness = NO # Postman.TooWordy, which was based on WriteGood, is better.
+Microsoft.Passive = NO
+Microsoft.Vocab = NO
+Microsoft.ComplexWords = NO
+Microsoft.We = YES
+Microsoft.Adverbs = NO # Postman.Weasel now has every unique word from this added to it.
+Microsoft.Terms = NO
+Microsoft.Avoid = NO
+[formats]
+mdx = md
+```
+
+3. Vale will automatically fetch the Style rules for you and save them into your
+   `StylesPath`.
+4. Set up a keybinging in Neovim to append `<cword>`, the word under the cursor,
+   to the custom spell file. Since this configuration specifies `Vocab = Me`,
+   the spellfile should be created at
+   `./vale/styles/config/vocabularies/accept.txt`, and it will simply be a list
+   of words to ignore seperated by newlines.

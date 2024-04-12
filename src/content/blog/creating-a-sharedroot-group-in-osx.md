@@ -5,6 +5,7 @@ pubDate: Jan 19 2024
 cover: ./assets/screenshots/nvim-dscl.png
 coverAlt: Neovim screenshot showing fish dscl function
 tags: ["osx"]
+draft: true
 ---
 
 Have you ever wanted to give yourself root permissions for certain folders in
