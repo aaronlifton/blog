@@ -1,12 +1,12 @@
 ---
 export const prerender = true;
-import { getCollection, type CollectionEntry } from "astro:content";
 import HeadingWithIcon from "$/components/HeadingWithIcon.astro";
 import Pages from "$/components/Pages.svelte";
 import PostPreviewList from "$/components/PostPreviewList.astro";
 import { PAGE_SIZE } from "$/consts";
 import Layout from "$/layouts/Layout.astro";
 import { getIsMobile } from "$/util";
+import { type CollectionEntry, getCollection } from "astro:content";
 
 const isMobile = getIsMobile(Astro);
 
@@ -50,13 +50,12 @@ const { tag } = Astro.params as Params;
     <HeadingWithIcon text={tag} {tag} className="mr-2" />
     <span class="emdash">—</span>
     <span
-      class="relative top-[-0.1ch] text-center italic leading-4
-      text-accent-gray-dark"
+      class="relative top-[-0.1ch] text-center italic leading-4 text-accent-gray-dark"
     >
       Page {page.currentPage}
     </span>
   </div>
-  <PostPreviewList posts={page.data} heading="Posts" asCard={isMobile()} />
+  <PostPreviewList posts={page.data} heading="Posts" asCard={true} />
   <Pages
     baseUrl={Astro.url.pathname.slice(0, -2)}
     currentPage={page.currentPage}
@@ -64,15 +63,15 @@ const { tag } = Astro.params as Params;
   />
 </Layout>
 <style>
-  .emdash {
-    span + span {
-      position: relative;
-      top: -4px;
-    }
+.emdash {
+  span + span {
+    position: relative;
+    top: -4px;
   }
+}
 
-  .title span {
-    align-items: middle;
-    line-height: 6;
-  }
+.title span {
+  align-items: middle;
+  line-height: 6;
+}
 </style>

@@ -29,6 +29,7 @@ type IconState =
 
 const PlayPause: React.FC<Props> = ({ className: _className, onClick }) => {
   const button = useRef<HTMLDivElement>(null);
+  const [pageLoaded, setPageLoaded] = useState(false);
   const [status, setStatus] = useState<IconState>(pauseStatus);
   const isPlayStatus = useMemo(
     () => status === playStatus || status === playHoverStatus,
@@ -54,6 +55,9 @@ const PlayPause: React.FC<Props> = ({ className: _className, onClick }) => {
     isPaused.subscribe((paused) => {
       setStatus(paused ? pauseStatus : playStatus);
     });
+    setTimeout(() => {
+      setPageLoaded(true);
+    }, 300);
   }, []);
 
   return (
@@ -68,7 +72,7 @@ const PlayPause: React.FC<Props> = ({ className: _className, onClick }) => {
         "border-border h-10 justify-center rounded-md border px-2",
         "[&_svg]:stroke-amethyst-300 [&_svg]:text-amethyst-300",
         "transition-all duration-150 ease-in [&_*]:leading-snug",
-        isPlayStatus ? "opacity-0" : "opacity-100",
+        isPlayStatus ? "opacity-0" : pageLoaded ? "opacity-100" : "opacity-0",
       ])}
     >
       <PauseFilled width={17} className="relative top-[-1px]" />
@@ -76,7 +80,8 @@ const PlayPause: React.FC<Props> = ({ className: _className, onClick }) => {
         data-state={isPlayStatus ? null : "paused"}
         className={clsx(
           "animate-fill-forwards absolute data-[state=paused]:animate-pingOnce",
-          "opacity-66 inline-flex h-full w-full rounded-full bg-gray-200",
+          "inline-flex h-full w-full rounded-full bg-gray-200",
+          pageLoaded ? "opacity-66" : "opacity-0",
           Styles.ping,
         )}
       />
