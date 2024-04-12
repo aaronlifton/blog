@@ -13,15 +13,17 @@ import Layout from "../layouts/Layout.astro";
 
     <Prose>
       <div
-        class="space-evenly mb-4 flex w-full flex-row items-start justify-center gap-4 align-middle"
+        class="space-evenly mb-4 flex w-full flex-col sm:flex-row items-start justify-center gap-4 align-middle"
       >
-        <Image
-          src={image}
-          alt="Astro logo, until I get a proper image."
-          width={128}
-          height={128}
-          class="m-0"
-        />
+        <div class="flex justify-center w-full">
+          <Image
+            src={image}
+            alt="Astro logo, until I get a proper image."
+            width={128}
+            height={128}
+            class="m-0"
+          />
+        </div>
         <div>
           <p class="mt-0">
             I'm a software engineer who taught himself Ruby on Rails after

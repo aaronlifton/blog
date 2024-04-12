@@ -21,18 +21,29 @@ const { post, asCard = false } = Astro.props;
   class:list={[
     "post-preview",
     "w-full",
-    "flex-col",
-    "sm:flex-row",
     { "post-preview--card": asCard },
     "group",
     "outline-amethyst-200 transition-transform duration-300 ease-out focus-within:outline group-hover:scale-[1.03]",
   ]}
 >
-  <a
-    href={`/blog/${post.slug}`}
-    title={post.data.title}
-    class="p-4 post-preview__link gap-4 flex text-md grow font-normal no-underline group-hover:no-underline text-current hover:no-underline"
-  >
+<a href={`/blog/${post.slug}`}
+  title={post.data.title}
+  class:list={[
+    "p-4",
+    "post-preview__link",
+    "gap-4",
+    "flex",
+    "flex-col",
+    "sm:flex-row",
+    "text-md",
+    "grow",
+    "font-normal",
+    "no-underline",
+    "group-hover:no-underline",
+    "text-current",
+    "hover:no-underline",
+  ]}
+>
     <div class="post-preview__date-box">
       <div class="post-preview__date">
         <span class="post-preview__date__day">{
