@@ -1,6 +1,6 @@
 ---
-import { Image } from "astro:assets";
 import ZoomableImage from "$/components/ZoomableImage.astro";
+import { Image } from "astro:assets";
 
 interface Props {
   link: string;
@@ -28,7 +28,6 @@ const {
 
 {
   src && (
-    <a href={postLink}>
     <Image
       class={className}
       src={src}
@@ -38,12 +37,11 @@ const {
       alt={`Go to the post titled "${postTitle}"`}
       width={width}
     />
-    </a>
   )
 }
 
 <style>
-  img {
-    @apply brightness-150;
-  }
+img {
+  @apply brightness-150;
+}
 </style>

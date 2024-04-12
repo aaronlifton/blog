@@ -1,0 +1,35 @@
+.container {
+  /* width: 100%; */
+  width: 250px;
+  height: 100%;
+  border-radius: 100%;
+  box-shadow: 2px 5px 20px 0px rgba(0, 0, 0, 0.1);
+  -webkit-box-shadow: 2px 5px 20px 0px rgba(0, 0, 0, 0.1);
+  -moz-box-shadow: 2px 5px 20px 0px rgba(0, 0, 0, 0.1);
+}
+.animatedBackground {
+  font-family: sans-serif;
+  text-align: center;
+  /* background: linear-gradient(-45deg, #310354, #9003fc, #23a6d5, #23d5ab); */
+  background-size: 400% 400%;
+  /* animation: gradient 15s ease infinite; */
+  /* Set rules to fill background */
+  min-height: 100%;
+
+  /* Set up proportionate scaling */
+  width: 100%;
+  height: auto;
+
+  /* Set up positioning */
+  /* position: fixed; */
+  /* top: 0; */
+  /* left: 0; */
+  /* z-index: -1; */
+}
+:root {
+  --step0: #ff615d;
+  --step1: #bad5ea;
+  --step2: #fd8769;
+  --step3: #356d94;
+  --step4: #ffdcb3;
+}

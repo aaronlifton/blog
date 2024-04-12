@@ -9,7 +9,7 @@ interface Props {
 const { tags }: Props = Astro.props;
 ---
 
-<div class="tags center mx-auto flex w-full max-w-xl justify-center">
+<div class="post-preview__tags">
   {
     tags
     && tags.map((tag, idx) => (
@@ -31,8 +31,8 @@ const { tags }: Props = Astro.props;
   }
 </div>
 <style>
-.tags {
-  @apply mb-0 mt-4;
+.post-preview__tags {
+  @apply relative left-0 top-0;
   a svg {
     @apply fill-theme-primary stroke-primary text-primary;
     display: inline;
