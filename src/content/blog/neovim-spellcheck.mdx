@@ -15,7 +15,7 @@ tags: ["neovim", "quick tips"]
 import { Image } from "astro:assets";
 import ZoomImage from "$components/ZoomImage.svelte";
 import image1 from "./assets/screenshots/neovim-spellfile.png";
-import image2 from "./assets/vale-diagnostics-sample_qgdcfz_c_pad,h_300,e_sharpen.png";
+import valeDiagnosticsImg from "./assets/vale-diagnostics-sample_qgdcfz_c_pad,h_300,e_sharpen.png";
 import Admonition from "$components/Admonition.astro";
 
 <Admonition type="tip" isQuote={false} title="Note" date={"Apr 11, 2024"}>
@@ -27,8 +27,8 @@ import Admonition from "$components/Admonition.astro";
   <Fragment slot="image">
     <Image
       inferSize={true}
-      src={image2}
-      alt="Kitty terminal logo"
+      src={valeDiagnosticsImg}
+      alt="Vale diagnoistics results in a terminal"
       style={"width: 400px;"}
     />
   </Fragment>

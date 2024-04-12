@@ -4,7 +4,7 @@ description:
   How to make keybindings for a preset list of workspaces, and generate and
   switch to new workspaces on the fly.
 pubDate: Feb 2, 2024
-cover: ./assets/vale-diagnostics-sample_qgdcfz_c_pad,h_300,e_sharpen.png
+cover: ./assets/screenshots/nvim-wezterm-workspaces.png
 coverAlt: Wezterm configuration file with workspaces switcher keybindings.
 tags: [wezterm, terminal, productivity]
 draft: false
@@ -12,6 +12,8 @@ draft: false
 
 import { Image } from "astro:assets";
 import wezVideo2 from "./assets/videos/wezterm2.webm";
+import kittyLogo from "./assets/kitty-logo_wiiemx.svg";
+import valeDiagnosticsImg from "./assets/vale-diagnostics-sample_qgdcfz_c_pad,h_300,e_sharpen.png";
 import Admonition from "$components/Admonition.astro";
 
 <Admonition type="tip" isQuote={false} title="Note" date={"Apr 11, 2024"}>
@@ -24,13 +26,7 @@ import Admonition from "$components/Admonition.astro";
   multiplexers involve the use of pseudoterminals, which adds additional lag
   between Neovim and...your keyboard!
   <Fragment slot="image">
-    <Image
-      inferSize={true}
-      src={
-        "https://res.cloudinary.com/disod51fp/image/upload/v1712857822/kitty-logo_wiiemx.svg"
-      }
-      alt="Kitty terminal logo"
-    />
+    <Image width={400} src={kittyLogo} alt="Kitty terminal logo" />
   </Fragment>
 </Admonition>
 
