@@ -1,17 +1,17 @@
 ---
+import Layout from "$/layouts/Layout.astro";
 import BaseHead from "$components/BaseHead.astro";
 import CodeText from "$components/CodeText.astro";
-import IconTextLink from "$components/IconTextLink.astro";
 import FormattedDate from "$components/FormattedDate.astro";
 import Header from "$components/Header.astro";
+import IconTextLink from "$components/IconTextLink.astro";
 import PostStats from "$components/PostStats.svelte";
 import Prose from "$components/Prose.astro";
 import Tags from "$components/Tags.astro";
+import TOC from "$components/TOC.astro";
 import ZoomImage from "$components/ZoomImage.svelte";
-import Layout from "$/layouts/Layout.astro";
 import type { MarkdownHeading } from "astro";
 import { Image } from "astro:assets";
-import TOC from "$components/TOC.astro";
 import type { CollectionEntry } from "astro:content";
 import "@radix-ui/themes/styles.css";
 import { getSlugFromPathname } from "$/util";
@@ -147,6 +147,7 @@ const tocEmpty = headings.length === 0;
                   widths={[240, 540, 720, cover.width]}
                   sizes={`(max-width: 360px) 240px, (max-width: 720px) 540px, (max-width: 1600px) 720px, ${cover.width}px`}
                   alt={coverAlt || ""}
+                  transition:name="post-cover-image"
                 />
               </ZoomImage>
             )
@@ -154,7 +155,7 @@ const tocEmpty = headings.length === 0;
           <Tags tags={tags} />
           <div class="prose">
             <div class="title">
-              <span class="date mb-3">
+              <span class="mb-3 date">
                 <FormattedDate date={pubDate} />
                 {
                   updatedDate && (
@@ -165,6 +166,7 @@ const tocEmpty = headings.length === 0;
                 }
               </span>
               <PostStats {slug} client:load />
+              {false && <h1 class="text-3xl"><CodeText text={title} /></h1>}
               <h1 class="text-3xl"><CodeText text={title} /></h1>
               <hr class="not-prose" />
             </div>
@@ -181,105 +183,105 @@ const tocEmpty = headings.length === 0;
   </Prose>
 </Layout>
 <style>
-  /* Size Modifiers: https://github.com/tailwindlabs/tailwindcss-typography#size-modifiers */
-  /* Color Themes: https://github.com/tailwindlabs/tailwindcss-typography#color-modifiers */
-  [data-back-to-top] {
-    @apply cursor-pointer no-underline;
-  }
-  .hero-image {
-    @apply max-w-full;
-  }
-  .hero-image img {
-    display: block;
-    margin: 0 auto;
-    border-radius: 12px;
-    box-shadow: var(--box-shadow);
-  }
-  .title {
-    margin-bottom: 1em;
-    padding: 1em 0;
-    text-align: center;
-    line-height: 1;
-  }
-  .title h1 {
-    @apply mb-6 mt-4;
-  }
-  .last-updated-on {
-    font-style: italic;
-  }
+/* Size Modifiers: https://github.com/tailwindlabs/tailwindcss-typography#size-modifiers */
+/* Color Themes: https://github.com/tailwindlabs/tailwindcss-typography#color-modifiers */
+[data-back-to-top] {
+  @apply cursor-pointer no-underline;
+}
+.hero-image {
+  @apply max-w-full;
+}
+.hero-image img {
+  display: block;
+  margin: 0 auto;
+  border-radius: 12px;
+  box-shadow: var(--box-shadow);
+}
+.title {
+  margin-bottom: 1em;
+  padding: 1em 0;
+  text-align: center;
+  line-height: 1;
+}
+.title h1 {
+  @apply mb-6 mt-4;
+}
+.last-updated-on {
+  font-style: italic;
+}
 </style>
 
 <script>
-  document.addEventListener("astro:page-load", () => {
-    const blogPostContainer = document.querySelector(
-      "[data-blog-post-container]",
-    ) as HTMLElement;
-    // const toggleTocButton = document.querySelector(
-    //   "[data-toggle-toc]",
-    // ) as HTMLElement;
-    // const tocContainer = document.querySelector(
-    //   "[data-blog-post-toc-container]",
-    // );
-    //
-    // const storedTocState = localStorage.getItem("__preferred_toc_state");
-    // if (storedTocState !== null) {
-    //   if (storedTocState === "open") {
-    //     openToc();
-    //   } else {
-    //     closeToc();
-    //   }
-    // }
+document.addEventListener("astro:page-load", () => {
+  const blogPostContainer = document.querySelector(
+    "[data-blog-post-container]",
+  ) as HTMLElement;
+  // const toggleTocButton = document.querySelector(
+  //   "[data-toggle-toc]",
+  // ) as HTMLElement;
+  // const tocContainer = document.querySelector(
+  //   "[data-blog-post-toc-container]",
+  // );
+  //
+  // const storedTocState = localStorage.getItem("__preferred_toc_state");
+  // if (storedTocState !== null) {
+  //   if (storedTocState === "open") {
+  //     openToc();
+  //   } else {
+  //     closeToc();
+  //   }
+  // }
 
-    // function openToc() {
-    //   blogPostContainer?.setAttribute("data-toc", "open");
-    //   toggleTocButton.setAttribute("data-state", "open");
-    //   saveState("open");
-    //   toggleTocButton.setAttribute(
-    //     "aria-label",
-    //     toggleTocButton.dataset.offLabel ?? "",
-    //   );
-    // }
-    //
-    // function closeToc() {
-    //   blogPostContainer?.setAttribute("data-toc", "closed");
-    //   saveState("closed");
-    //   toggleTocButton.setAttribute(
-    //     "aria-label",
-    //     toggleTocButton.dataset.openTocLabel ?? "",
-    //   );
-    // }
-    //
-    // toggleTocButton?.addEventListener("click", () => {
-    //   const tocIsOpen = blogPostContainer.dataset.toc === "open";
-    //   if (tocIsOpen) {
-    //     closeToc();
-    //     tocContainer?.addEventListener(
-    //       "transitionend",
-    //       () => {
-    //         tocContainer.classList.add("invisible");
-    //       },
-    //       {
-    //         once: true,
-    //       },
-    //     );
-    //   } else {
-    //     openToc();
-    //     tocContainer?.classList.remove("invisible");
-    //   }
-    // });
+  // function openToc() {
+  //   blogPostContainer?.setAttribute("data-toc", "open");
+  //   toggleTocButton.setAttribute("data-state", "open");
+  //   saveState("open");
+  //   toggleTocButton.setAttribute(
+  //     "aria-label",
+  //     toggleTocButton.dataset.offLabel ?? "",
+  //   );
+  // }
+  //
+  // function closeToc() {
+  //   blogPostContainer?.setAttribute("data-toc", "closed");
+  //   saveState("closed");
+  //   toggleTocButton.setAttribute(
+  //     "aria-label",
+  //     toggleTocButton.dataset.openTocLabel ?? "",
+  //   );
+  // }
+  //
+  // toggleTocButton?.addEventListener("click", () => {
+  //   const tocIsOpen = blogPostContainer.dataset.toc === "open";
+  //   if (tocIsOpen) {
+  //     closeToc();
+  //     tocContainer?.addEventListener(
+  //       "transitionend",
+  //       () => {
+  //         tocContainer.classList.add("invisible");
+  //       },
+  //       {
+  //         once: true,
+  //       },
+  //     );
+  //   } else {
+  //     openToc();
+  //     tocContainer?.classList.remove("invisible");
+  //   }
+  // });
 
-    type TocState = "open" | "closed";
+  type TocState = "open" | "closed";
 
-    // function saveState(state: TocState) {
-    //   localStorage.setItem("__preferred_toc_state", state);
-    // }
+  // function saveState(state: TocState) {
+  //   localStorage.setItem("__preferred_toc_state", state);
+  // }
 
-    const backToTopButton = document.querySelector("[data-back-to-top]");
-    backToTopButton?.addEventListener("click", () => {
-      window.scrollTo({
-        top: 0,
-        behavior: "smooth",
-      });
+  const backToTopButton = document.querySelector("[data-back-to-top]");
+  backToTopButton?.addEventListener("click", () => {
+    window.scrollTo({
+      top: 0,
+      behavior: "smooth",
     });
   });
+});
 </script>

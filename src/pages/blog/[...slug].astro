@@ -28,15 +28,49 @@ if (post.data.cover.width > 1000) {
 ---
 
 <BlogPost {...post.data} {headings} {remarkPluginFrontmatter}>
-  <div class="flex w-full flex-col gap-8 pb-4 transition-all md:flex-row">
-    <ZoomImage
-      src={post.data.cover.src}
+  <div class="flex flex-col gap-8 pb-4 w-full transition-all md:flex-row">
+    <Image
+      id={`img-${post.slug}`}
+      class="my-4"
+      src={post.data.cover}
+      width={1500}
+      height={643}
       alt={post.data.coverAlt}
-      caption={post.data.coverAlt}
-      client:load
-    >
-      <Image src={post.data.cover} {width} {height} alt={post.data.coverAlt} />
-    </ZoomImage>
+      loading="lazy"
+      decoding="async"
+      format="webp"
+      transition:name={`img-${post.slug}`}
+    />
+    {
+      false && (
+        <ZoomImage
+          src={post.data.cover.src}
+          alt={post.data.coverAlt}
+          caption={post.data.coverAlt}
+          client:load
+        >
+          <Image
+            src={post.data.cover}
+            {width}
+            {height}
+            alt={post.data.coverAlt}
+          />
+        </ZoomImage>
+      )
+    }
   </div>
   <Content />
 </BlogPost>
+
+<script define:vars={{ post }}>
+let dialogEl: HTMLDialogElement | null;
+let imgClickEvent;
+document.addEventListener("astro:after-swap", () => {
+  imgClickEvent = document.getElementById(`img-${post.slug}`).addEventListener(
+    "click",
+    () => {
+      // TODO: after installing shadcn, trigger dialog
+    },
+  );
+});
+</script>

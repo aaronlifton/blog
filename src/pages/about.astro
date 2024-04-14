@@ -6,16 +6,16 @@ import Layout from "../layouts/Layout.astro";
 ---
 
 <Layout title="About">
-  <div class="space-between flex w-full flex-col">
+  <div class="flex flex-col w-full space-between">
     <div class="text-center">
       <h5 class="m-0">About Me</h5>
     </div>
 
     <Prose>
       <div
-        class="space-evenly mb-4 flex w-full flex-col sm:flex-row items-start justify-center gap-4 align-middle"
+        class="flex flex-col gap-4 justify-center items-start mb-4 w-full align-middle sm:flex-row sm:w-auto space-evenly"
       >
-        <div class="flex justify-center w-full">
+        <div class="flex justify-center w-full sm:justify-start sm:w-auto">
           <Image
             src={image}
             alt="Astro logo, until I get a proper image."
@@ -32,8 +32,8 @@ import Layout from "../layouts/Layout.astro";
             years, and React for over 4. Today, I specialize in Ruby on Rails
             and React/Typescript development.
           </p>
-          <div class="mt-8">
-            <h5>Links</h5>
+          <div class="mt-8 not-prose">
+            <b>Links</b>
             <ul
               class="m-0 ml-0 list-disc p-0 pl-0 indent-0 [&_li]:m-0 [&_li]:p-0"
             >

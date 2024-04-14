@@ -8,7 +8,7 @@ import { menuItems } from "$util/menu";
 import HamburgerMenu from "./HamburgerMenu.astro";
 ---
 
-<header class="grid grid-cols-layout antialiased">
+<header class="grid antialiased grid-cols-layout">
   <nav class="h-nav-height sm:col-content">
     <h2
       class:list={[
@@ -36,7 +36,7 @@ import HamburgerMenu from "./HamburgerMenu.astro";
         {SITE_TITLE}
       </a>
     </h2>
-    <div class="internal-links hidden select-none sm:flex">
+    <div class="hidden select-none sm:flex internal-links">
       {
         menuItems.map((item) => (
           <HeaderLink href={item.pathname}>{item.name}</HeaderLink>
@@ -44,7 +44,7 @@ import HamburgerMenu from "./HamburgerMenu.astro";
       }
     </div>
 
-    <div class="social-links select-none">
+    <div class="select-none social-links">
       <a href="https://linkedin.com/in/aaronlifton" target="_blank">
         <span class="sr-only">Are you a recruiter? Connect with Aaron on
           LinkedIn</span>
@@ -72,7 +72,7 @@ import HamburgerMenu from "./HamburgerMenu.astro";
         </svg>
       </a>
       <IconButton
-        className="cursor-pointer sm:hidden  mr-[-16px] pr-[16px]"
+        className="cursor-pointer sm:hidden mr-[-16px] pr-[16px]"
         data-hamburger-btn
         data-a11y-dialog-show="sidenav"
         variant="menu"

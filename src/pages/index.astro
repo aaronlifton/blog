@@ -1,11 +1,11 @@
 ---
+import { SITE_DESCRIPTION } from "$/consts";
 import Layout from "$/layouts/Layout.astro";
-import { getCollection, type CollectionEntry } from "astro:content";
-import Prose from "$components/Prose.astro";
+import LatestCodeList from "$components/LatestCodeList.astro";
 import PostPreviewList from "$components/PostPreviewList.astro";
 import PostPreviewListFooter from "$components/PostPreviewListFooter.astro";
-import LatestCodeList from "$components/LatestCodeList.astro";
-import { SITE_DESCRIPTION } from "$/consts";
+import Prose from "$components/Prose.astro";
+import { type CollectionEntry, getCollection } from "astro:content";
 export const prerender = true;
 
 let posts: CollectionEntry<"blog">[] = await getCollection("blog");
@@ -25,23 +25,22 @@ posts = Array.from(posts).filter((post) => !post.data.draft);
     },
   }}
 >
-  <div class="hero flex justify-center pb-vert-padding">
-    <div class="hero__tagline flex justify-center">
-      <Prose className="prose prose-base mb-3 text-center lg:prose-base">
+  <div class="flex justify-center hero pb-vert-padding">
+    <div class="flex justify-center hero__tagline">
+      <Prose className="mb-3 text-center prose prose-base lg:prose-base">
         {SITE_DESCRIPTION}
       </Prose>
     </div>
   </div>
-  <div
-    class="flex flex-col gap-0 rounded-lg border border-2 border-card-border bg-card-bg bg-opacity-50 p-4
-    scrollbar-thin scrollbar-track-card-bg sm:flex-row sm:gap-6 portrait:hidden"
+  <ul
+    class="flex flex-col gap-0 p-4 bg-opacity-50 rounded-lg border-2 sm:flex-row sm:gap-6 border-card-border bg-card-bg scrollbar-thin scrollbar-track-card-bg portrait:hidden"
   >
     <LatestCodeList />
-  </div>
+  </ul>
 
   <!-- <div class="flex flex-col"> -->
   <!--   <div -->
-  <!--     class="my-4 flex w-1/2 flex-col gap-0 rounded-lg border border-2 border-card-border bg-card-bg bg-opacity-50 p-4" -->
+  <!--     class="flex flex-col gap-0 p-4 my-4 w-1/2 bg-opacity-50 rounded-lg border-2 border border-card-border bg-card-bg" -->
   <!--   > -->
   <!--     <DeployWatch /> -->
   <!--   </div> -->

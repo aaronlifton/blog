@@ -13,7 +13,7 @@ const { posts, heading, mode = "col", asCard = false } = Astro.props;
 // @ts-ignore
 const sortedPosts = posts.sort(
   (a, b) =>
-    new Date(b.data.pubDate).valueOf() - new Date(a.data.pubDate).valueOf()
+    new Date(b.data.pubDate).valueOf() - new Date(a.data.pubDate).valueOf(),
 );
 ---
 
@@ -22,24 +22,23 @@ const sortedPosts = posts.sort(
     <h2 class={`post-preview__heading post-preview__heading--${mode}`}>
       {heading}
     </h2>
-  ) : (
-    ""
-  )
+  ): (
+     ""
+   )
 }
 <hr />
+<ul class="flex flex-col gap-y-4 max-w-screen-md md:gap-y-6 lg:gap-y-8"></ul>
 <section class={`post-preview__list post-preview__list--${mode}`}>
   {sortedPosts.map((post, idx) => <PostPreview post={post} asCard={asCard} />)}
 </section>
 <style>
-  .post-preview__heading {
-    @apply my-vert-padding text-2xl;
-  }
-  .post-preview__list {
-    @apply flex flex-col gap-6 sm:gap-12;
-    @apply flex-row flex-wrap gap-12 sm:gap-10 md:gap-8 lg:gap-12 lg:px-0;
-  }
-  .post-preview__heading--row {
-  }
-  .post-preview__list--row {
-  }
+.post-preview__heading {
+  @apply my-vert-padding text-2xl;
+}
+.post-preview__list {
+  @apply flex flex-col gap-6 sm:gap-12;
+  @apply flex-row flex-wrap gap-12 sm:gap-10 md:gap-8 lg:gap-12 lg:px-0;
+}
+.post-preview__heading--row {}
+.post-preview__list--row {}
 </style>

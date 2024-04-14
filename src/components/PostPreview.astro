@@ -3,8 +3,9 @@ import { getMonthName, mobileUserAgent } from "$/util";
 import { getIsMobile } from "$/util";
 import CodeText from "$components/CodeText.astro";
 import HomeImage from "$components/HomeImage.astro";
-import type { CollectionEntry } from "astro:content";
 import Tags from "$components/PostPreviewTags.astro";
+import { Image } from "astro:assets";
+import type { CollectionEntry } from "astro:content";
 
 const isMobile = getIsMobile(Astro);
 console.log(isMobile, mobileUserAgent);
@@ -14,159 +15,71 @@ interface Props {
   asCard?: boolean;
 }
 
-const { post, asCard = false } = Astro.props;
+const { post } = Astro.props;
 ---
 
-<article
-  class:list={[
-    "post-preview",
-    "w-full",
-    { "post-preview--card": asCard },
-    "group",
-    "outline-amethyst-200 transition-transform duration-300 ease-out focus-within:outline group-hover:scale-[1.03]",
-  ]}
->
-<a href={`/blog/${post.slug}`}
-  title={post.data.title}
-  class:list={[
-    "p-4",
-    "post-preview__link",
-    "gap-4",
-    "flex",
-    "flex-col",
-    "md:flex-row",
-    "text-md",
-    "grow",
-    "font-normal",
-    "no-underline",
-    "group-hover:no-underline",
-    "text-current",
-    "hover:no-underline",
-  ]}
->
-    <div class="post-preview__date-box">
-      <div class="post-preview__date">
-        <span class="post-preview__date__day">{
-          new Date(post.data.pubDate).getDate()
-        }</span>
-        <span class="post-preview__date__month-n-year">{
-          `${getMonthName(post.data.pubDate)} ${
-            new Date(post.data.pubDate).getFullYear()
-          }`
-        }</span>
-      </div>
-    </div>
-    <div
-      class:list={[
-        "lg:w-auto landscape:w-[300px]",
-        { "w-[100px]": isMobile() },
-        "group-hover:-translate-y-1 group-hover:shadow-xl transition duration-300",
-      ]}
+<li>
+  <article
+    class="p-4 border border-gray-500 transition-transform duration-300 ease-out bg-card-bg outline-pink-light focus-within:outline hover:scale-[1.03]"
+  >
+    <a
+      href={`/blog/${post.slug}`}
+      class="block no-underline outline-none hover:no-underline group hover:[&_p]:no-underline"
     >
-      <HomeImage
-        src={post.data.cover}
-        alt={post.data.coverAlt}
-        link={`/posts/${post.slug}`}
-        postTitle={post.data.title}
-        postLink={`/blog/${post.slug}`}
-        width={asCard ? 400 : 100}
-        key={post.id}
-        data-home-image
-      />
-    </div>
-    <div class="flex flex-1 flex-col">
-      <div class="post-preview__title space-apart flex">
-        <div
-          title={post.data.title}
-          class="text-md grow font-normal group-hover:underline group-hover:text-primary group-hover:decoration-primary transition duration-150 ease-in"
+      <header>
+        <time
+          class="text-gray-200 code"
+          datetime="2024-04-11T00:00:00.000Z"
         >
-          <CodeText text={post.data.title} />
-        </div>
+          {
+            `${new Date(post.data.pubDate).getDate()} ${
+              getMonthName(post.data.pubDate)
+            } ${new Date(post.data.pubDate).getFullYear()}`
+          }
+        </time>
+      </header>
+      <div class="-mx-4">
+        <Image
+          class="my-4"
+          src={post.data.cover}
+          width={1500}
+          height={643}
+          title={post.data.coverAlt}
+          alt={`Go to the post titled "${post.data.title}"`}
+          loading="lazy"
+          decoding="async"
+          format="webp"
+          transition:name={`img-${post.slug}`}
+        />
+        <!-- <img -->
+        <!--   src="/_astro/post-header-4.6.kEAVNs1D.webp" -->
+        <!--   width="1500" -->
+        <!--   height="643" -->
+        <!--   alt="Astro 4.6" -->
+        <!--   class="my-4" -->
+        <!--   loading="lazy" -->
+        <!--   decoding="async" -->
+        <!-- > -->
       </div>
-      <p class="post-preview__desc">
-        <CodeText text={post.data.description} />
-      </p>
-      <div class="flex grow flex-row gap-2">
-        <!-- <p style="color:oklab(83.9% -2.09 4.37)">Sample code:</p> -->
-        <!-- <p style="lab(83.37% 1.51 -22.22)">Sample code:</p> -->
-        <!-- <p style="lab(86.96% 0.87 -16.77)">Sample code:</p> -->
-        <!-- oklch(89% 0.045 270.12) -->
-        <!-- oklch(86% 0.06 270.12) -->
-        <!-- oklch(86.5% 0.072 309.04) // French lilac -150 -->
-        <!-- oklch(81.5% 0.107 309.04) // French lilac -175<F19> -->
-        <!-- <SampleCode slug = {post.slug} /> -->
-        <!-- <ReadPostButton link={`/blog/${post.slug}`} /> -->
-      </div>
-    </div>
-  </a>
-</article>
+      <div class="grid gap-y-4 gap-x-16 mt-6 md:grid-cols-2">
+        <h3 class="group-hover:underline heading-4 md:heading-3"
+          transition:name={`title-${post.slug}`}>
+          {post.data.title}
+        </h3>
+        <p class="text-gray-700">
+          {post.data.description}
+        </p>
+      </div></a>
+  </article>
+</li>
+
 <style>
-.post-preview {
-  @apply flex gap-6;
+.code {
+  font-family: var(--font-mono);
+  font-size: 0.875rem;
+  color: var(--color-gray-200);
 }
-.post-preview__desc :global(code) {
-  @apply text-sm text-black group-hover:text-black;
-}
-.post-preview--card {
-  @apply rounded-lg border border-2 border-card-border bg-card-bg bg-opacity-50
-   transition-colors duration-300 ease-in-out;
-
-  .post-preview__link {
-    @apply hover:text-current
-  }
-  .post-preview__title a {
-    /*@apply decoration-theme-amethyst-200 underline-offset-4;*/
-    /* @apply relative bg-gradient-to-r from-indigo-500 */
-    /* from-10% via-sky-500 via-30% to-emerald-500 to-90% bg-clip-text text-transparent */
-    /* hover:bg-[0%\_0%] hover:from-pink-500 hover:to-yellow-500; */
-    /* background-image: linear-gradient(140deg, 0%, oklch(0.6902 0.277 332.77) 15%, color(srgb 0.74299 0.14734 0.925598) 25%, color(srgb 0.920046 0.203267 0.897015) 35%, color(srgb 0.972118 0.195589 0.454369) 42%, color(srgb 0.972118 0.195589 0.454369) 44%, color(srgb 0.989293 0.765175 0.966961) 47%, oklch(0.5318 0.28 296.97) 48%, oklch(0.5101 0.274 263.83) 60%); */
-    /* background-image: --pink-to-highlight-to-purple-to-blue-horizontal-gradient */
-    /* background-size: 200% 100%; */
-    /* color: rgba(0, 0, 0, 0); */
-    @apply transition-colors ease-in-out duration-150 cursor-pointer;
-  }
-  .post-preview__date-box {
-    @apply flex min-w-[140px] text-lg sm:block sm:text-inherit;
-  }
-  .post-preview__date {
-    @apply flex flex-row gap-1 text-left;
-  }
-  .post-preview__date__day {
-    @apply text-lg sm:text-4xl;
-  }
-  img {
-    @apply border border-2 border-card-img;
-  }
-}
-
-[data-home-image] {
-  @apply flex h-fit flex-row-reverse;
-}
-.post-preview__date-box {}
-.post-preview__date {
-  @apply flex w-full flex-col text-center;
-}
-.post-preview__date__day {
-  @apply text-6xl font-semibold text-gray-500;
-}
-.post-preview__date__month-n-year {
-  @apply text-gray-400;
-}
-.post-preview__title {
-  @apply mb-2 text-2xl font-semibold;
-  a {
-    @apply text-primary;
-  }
-}
-/*.post-preview__title :global(code) {*/
-/*  @apply sm:line-clamp-none landscape:line-clamp-3;*/
-/*}*/
-.post-preview__desc {
-  @apply line-clamp-2 hyphens-auto text-lg leading-6;
-}
-.fancyImage {
-  @apply relative z-10 transform rounded-lg object-cover opacity-0 shadow-none
-  shadow-black/5 transition-transform-opacity duration-300
-  data-[loaded=true]:opacity-100 hover:scale-125 motion-reduce:transition-none;
+li {
+  list-style: none;
 }
 </style>
