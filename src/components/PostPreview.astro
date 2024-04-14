@@ -18,13 +18,13 @@ interface Props {
 const { post } = Astro.props;
 ---
 
-<li>
+<div>
   <article
-    class="p-4 border border-gray-500 transition-transform duration-300 ease-out bg-card-bg outline-pink-light focus-within:outline hover:scale-[1.03]"
+    class="p-4 border-2 transition-transform duration-300 ease-out border-card-border text-primary bg-card-bg outline-pink-light focus-within:outline hover:scale-[1.03]"
   >
     <a
       href={`/blog/${post.slug}`}
-      class="block no-underline outline-none hover:no-underline group hover:[&_p]:no-underline"
+      class="block hover:text-black text-black no-underline outline-none hover:no-underline group hover:[&_p]:no-underline"
     >
       <header>
         <time
@@ -38,9 +38,9 @@ const { post } = Astro.props;
           }
         </time>
       </header>
-      <div class="-mx-4">
+      <div class="-mx-4 h-52">
         <Image
-          class="my-4"
+          class="object-cover my-4 w-full h-full"
           src={post.data.cover}
           width={1500}
           height={643}
@@ -62,16 +62,18 @@ const { post } = Astro.props;
         <!-- > -->
       </div>
       <div class="grid gap-y-4 gap-x-16 mt-6 md:grid-cols-2">
-        <h3 class="group-hover:underline heading-4 md:heading-3"
-          transition:name={`title-${post.slug}`}>
+        <h3
+          class="text-lg leading-snug group-hover:underline heading-4 line-clamp-3 md:heading-3 group-hover:text-primary"
+          transition:name={`title-${post.slug}`}
+        >
           {post.data.title}
         </h3>
-        <p class="text-gray-700">
+        <p class="text-base leading-snug text-gray-700 line-clamp-3">
           {post.data.description}
         </p>
       </div></a>
   </article>
-</li>
+</div>
 
 <style>
 .code {

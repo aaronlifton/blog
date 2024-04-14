@@ -27,18 +27,21 @@ const sortedPosts = posts.sort(
    )
 }
 <hr />
-<ul class="flex flex-col gap-y-4 max-w-screen-md md:gap-y-6 lg:gap-y-8"></ul>
-<section class={`post-preview__list post-preview__list--${mode}`}>
+<!-- <ul class="flex flex-col gap-y-4 md:gap-y-6 lg:gap-y-8"> -->
+<section
+  class={`post-preview__list post-preview__list--${mode} grid grid-cols-3 gap-4`}
+>
   {sortedPosts.map((post, idx) => <PostPreview post={post} asCard={asCard} />)}
 </section>
+<!-- </ul> -->
 <style>
 .post-preview__heading {
   @apply my-vert-padding text-2xl;
 }
-.post-preview__list {
-  @apply flex flex-col gap-6 sm:gap-12;
-  @apply flex-row flex-wrap gap-12 sm:gap-10 md:gap-8 lg:gap-12 lg:px-0;
-}
+/* .post-preview__list { */
+/*   @apply flex flex-col gap-6 sm:gap-12; */
+/*   @apply flex-row flex-wrap gap-12 sm:gap-10 md:gap-8 lg:gap-12 lg:px-0; */
+/* } */
 .post-preview__heading--row {}
 .post-preview__list--row {}
 </style>

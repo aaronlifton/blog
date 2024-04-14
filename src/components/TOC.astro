@@ -2,8 +2,8 @@
 import type { MarkdownHeading } from "astro";
 import { Icon } from "astro-icon/components";
 // @ts-ignore -  Missing declaration file
-import { TOC as TableOfContents } from "astro-toc";
 import TOCScroll from "$components/react/TOCIndicator.tsx";
+import { TOC as TableOfContents } from "astro-toc";
 
 type Props = {
   headings: MarkdownHeading[];
@@ -26,14 +26,14 @@ if (minimumDepth > 1) {
 }
 ---
 
-<div class="hidden bg-slate-50 p-4 lg:flex lg:h-full lg:flex-col">
+<div class="hidden p-4 lg:flex lg:flex-col lg:h-full bg-slate-50">
   <div class:list={["flex", "items-center", "gap-2", "h-10", "flex-none"]}>
-    <Icon name="tabler/list" class="relative top-[-1px] inline" />
+    <Icon name="tabler/list" class="inline relative top-[-1px]" />
 
     <b class="m-0">Table of contents</b>
 
     <div
-      class="ml-auto flex items-center transition-transform duration-150 ease-in group-open:rotate-180 lg:hidden"
+      class="flex items-center ml-auto transition-transform duration-150 ease-in lg:hidden group-open:rotate-180"
     >
       <Icon name="tabler/chevron-down" />
     </div>
@@ -83,17 +83,19 @@ if (minimumDepth > 1) {
 </div>
 
 <details
-  class="group px-horizontal-padding py-4 lg:hidden"
+  class="mb-2 rounded-lg border lg:hidden p-[0.25rem] group px-horizontal-padding bg-slate-100 border-slate-200"
   aria-label="Table of contents"
 >
   <summary class="list-none">
-    <div class="align-center flex items-center gap-2">
+    <div class="flex gap-2 items-center align-center">
       <Icon name="tabler/list" />
 
-      <h2>Table of contents</h2>
+      <p class="m-0 not-prose text-[15px] translate-y-[1px]">
+        Table of contents
+      </p>
 
       <div
-        class="ml-auto flex items-center transition-transform duration-150 ease-in group-open:rotate-180 lg:hidden"
+        class="flex items-center ml-auto transition-transform duration-150 ease-in lg:hidden group-open:rotate-180"
       >
         <Icon name="tabler/chevron-down" />
       </div>
@@ -108,120 +110,162 @@ if (minimumDepth > 1) {
       "[&_ol]:list-outside",
       "[&_ol]:px-horizontal-padding",
       "[&_ol_li:not(:first-child)]:mt-1",
+      "[&_ol_li_a]:text-amethyst-400",
     ]}
   >
     <TableOfContents toc={tocItems} as="number" />
   </nav>
 </details>
 
+<div data-state="top" id="back-to-top-link"
+  class="fixed left-4 bottom-4 z-50 transition-transform translate-y-[50px] data-[state=scrolled]:translate-y-0 duration-300 ease-in-out">
+  <button
+    id="back-to-top"
+    class="p-2 rounded-lg shadow-lg bg-slate-100"
+  >
+    <Icon name="tabler/chevron-up" />
+  </button>
 <script>
-  import { activeHeading } from "$state/index";
-  document.addEventListener("astro:page-load", () => {
-    const toc = document.querySelector<HTMLElement>("nav[data-toc-wrapper] ol");
 
-    const tocContainer = toc?.closest<HTMLElement>("[data-toc-wrapper]");
-    const blogPost = document.querySelector("[data-blog-post]") as HTMLElement;
-    const firstTocItem = toc?.querySelector("li");
+</script>
 
-    function activate(listItem: HTMLLIElement): void {
-      if (listItem.parentElement?.parentElement?.tagName === "li") {
-        listItem.parentElement.setAttribute("data-active", "");
-      }
-      listItem.setAttribute("data-active", "");
+<script>
+import { activeHeading } from "$state/index";
+const getHeadingsInBlogPost = (blogPost: HTMLElement) => {
+  return blogPost?.querySelectorAll("h1, h2, h3, h4, h4, h6") ?? [];
+};
+document.addEventListener("astro:after-swap", () => {
+  console.log("Astro:PageLoad");
+  const toc = document.querySelector<HTMLElement>("nav[data-toc-wrapper] ol");
+
+  const tocContainer = toc?.closest<HTMLElement>("[data-toc-wrapper]");
+  const blogPost = document.querySelector("[data-blog-post]") as HTMLElement;
+  const firstTocItem = toc?.querySelector("li");
+
+  function activate(listItem: HTMLLIElement): void {
+    if (listItem.parentElement?.parentElement?.tagName === "li") {
+      listItem.parentElement.setAttribute("data-active", "");
     }
+    listItem.setAttribute("data-active", "");
+  }
 
-    function deactivate(listItem: HTMLLIElement): void {
-      listItem.parentElement?.removeAttribute("data-active");
-      listItem.removeAttribute("data-active");
+  function deactivate(listItem: HTMLLIElement): void {
+    listItem.parentElement?.removeAttribute("data-active");
+    listItem.removeAttribute("data-active");
+  }
+
+  function deactivateAllTocItems(): void {
+    toc?.querySelectorAll("li").forEach(deactivate);
+  }
+
+  function getTocItemByHeading(
+    heading: HTMLHeadingElement,
+  ): HTMLLIElement | null {
+    const headingId = heading.getAttribute("id");
+    const tocAnchorElem = toc?.querySelector(`li a[href="#${headingId}"]`);
+
+    if (!tocAnchorElem) {
+      return null;
     }
+    return tocAnchorElem.closest("li");
+  }
 
-    function deactivateAllTocItems(): void {
-      toc?.querySelectorAll("li").forEach(deactivate);
-    }
+  // let ratios: { [key: string]: number } = {};
+  // let lastMaxRatio = 0;
+  const observer = new IntersectionObserver(
+    (entries) => {
+      // Find the heading that is most visible in the viewport.
+      // const intersectionRatio = Math.max(
+      //   ...entries.map((entry) => entry.intersectionRatio),
+      // );
 
-    function getTocItemByHeading(
-      heading: HTMLHeadingElement,
-    ): HTMLLIElement | null {
-      const headingId = heading.getAttribute("id");
-      const tocAnchorElem = toc?.querySelector(`li a[href="#${headingId}"]`);
+      entries.forEach((entry): void => {
+        if (!tocContainer) {
+          return;
+        }
 
-      if (!tocAnchorElem) {
-        return null;
-      }
-      return tocAnchorElem.closest("li");
-    }
+        const heading = entry.target;
 
-    // let ratios: { [key: string]: number } = {};
-    // let lastMaxRatio = 0;
-    const observer = new IntersectionObserver(
-      (entries) => {
-        // Find the heading that is most visible in the viewport.
-        // const intersectionRatio = Math.max(
-        //   ...entries.map((entry) => entry.intersectionRatio),
-        // );
+        if (entry.isIntersecting) {
+          const tocItem = getTocItemByHeading(heading as HTMLHeadingElement);
 
-        entries.forEach((entry): void => {
-          if (!tocContainer) {
+          if (!tocItem) {
+            return;
+          }
+          console.log({ tocItem, heading });
+
+          deactivateAllTocItems();
+          activate(tocItem);
+          activeHeading.set(tocItem);
+          const tocContainerCoords = tocContainer.getBoundingClientRect();
+          const tocItemCoords = tocItem.getBoundingClientRect();
+
+          if (tocItem === firstTocItem) {
+            tocContainer.scrollTop = 0;
             return;
           }
 
-          const heading = entry.target;
-
-          if (entry.isIntersecting) {
-            const tocItem = getTocItemByHeading(heading as HTMLHeadingElement);
-
-            if (!tocItem) {
-              return;
-            }
-
-            deactivateAllTocItems();
-            activate(tocItem);
-            activeHeading.set(tocItem);
-            const tocContainerCoords = tocContainer.getBoundingClientRect();
-            const tocItemCoords = tocItem.getBoundingClientRect();
-
-            if (tocItem === firstTocItem) {
-              tocContainer.scrollTop = 0;
-              return;
-            }
-
-            // Is the item not visible because it's above the scrollable area? Then
-            // make it visible by scrolling up.
-            if (tocContainerCoords.top > tocItemCoords.top) {
-              tocContainer.scrollTop -=
-                tocContainerCoords.top - tocItemCoords.top;
-              return;
-            }
-
-            if (tocItemCoords.bottom > tocContainerCoords.bottom) {
-              tocContainer.scrollTop +=
-                tocItemCoords.bottom - tocContainerCoords.bottom;
-            }
+          // Is the item not visible because it's above the scrollable area? Then
+          // make it visible by scrolling up.
+          if (tocContainerCoords.top > tocItemCoords.top) {
+            tocContainer.scrollTop -= tocContainerCoords.top
+              - tocItemCoords.top;
+            return;
           }
-        });
-      },
-      {
-        threshold: 1,
-      },
-    );
 
-    const headingsInBlogPost =
-      blogPost?.querySelectorAll("h1, h2, h3, h4, h4, h6") ?? [];
+          if (tocItemCoords.bottom > tocContainerCoords.bottom) {
+            tocContainer.scrollTop += tocItemCoords.bottom
+              - tocContainerCoords.bottom;
+          }
+        }
+      });
+    },
+    {
+      threshold: 1,
+    },
+  );
 
-    for (const headingInBlogPost of headingsInBlogPost) {
-      observer.observe(headingInBlogPost);
+  // const headingsInBlogPost =
+  //   blogPost?.querySelectorAll("h1, h2, h3, h4, h4, h6") ?? [];
+  const headingsInBlogPost = getHeadingsInBlogPost(blogPost);
+
+  for (const headingInBlogPost of headingsInBlogPost) {
+    observer.observe(headingInBlogPost);
+  }
+
+  const backToTopLink = document.getElementById("back-to-top-link")
+  window.addEventListener('scroll', function() {
+    if (!backToTopLink) return;
+
+    if (window.scrollY > 100) {
+      backToTopLink.dataset.state = "scrolled";
+    } else {
+      backToTopLink.dataset.state = "top";
     }
   });
+
+  backToTopLink?.addEventListener('click', function() {
+    scrollToTop();
+  });
+
+  function scrollToTop() {
+    window.scrollTo({
+      top: 0,
+      behavior: 'smooth'
+    });
+  }
+});
+
 </script>
 
 <style>
-  [data-toc-wrapper] * {
-    background: linear-gradient(120deg, #ab4e19, #c99a2e);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    -webkit-box-decoration-break: clone;
-  }
-  summary h2 {
-    @apply m-0 text-[var(--tw-prose-body)];
-  }
+[data-toc-wrapper] * {
+  background: linear-gradient(120deg, #ab4e19, #c99a2e);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  -webkit-box-decoration-break: clone;
+}
+summary h2 {
+  @apply m-0 text-[var(--tw-prose-body)];
+}
 </style>

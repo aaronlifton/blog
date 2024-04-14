@@ -1,14 +1,14 @@
 import { activeHeading, lastActiveHeading } from "$state/index";
 import {
-  animate,
   motion,
+  useAnimate,
   // useScroll,
   // useSpring,
   // useTransform,
 } from "framer-motion";
-import { useRef, type FC, useEffect } from "react";
-import Styles from "./TOCIndicator.module.css";
+import { type FC, useEffect, useRef } from "react";
 import { useBreakpoint } from "./hooks/useBreakpoint";
+import Styles from "./TOCIndicator.module.css";
 
 const addDepthDataAttributesToUlTree = (
   listEl: HTMLUListElement | HTMLOListElement,
@@ -28,11 +28,12 @@ const addDepthDataAttributesToUlTree = (
 };
 
 const CircleIndicator: FC = () => {
+  const [indicator, animate] = useAnimate();
   const isMobile = useBreakpoint(768);
   //
   // const { scrollY, scrollYProgress } = useScroll();
   // const scale = useTransform(scrollYProgress, [0, 1], [0, 100]);
-  const indicatorRef = useRef<HTMLDivElement | null>(null);
+  // const indicatorRef = useRef<HTMLDivElement | null>(null);
   const yOffset = useRef(0);
 
   function getUpperPadding(element: HTMLElement) {
@@ -84,15 +85,13 @@ const CircleIndicator: FC = () => {
   }
 
   activeHeading.subscribe((activeHeader): { activeHeader: HTMLLIElement } => {
-    const indicator = indicatorRef.current;
-
     // const treeDept = activeHeader?.getAttribute("data-depth");
 
-    if (indicator && activeHeader) {
+    if (indicator.current && activeHeader) {
       const { top } = activeHeader.getBoundingClientRect();
 
-      // TODO: Calculate the depth of the header
-      animate(indicator, { y: top - yOffset.current });
+      console.log({ top, ytOffset: yOffset.current });
+      animate(indicator.current, { y: top - yOffset.current });
       lastActiveHeading.set(activeHeader);
     }
     return { activeHeader: activeHeader as HTMLLIElement };
@@ -106,7 +105,7 @@ const CircleIndicator: FC = () => {
             willChange: "transform",
           }}
           className={Styles.item}
-          ref={indicatorRef}
+          ref={indicator}
         />
       </motion.div>
     </div>

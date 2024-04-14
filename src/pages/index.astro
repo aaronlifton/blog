@@ -46,16 +46,5 @@ posts = Array.from(posts).filter((post) => !post.data.draft);
   <!--   </div> -->
   <!-- </div> -->
   <PostPreviewList posts={posts} heading="Recent posts" asCard />
-  <!-- <PostPreviewList posts={po {deploys.map((deploy) => (
-
-    <ul>
-      <h2>Deploy ID: {deploy.deploy.id}</h2>
-      <li>Status: {deploy.deploy.status}</li>
-      <li>Trigger: {deploy.deploy.trigger}</li>
-      <li>Created At: {deploy.deploy.createdAt}</li>
-      <li>Updated At: {deploy.deploy.updatedAt}</li>
-      <li>Finished At: {deploy.deploy.finishedAt}</li>
-    </ul>
-  ))}sts} heading="Recent posts" /> -->
   <PostPreviewListFooter />
 </Layout>
