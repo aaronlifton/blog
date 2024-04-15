@@ -40,6 +40,7 @@ if (post.data.cover.width > 1000) {
       decoding="async"
       format="webp"
       transition:name={`img-${post.slug}`}
+      transition:animate="fade"
     />
     <Prose className={"my-0 prose-gray"}>
       <figcaption class="my-0 italic" id="header-image__caption">
@@ -73,3 +74,13 @@ if (post.data.cover.width > 1000) {
   margin-top: 0;
 }
 </style>
+
+<script is:inline define:vars={{ slug: post.slug }}>
+// Disable the image from flying in from the top of the page
+document.addEventListener("scroll", ev => {
+  const img = document.getElementById(`img-${slug}`);
+  if (window.scrollY > 1000) {
+    img.setAttribute("data-astro-transition-scope", null);
+  }
+});
+</script>

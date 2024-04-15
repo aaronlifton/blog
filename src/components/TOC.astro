@@ -134,7 +134,7 @@ import { activeHeading } from "$state/index";
 const getHeadingsInBlogPost = (blogPost: HTMLElement) => {
   return blogPost?.querySelectorAll("h1, h2, h3, h4, h4, h6") ?? [];
 };
-document.addEventListener("astro:page-load", () => {
+const observeHeaders = () => {
   const toc = document.querySelector<HTMLElement>("nav[data-toc-wrapper] ol");
 
   const tocContainer = toc?.closest<HTMLElement>("[data-toc-wrapper]");
@@ -231,12 +231,19 @@ document.addEventListener("astro:page-load", () => {
   for (const headingInBlogPost of headingsInBlogPost) {
     observer.observe(headingInBlogPost);
   }
+}
+let wasSwapped = false;
+document.addEventListener("astro:after-swap", () => {
+  observeHeaders(); 
+  wasSwapped = true;
 });
 
 document.addEventListener("astro:page-load", () => {
+  if (!wasSwapped) {
+    observeHeaders();
+  }
   const backToTopLink = document.getElementById("back-to-top-link")
   window.addEventListener('scroll', function() {
-    console.log({backToTopLink})
     if (!backToTopLink) return;
 
     if (window.scrollY > 100) {

@@ -80,7 +80,6 @@ const CircleIndicator: FC = () => {
   }, []);
 
   if (isMobile) {
-    console.log("isMobile");
     return null;
   }
 
@@ -90,7 +89,6 @@ const CircleIndicator: FC = () => {
     if (indicator.current && activeHeader) {
       const { top } = activeHeader.getBoundingClientRect();
 
-      console.log({ top, ytOffset: yOffset.current });
       animate(indicator.current, { y: top - yOffset.current });
       lastActiveHeading.set(activeHeader);
     }
