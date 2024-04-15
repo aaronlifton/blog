@@ -77,10 +77,14 @@ if (post.data.cover.width > 1000) {
 
 <script is:inline define:vars={{ slug: post.slug }}>
 // Disable the image from flying in from the top of the page
+let oldAttribute;
 document.addEventListener("scroll", ev => {
   const img = document.getElementById(`img-${slug}`);
+  oldAttribute = img.getAttribute("data-astro-transition-scope");
   if (window.scrollY > 1000) {
     img.setAttribute("data-astro-transition-scope", null);
+  } else {
+    img.setAttribute("data-astro-transition-scope", oldAttribute);
   }
 });
 </script>

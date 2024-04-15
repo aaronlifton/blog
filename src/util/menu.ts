@@ -4,10 +4,6 @@ export const menuItems = [
     pathname: "/",
   },
   {
-    name: "Blog",
-    pathname: "/blog/1",
-  },
-  {
     name: "Tags",
     pathname: "/tags",
   },
