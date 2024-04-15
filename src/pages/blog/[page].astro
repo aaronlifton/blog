@@ -1,10 +1,10 @@
 ---
-import { type CollectionEntry, getCollection } from "astro:content";
-import Layout from "$layouts/Layout.astro";
+import { PAGE_SIZE, SITE_TITLE } from "$/consts.ts";
+import Pages from "$components/Pages.svelte";
 import PostPreviewList from "$components/PostPreviewList.astro";
 import PostPreviewListFooter from "$components/PostPreviewListFooter.astro";
-import Pages from "$components/Pages.svelte";
-import { PAGE_SIZE, SITE_TITLE } from "$/consts.ts";
+import Layout from "$layouts/Layout.astro";
+import { type CollectionEntry, getCollection } from "astro:content";
 
 type Props = {
   page: {
@@ -20,7 +20,7 @@ export async function getStaticPaths({
 }: {
   paginate: (
     data: CollectionEntry<"blog">[],
-    options: { pageSize: number }
+    options: { pageSize: number },
   ) => any;
 }) {
   let posts: CollectionEntry<"blog">[] = await getCollection("blog");
@@ -39,12 +39,19 @@ const { page }: Props = Astro.props;
   {
     page && (
       <Fragment>
-        <div class="mb-vert-padding flex items-center justify-center">
-          <p class="full not-prose mb-0 translate-x-2/4 text-center text-base italic">
+        <div class="flex justify-center items-center mb-vert-padding">
+          <p
+            class="mb-0 text-base italic text-center translate-x-2/4 full not-prose"
+          >
             Page {page.currentPage}
           </p>
         </div>
-        <PostPreviewList posts={page.data} heading="Posts" asCard />
+        <PostPreviewList
+          posts={page.data}
+          heading="Posts"
+          asCard
+          noTransition
+        />
         <PostPreviewListFooter />
         <Pages
           baseUrl={Astro.url.pathname.slice(0, -2)}

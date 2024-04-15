@@ -1,9 +1,6 @@
 ---
 import { getMonthName, mobileUserAgent } from "$/util";
 import { getIsMobile } from "$/util";
-import CodeText from "$components/CodeText.astro";
-import HomeImage from "$components/HomeImage.astro";
-import Tags from "$components/PostPreviewTags.astro";
 import { Image } from "astro:assets";
 import type { CollectionEntry } from "astro:content";
 
@@ -13,9 +10,10 @@ console.log(isMobile, mobileUserAgent);
 interface Props {
   post: CollectionEntry<"blog">;
   asCard?: boolean;
+  noTransition?: boolean;
 }
 
-const { post } = Astro.props;
+const { post, noTransition } = Astro.props;
 ---
 
 <div>
@@ -49,7 +47,7 @@ const { post } = Astro.props;
           loading="lazy"
           decoding="async"
           format="webp"
-          transition:name={`img-${post.slug}`}
+          transition:name={noTransition ? "" : `img-${post.slug}`}
         />
         <!-- <img -->
         <!--   src="/_astro/post-header-4.6.kEAVNs1D.webp" -->
@@ -64,7 +62,6 @@ const { post } = Astro.props;
       <div class="grid gap-y-4 gap-x-16 mt-6 md:grid-cols-2">
         <h3
           class="text-lg leading-snug group-hover:underline heading-4 line-clamp-3 text-primary md:heading-3"
-          transition:name={`title-${post.slug}`}
         >
           {post.data.title}
         </h3>

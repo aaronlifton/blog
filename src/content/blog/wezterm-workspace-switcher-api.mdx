@@ -18,13 +18,10 @@ import Admonition from "$components/Admonition.astro";
 
 <Admonition type="tip" isQuote={false} title="Note" date={"Apr 11, 2024"}>
   Does Neovim run slow in your terminal? I've since switched to the Kitty
-  terminal to make Neovim faster, and I've been loving it. Besides session
-  functionality, Kitty + `smart-splits.nvim` replaces the need for a terminal
-  multiplexer like tmux, besides saving sessions, which no modern terminal has
-  implemented yet. Removing the need for terminal multiplexers is important
-  because Neovim runs fastest when directly interfacing with its client, and
-  multiplexers involve the use of pseudoterminals, which adds additional lag
-  between Neovim and...your keyboard!
+  terminal to make Neovim faster. Kitty + `smart-splits.nvim` let's you navigate
+  between Neovim and other terminal panes, even when Kitty is in stacked mode.
+  This may replace the need for a multiplexer like tmux, which will make Neovim
+  faster as there is no pseudoterminal in between.
   <Fragment slot="image">
     <Image width={400} src={kittyLogo} alt="Kitty terminal logo" />
   </Fragment>

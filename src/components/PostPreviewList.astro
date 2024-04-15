@@ -7,9 +7,10 @@ interface Props {
   posts: CollectionEntry<"blog">[];
   heading?: string;
   asCard?: boolean;
+  noTransition?: boolean;
 }
 
-const { posts, heading, asCard = false } = Astro.props;
+const { posts, heading, asCard = false, noTransition } = Astro.props;
 // @ts-ignore
 const sortedPosts = posts.sort(
   (a, b) =>
@@ -22,7 +23,11 @@ const sortedPosts = posts.sort(
 <section
   class={`post-preview__list lg:grid-cols-3 sm:grid-cols-2 grid-cols-1 grid gap-4 bg-opacity-50 sm:gap-6`}
 >
-  {sortedPosts.map((post) => <PostPreview post={post} asCard={asCard} />)}
+  {
+    sortedPosts.map((post) => (
+      <PostPreview post={post} asCard={asCard} noTransition={noTransition} />
+    ))
+  }
 </section>
 
 <style>
