@@ -23,7 +23,12 @@ import Admonition from "$components/Admonition.astro";
   This may replace the need for a multiplexer like tmux, which will make Neovim
   faster as there is no pseudoterminal in between.
   <Fragment slot="image">
-    <Image width={400} src={kittyLogo} alt="Kitty terminal logo" />
+    <Image
+      class="h-32 object-contain"
+      width={400}
+      src={kittyLogo}
+      alt="Kitty terminal logo"
+    />
   </Fragment>
 </Admonition>
 

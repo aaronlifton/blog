@@ -29,10 +29,10 @@ if (!title) {
   {icon && <Icon name={icon} />}
   <h3 class="mb-0 leading-0">{title}</h3>
   {date && <span class="text-sm text-gray-500">{date}</span>}
-  <div class="flex flex-row justify-between items-center [&_*]:m-0 [&_*]:p-0
+  <div class="flex flex-col sm:flex-row justify-between items-center [&_*]:m-0 [&_*]:p-0
     [&_*]:first-of-type:pr-2">
     {isQuote ? <blockquote><slot /></blockquote>  : <div class="message"><slot /></div>}
-    <slot name="image" />
+      <slot name="image" />
   </div>
 </div>
 <style type="text/css">

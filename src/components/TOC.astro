@@ -83,7 +83,7 @@ if (minimumDepth > 1) {
 </div>
 
 <details
-  class="flex items-center mb-2 w-full rounded-lg border lg:hidden p-[0.25rem] group px-horizontal-padding bg-slate-100 border-slate-200"
+  class="flex items-center mb-2 w-full rounded-lg border lg:hidden p-[0.25rem] group px-horizontal-padding bg-slate-100 border-slate-200 [&::marker]:hidden [&::webkit-details-marker]:hidden"
   aria-label="Table of contents"
 >
   <summary class="list-none">
@@ -275,5 +275,10 @@ document.addEventListener("astro:page-load", () => {
 }
 summary h2 {
   @apply m-0 text-[var(--tw-prose-body)];
+}
+details {
+  summary::-webkit-details-marker {
+    display:none;
+  }
 }
 </style>
