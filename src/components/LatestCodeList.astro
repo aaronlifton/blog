@@ -63,9 +63,8 @@ h5 {
   @apply scrollbar-thumb-amethyst-300;
 }
 .code {
-  @apply mx-4 min-w-[433px] max-w-[80ch] snap-start rounded-md border
-  border-gray-200 p-0 p-4 transition-colors duration-300 ease-in-out
-  scrollbar-thin lg:min-w-min;
+  @apply mx-4 min-w-[433px] max-w-[80ch] snap-start border border-gray-200 p-0
+  p-4 transition-colors duration-300 ease-in-out scrollbar-thin lg:min-w-min;
 }
 .code-container {
   @apply scrollbar-track-card-bg/0 scrollbar-thumb-amethyst-300;
@@ -88,16 +87,16 @@ h5 {
 </div>
 <!-- if mobile needs more performance, use will-change-scroll -->
 <div
-  class="codes-container flex h-auto w-full snap-x snap-mandatory snap-always overflow-auto"
+  class="flex overflow-auto w-full h-auto codes-container snap-x snap-mandatory snap-always"
 >
   {
     allCodes.map((code) => (
       <div class="code">
-        <div class="code-header flex flex-row justify-between">
-          <h2 class="flex grow pr-3 text-xl font-bold">{code.lang}</h2>
+        <div class="flex flex-row justify-between code-header">
+          <h2 class="flex pr-3 text-xl font-bold grow">{code.lang}</h2>
           {
             code.post && (
-              <div class="truncate text-sm">
+              <div class="text-sm truncate">
                 <a href={`/blog/${code.post.slug}`}>{code.post.data.title}</a>
               </div>
             )

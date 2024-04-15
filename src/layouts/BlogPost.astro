@@ -99,6 +99,8 @@ const tocEmpty = headings.length === 0;
             class:list={[
               "relative",
               "shrink-0",
+              "w-full",
+              "lg:w-auto",
               "mb-0",
               "lg:mb-8",
               "lg:ml-auto",
@@ -108,7 +110,7 @@ const tocEmpty = headings.length === 0;
               "lg:top-[var(--offset-from-top)]",
               "lg:h-[calc(100vh-var(--offset-from-top)_*_2)]",
               "[&_h2]:m-0",
-              "max-w-prose",
+              "lg:max-w-prose",
             ]}
           >
             <div
@@ -138,20 +140,6 @@ const tocEmpty = headings.length === 0;
       <!-- /** min-w-0 [&>pre]:my-8 [&>pre]:max-sm:full-bleed [&>[data-codeblock]]:my-8 -->
       <!-- [&>[data-codeblock]]:max-sm:full-bleed [&>[data-codeblock]_pre]:max-sm:rounded-none -->
       <div data-blog-post class="min-w-0">
-        <div class="hero-image">
-          {
-            false && cover && (
-              <ZoomImage src={cover.src} alt={coverAlt} caption={coverAlt} hero>
-                <Image
-                  src={cover}
-                  widths={[240, 540, 720, cover.width]}
-                  sizes={`(max-width: 360px) 240px, (max-width: 720px) 540px, (max-width: 1600px) 720px, ${cover.width}px`}
-                  alt={coverAlt || ""}
-                  transition:name="post-cover-image"
-                />
-              </ZoomImage>
-            )
-          }
           <Tags tags={tags} />
           <div class="prose">
             <div class="title">
@@ -166,7 +154,6 @@ const tocEmpty = headings.length === 0;
                 }
               </span>
               <PostStats {slug} client:load />
-              {false && <h1 class="text-3xl"><CodeText text={title} /></h1>}
               <h1 class="text-3xl"><CodeText text={title} /></h1>
               <hr class="not-prose" />
             </div>
@@ -183,8 +170,6 @@ const tocEmpty = headings.length === 0;
   </Prose>
 </Layout>
 <style>
-/* Size Modifiers: https://github.com/tailwindlabs/tailwindcss-typography#size-modifiers */
-/* Color Themes: https://github.com/tailwindlabs/tailwindcss-typography#color-modifiers */
 [data-back-to-top] {
   @apply cursor-pointer no-underline;
 }
@@ -198,10 +183,12 @@ const tocEmpty = headings.length === 0;
   box-shadow: var(--box-shadow);
 }
 .title {
-  margin-bottom: 1em;
-  padding: 1em 0;
+  padding: 1em 0 0 0;
   text-align: center;
   line-height: 1;
+}
+.title hr {
+  margin-bottom: 0;
 }
 .title h1 {
   @apply mb-6 mt-4;
@@ -213,69 +200,6 @@ const tocEmpty = headings.length === 0;
 
 <script>
 document.addEventListener("astro:page-load", () => {
-  const blogPostContainer = document.querySelector(
-    "[data-blog-post-container]",
-  ) as HTMLElement;
-  // const toggleTocButton = document.querySelector(
-  //   "[data-toggle-toc]",
-  // ) as HTMLElement;
-  // const tocContainer = document.querySelector(
-  //   "[data-blog-post-toc-container]",
-  // );
-  //
-  // const storedTocState = localStorage.getItem("__preferred_toc_state");
-  // if (storedTocState !== null) {
-  //   if (storedTocState === "open") {
-  //     openToc();
-  //   } else {
-  //     closeToc();
-  //   }
-  // }
-
-  // function openToc() {
-  //   blogPostContainer?.setAttribute("data-toc", "open");
-  //   toggleTocButton.setAttribute("data-state", "open");
-  //   saveState("open");
-  //   toggleTocButton.setAttribute(
-  //     "aria-label",
-  //     toggleTocButton.dataset.offLabel ?? "",
-  //   );
-  // }
-  //
-  // function closeToc() {
-  //   blogPostContainer?.setAttribute("data-toc", "closed");
-  //   saveState("closed");
-  //   toggleTocButton.setAttribute(
-  //     "aria-label",
-  //     toggleTocButton.dataset.openTocLabel ?? "",
-  //   );
-  // }
-  //
-  // toggleTocButton?.addEventListener("click", () => {
-  //   const tocIsOpen = blogPostContainer.dataset.toc === "open";
-  //   if (tocIsOpen) {
-  //     closeToc();
-  //     tocContainer?.addEventListener(
-  //       "transitionend",
-  //       () => {
-  //         tocContainer.classList.add("invisible");
-  //       },
-  //       {
-  //         once: true,
-  //       },
-  //     );
-  //   } else {
-  //     openToc();
-  //     tocContainer?.classList.remove("invisible");
-  //   }
-  // });
-
-  type TocState = "open" | "closed";
-
-  // function saveState(state: TocState) {
-  //   localStorage.setItem("__preferred_toc_state", state);
-  // }
-
   const backToTopButton = document.querySelector("[data-back-to-top]");
   backToTopButton?.addEventListener("click", () => {
     window.scrollTo({

@@ -4,33 +4,44 @@ description:
   "Learn how to call TRPC endpoints from Astro on the server and on the client "
 pubDate: Mar 24 2024
 cover: ./assets/screenshots/nvim-trpc-router.png
-coverAlt: ""
+coverAlt:
+  "An example of a tRPC router, taking from the source code of this site."
 tags: [react, trpc, astro]
 ---
 
 import { Image } from "astro:assets";
 import ZoomImage from "$components/ZoomImage.svelte";
 import image1 from "./assets/screenshots/octokit-response-type.png";
+import CodeDescription from "$components/CodeDescription.astro";
 
-# Using tRPC v11.1 with Astro, Prisma, and the Github API
+## Using tRPC v11.1 with Astro, Prisma, and the Github API
 
 With over 32k stars on Github, TRPC has become a popular framework for building
 type-safe RPC APIs. Its type safety builds upon Zod, a TypeScript-first schema
 declaration and validation library. Compared to a REST API, a type-safe RPC
-server may include editor support for code completion, and saves the developer
-from having to deal with the implementation details of HTTP or REST. Instead of
-making a POST or PUT request to the server, RPCs typically involves more direct
-communication with the server. tRPC integrates with newer best practices like
-using React Query to hydrate the client with data from the server, instead of
-reimplementing the same logic in its own library. I had worked before in an
-environment that used GRPC, and there the GRPC definitions generated Ruby,
-Kotlin, and JS definitions so that each team worked with the exact same set of
-type definitions.
+server may include editor support for client-side code completion, and saves the
+developer from having to deal with the implementation details of HTTP or REST.
 
-For example, if we specified that on the RPC server, we require a
-`{name: string}` parameter for the `createUser` procedure, the client would not
-build without passing the correct typed parameter:
+However, several RPC use HTTP as their protocol, such as GRPC, which is built
+upon HTTP, so as to take advantage of the many great features of HTTP/2:
+bidirectional streaming, such as in websockets, multiplexed requests (concurrent
+server calls over a single connection), and header compression. RPC differs from
+REST in that, the client only needs to call a server method in order to
+communicate with the server. Behind the scenes, the server method is stubbed,
+where serialization, communication, and deserialization take place, hidden from
+the developer-facing API. This enables developers to focus on implementing API
+functionality, such as business logic, rather than the details of the protocol
+used. RPCs also benefit from type-safety - I had worked before in an environment
+that used GRPC to automatically create generate client side APIs for multiple
+languages, so that each team worked with the exact same set of type definitions.
 
+tRPC integrates with newer best practices like using React Query to hydrate the
+client with data from the server, instead of re-implementing the same logic in
+its own library. For example, if we specified that on the RPC server, we require
+a `{name: string}` parameter for the `createUser` procedure, the client would
+not build without passing the correct typed parameter:
+
+<CodeDescription>Server:</CodeDescription>
 ```ts
 const router = router({
   create: publicProcedure
@@ -47,40 +58,28 @@ const router = router({
 });
 ```
 
+<CodeDescription>Client:</CodeDescription>
+
 ```ts
-const router = router({
-  create: publicProcedure
-    .input(z.object({ name: z.string() })) // [!code highlight]
-    .mutation(async (opts) => {
-      const { input } = opts;
-      const user = await prisma.user.create({
-        data: {
-          name: input.name,
-        },
-      });
-      return user;
-    }),
-});
+// Name must be a string, thanks to Zod
+const { data: user } = await trpc.user.create.mutate({ name: "Jane" });
 ```
 
-Today we'll build a React component that uses Suspense to render a loading state
-while the backend streams data from the Github API, via a tRPC procedure. This
-idea came from me wanting to display an auto-refreshing code snippets for other
-articles. To accomplish this task, we need to set up tRPC and write a procedure
-that fetches a file from a github repository.
+Today we'll build a tRPC router that fetches a single file from Github API. To
+accomplish this task, we need to set up tRPC and write a procedure that fetches
+a file from a github repository.
 
 ## Installing tRPC v11
 
 First, let's install v11 of tRPC.
 [tRPC v11](https://trpc.io/docs/migrate-from-v10-to-v11) packages have the
-`@next` release tag, and we can install them with the following command:
+`@next` release tag, and the tRPC team states that v11 is
+[stable](https://trpc.io/docs/migrate-from-v10-to-v11#:~:text=stable%20and%20can%20be%20used%20in%20production).
+We can install them with the following command:
 
 ```sh
 npm install @trpc/server@next @trpc/client@next @trpc/react-query@next @trpc/next@next @tanstack/react-query@latest @tanstack/react-query-devtools@latest
 ```
-
-The tRPC team states that the `next` tag is
-[stable](https://trpc.io/docs/migrate-from-v10-to-v11#:~:text=stable%20and%20can%20be%20used%20in%20production).
 
 ## Building the tRPC server
 
@@ -92,15 +91,14 @@ The tRPC team states that the `next` tag is
    request object being present, such as database queries. This enables us to
    write integration tests for our procedures without having to set up mocks for
    the HTTP request or response, as well as create server-side helpers where
-   tRPC's where `req` and `res` are not available (See more about
-   `createServerSideHelpers`). Inner context is always available in your
-   procedures.
+   `req` and `res` are not available
+   ([docs](https://trpc.io/docs/client/nextjs/server-side-helpers)). Inner
+   context is always available in your procedures, while outer context depends
+   on the request. This is useful for authentication, because session
+   information would be found in the request. This kind of context is only
+   available for procedures called via HTTP, which makes sense.
 
-   Outer context depends on the request. This is useful for authentication,
-   because session information would be found in the request. This kind of
-   context is only available for procedures called via HTTP.
-
-1. We can implement both contexts by creating a file named 'context.ts' in the
+1. We can implement both contexts by creating a file named `context.ts` in the
    `rpc-server` folder:
 
 ```ts
@@ -123,7 +121,8 @@ export async function createContextInner(opts?: CreateInnerContextOptions) {
   };
 }
 
-// Outer context. This is a superset of the inner context.
+// Outer context. This is a superset of the inner context, which will include
+// the Prisma context.
 export async function createContext({
   req,
   resHeaders,
@@ -134,7 +133,8 @@ export async function createContext({
 export type Context = Awaited<ReturnType<typeof createContext>>;
 ```
 
-2. Create a file named 'server.ts' in the `rpc-server` folder:
+2. A server is needed to server the router. Create a file named 'server.ts' in
+   the `rpc-server` folder:
 
 ```ts
 import { initTRPC } from "@trpc/server";
@@ -150,11 +150,12 @@ createHTTPServer({
 }).listen(3333);
 ```
 
-Now that we have context, and a server, the last piece on the server side will
-be writing a procedure. Let's start by creating a new procedure call in a file
+Now that we have context and a server, the last piece on the server side will be
+writing a procedure. Let's start by creating a new procedure call in a file
 named `rpc-server/services/github.ts` that fetches the contents of a file from a
 GitHub repository. First, we'll cURL the Github API to see what the response
-looks like so we know what to expect.
+looks like so we know what to expect. Here's an example response, with some
+fields omitted for brevity:
 
 ```json
 {
@@ -163,22 +164,11 @@ looks like so we know what to expect.
     url: 'https://api.github.com/repos/facebook/react/contents/packages%2Fshared%2FshallowEqual.js',
     headers: {
       // ...
-      'access-control-allow-origin': '*',
-      'cache-control': 'public, max-age=60, s-maxage=60',
-      'content-length': '1340',
-      'content-security-policy': "default-src 'none'",
-      server: 'GitHub.com',
-      'x-content-type-options': 'nosniff',
-      'x-frame-options': 'deny',
-      'x-github-api-version-selected': '2022-11-28',
-      'x-github-media-type': 'github.v3; format=json',
-      'x-github-request-id': '...',
       'x-ratelimit-limit': '60',
       'x-ratelimit-remaining': '59',
       'x-ratelimit-reset': '1711322225',
       'x-ratelimit-resource': 'core',
       'x-ratelimit-used': '1',
-      'x-xss-protection': '0'
     },
     data: {
       name: 'shallowEqual.js',
@@ -190,78 +180,60 @@ looks like so we know what to expect.
       git_url: 'https://api.github.com/repos/facebook/react/git/blobs/7c73b88c05c32ce1e2ff16a51498631939469050',
       download_url: 'https://raw.githubusercontent.com/facebook/react/main/packages/shared/shallowEqual.js',
       type: 'file',
-      content: 'LyoqCiAqIENvcHlyaWdodCAoYykgTWV0YSBQbGF0Zm9ybXMsIEluYy4gYW5k\n' +
-        'IGFmZmlsaWF0ZXMuCiAqCiAqIFRoaXMgc291cmNlIGNvZGUgaXMgbGljZW5z\n' +
-        'ZWQgdW5kZXIgdGhlIE1JVCBsaWNlbnNlIGZvdW5kIGluIHRoZQogKiBMSUNF\n' +
-        'TlNFIGZpbGUgaW4gdGhlIHJvb3QgZGlyZWN0b3J5IG9mIHRoaXMgc291cmNl\n' +
-        'IHRyZWUuCiAqCiAqIEBmbG93CiAqLwoKaW1wb3J0IGlzIGZyb20gJy4vb2Jq\n' +
-        'ZWN0SXMnOwppbXBvcnQgaGFzT3duUHJvcGVydHkgZnJvbSAnLi9oYXNPd25Q\n' +
-        'cm9wZXJ0eSc7CgovKioKICogUGVyZm9ybXMgZXF1YWxpdHkgYnkgaXRlcmF0\n' +
-        'aW5nIHRocm91Z2gga2V5cyBvbiBhbiBvYmplY3QgYW5kIHJldHVybmluZyBm\n' +
-        'YWxzZQogKiB3aGVuIGFueSBrZXkgaGFzIHZhbHVlcyB3aGljaCBhcmUgbm90\n' +
-        'IHN0cmljdGx5IGVxdWFsIGJldHdlZW4gdGhlIGFyZ3VtZW50cy4KICogUmV0\n' +
-        'dXJucyB0cnVlIHdoZW4gdGhlIHZhbHVlcyBvZiBhbGwga2V5cyBhcmUgc3Ry\n' +
-        'aWN0bHkgZXF1YWwuCiAqLwpmdW5jdGlvbiBzaGFsbG93RXF1YWwob2JqQTog\n' +
-        'bWl4ZWQsIG9iakI6IG1peGVkKTogYm9vbGVhbiB7CiAgaWYgKGlzKG9iakEs\n' +
-        'IG9iakIpKSB7CiAgICByZXR1cm4gdHJ1ZTsKICB9CgogIGlmICgKICAgIHR5\n' +
-        'cGVvZiBvYmpBICE9PSAnb2JqZWN0JyB8fAogICAgb2JqQSA9PT0gbnVsbCB8\n' +
-        'fAogICAgdHlwZW9mIG9iakIgIT09ICdvYmplY3QnIHx8CiAgICBvYmpCID09\n' +
-        'PSBudWxsCiAgKSB7CiAgICByZXR1cm4gZmFsc2U7CiAgfQoKICBjb25zdCBr\n' +
-        'ZXlzQSA9IE9iamVjdC5rZXlzKG9iakEpOwogIGNvbnN0IGtleXNCID0gT2Jq\n' +
-        'ZWN0LmtleXMob2JqQik7CgogIGlmIChrZXlzQS5sZW5ndGggIT09IGtleXNC\n' +
-        'Lmxlbmd0aCkgewogICAgcmV0dXJuIGZhbHNlOwogIH0KCiAgLy8gVGVzdCBm\n' +
-        'b3IgQSdzIGtleXMgZGlmZmVyZW50IGZyb20gQi4KICBmb3IgKGxldCBpID0g\n' +
-        'MDsgaSA8IGtleXNBLmxlbmd0aDsgaSsrKSB7CiAgICBjb25zdCBjdXJyZW50\n' +
-        'S2V5ID0ga2V5c0FbaV07CiAgICBpZiAoCiAgICAgICFoYXNPd25Qcm9wZXJ0\n' +
-        'eS5jYWxsKG9iakIsIGN1cnJlbnRLZXkpIHx8CiAgICAgIC8vICRGbG93Rml4\n' +
-        'TWVbaW5jb21wYXRpYmxlLXVzZV0gbG9zdCByZWZpbmVtZW50IG9mIGBvYmpC\n' +
-        'YAogICAgICAhaXMob2JqQVtjdXJyZW50S2V5XSwgb2JqQltjdXJyZW50S2V5\n' +
-        'XSkKICAgICkgewogICAgICByZXR1cm4gZmFsc2U7CiAgICB9CiAgfQoKICBy\n' +
-        'ZXR1cm4gdHJ1ZTsKfQoKZXhwb3J0IGRlZmF1bHQgc2hhbGxvd0VxdWFsOwo=\n',
+      content: '[long base64-encoded string]'
       encoding: 'base64',
       _links: [Object]
     }
   }
 }
-18:17:05 [200] /api/ops/repo-content 385ms
 ```
 
 As we can see, the endpoint returns base64-encoded content for the file we
 requested, along with rate-limit headers that will enable us to prevent hitting
 the rate limit. With the right combination of logic based on the headers, the
 rate limit should never be reached. Let's add a metric so we can confirm our
-prediction after this gets deployed:
-
-Let's create a new file in the `rpc-server` folder called `types.ts`:
-
-```ts
-import { IncrementMetricInput } from "./types";
-```
-
-Then, let's create a route in the tRPC router that will accept input of that
-type, so we can take advantage of type safety in both the client and server.
+prediction after this gets deployed, and then a route in the tRPC router that
+will accept only certain metric types, so we can take advantage of type safety
+in both the client and server. Prisma supports upsort operations on most
+database; in this example I was using a SQLite database provided by Turso.
 
 ```ts
+interface IncrementMetricInput {
+  metricType: "views" | "gh_ratelimit_errors";
+}
+
 const router = router({
   incrementMetric: publicProcedure
-    .input(z.enum(["views", "gh_ratelimit_errors"]))
+    .input(IncrementMetricInput)
     .mutation((resolver) => {
       const { prisma } = resolver.ctx;
-      return {
-        id: "1",
-        title: "Buy milk",
-        completed: false,
-      };
+      const { metricType, slug } = resolver.input;
+      const upsert = async () =>
+        prisma.metric.upsert({
+          where: {
+            metricType,
+          },
+          create: {
+            metricType,
+            value: 1,
+          },
+          update: {
+            value: {
+              increment: 1,
+            },
+          },
+          select: {
+            metricType: true,
+            value: true,
+          },
+        });
+      return await upsert();
     }),
 });
 ```
 
 Nice! Now our API only allows incrementing of the `views` and
-`gh_ratelimit_errors` metrics can be incremented, similar to how one would use
-StatsD metrics. And the best part? **The type restriction is enforced at compile
-time.**
-
-## Writing a unit test
+`gh_ratelimit_errors` metrics, and type restriction is enforced at build time.
 
 ## Writing the `getRepoContents` procedure
 
@@ -312,13 +284,14 @@ giving the typescript compiler a hint, by returning early if the response is an
 array.
 
 <ZoomImage
-  link={image1.src}
+  src={image1.src}
   alt={"Full-size neovim screenshot"}
   caption="Neovim screenshot showing the Typescript type of an OctokitResponse"
   client:load
 >
   <Image
     src={image1}
+    width={1500}
     alt="Neovim screenshot showing the Typescript type of an OctokitResponse"
   />
 </ZoomImage>
@@ -384,7 +357,7 @@ async (props: { owner: string; repo: string; path: string }) => {
 ## Testing the server side call
 
 Now that we've written a function that fetches a file from a certain path in a
-github repository, let's finish hooking up the client to our backend rpc-server:
+github repository, let's finish hooking up the client to our backend RPC server:
 
 In the `rpc-server` folder, create a file named `router.ts`:
 
@@ -430,9 +403,11 @@ export type AppRouter = typeof appRouter;
 export const createCaller = createCallerFactory(appRouter);
 ```
 
-Now our RPC server has a single procedure, `getFile`. Let's first call this
-procedure from another server-side endpoint. This involves creating a `caller`
-via the `createCallerFactory` function, as stated
+Now our RPC server has a single procedure, `getFile`. In this post, we will call
+this procedure from the server-side. This is useful for micro-frontend
+architectures, where the RPC server may live in a separate package. Calling the
+RPC from the server side involves creating a `caller` via the
+`createCallerFactory` function, as stated
 [here](https://trpc.io/docs/server/server-side-calls). We'll put this endpoint
 in the `src/pages` directory called `api/ops/repo-content.ts`.
 
@@ -445,7 +420,6 @@ import type { APIRoute } from "astro";
 export const GET: APIRoute = async ({ params, request, cookies }) => {
   const queryParams = new URLSearchParams(request.url.split("?")[1]);
   const parsedParams = Object.fromEntries(queryParams.entries());
-  console.log({ parsedParams });
   const { owner, repo, path } = parsedParams;
   if (!owner || !repo || !path) {
     return new Response(JSON.stringify({ error: "Missing params" }), {
@@ -472,8 +446,50 @@ the `data/packages` directory.
 
 ## Testing with Vitest
 
-It took me some time to figure out how to test tRPC, but I'm adding this note to
-this article to say that a new post covering how to test tRPC and Astro with
-Vitest is coming soon. I've noticed that some companies on github don't mock
-Prisma in the test environment, and now that I've tested tRPC with Vitest mocks,
-I'm working on setting up a Rails-like test database setup.
+Vitest allow us to mock entire imports, so we can mock our github service as
+follows:
+
+```ts
+vi.mock("../rpc-server/services/github.ts", () => {
+  return {
+    default: {
+      getRepoContents: (input: string) =>
+        new Promise((res) =>
+          res({
+            json: () =>
+              new Promise((res) =>
+                res({
+                  path: "data/packages/shared/shallowEqual.js",
+                }),
+              ),
+          }),
+        ),
+      getCommits: vi.fn(),
+    },
+  };
+});
+```
+
+A test would look something like this:
+
+```ts
+describe("trpc router", () => {
+  it("should call the Github API", async () => {
+    const ctx = await createContext({
+      prisma: prismaMock,
+      githubService,
+    });
+    const caller = appRouter.createCaller(ctx);
+
+    const input: inferProcedureInput<AppRouter["getFile"]> = {
+      owner: "facebook",
+      repo: "react",
+      path: "data/packages/shared/shallowEqual.js",
+    };
+    const result = await caller.getFile(input);
+    expect(result).toMatchObject({
+      path: "data/packages/shared/shallowEqual.js",
+    });
+  });
+});
+```

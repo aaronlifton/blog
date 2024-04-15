@@ -83,7 +83,7 @@ if (minimumDepth > 1) {
 </div>
 
 <details
-  class="mb-2 rounded-lg border lg:hidden p-[0.25rem] group px-horizontal-padding bg-slate-100 border-slate-200"
+  class="flex items-center mb-2 w-full rounded-lg border lg:hidden p-[0.25rem] group px-horizontal-padding bg-slate-100 border-slate-200"
   aria-label="Table of contents"
 >
   <summary class="list-none">
@@ -134,8 +134,7 @@ import { activeHeading } from "$state/index";
 const getHeadingsInBlogPost = (blogPost: HTMLElement) => {
   return blogPost?.querySelectorAll("h1, h2, h3, h4, h4, h6") ?? [];
 };
-document.addEventListener("astro:after-swap", () => {
-  console.log("Astro:PageLoad");
+document.addEventListener("astro:page-load", () => {
   const toc = document.querySelector<HTMLElement>("nav[data-toc-wrapper] ol");
 
   const tocContainer = toc?.closest<HTMLElement>("[data-toc-wrapper]");
@@ -232,9 +231,12 @@ document.addEventListener("astro:after-swap", () => {
   for (const headingInBlogPost of headingsInBlogPost) {
     observer.observe(headingInBlogPost);
   }
+});
 
+document.addEventListener("astro:page-load", () => {
   const backToTopLink = document.getElementById("back-to-top-link")
   window.addEventListener('scroll', function() {
+    console.log({backToTopLink})
     if (!backToTopLink) return;
 
     if (window.scrollY > 100) {
@@ -255,7 +257,6 @@ document.addEventListener("astro:after-swap", () => {
     });
   }
 });
-
 </script>
 
 <style>

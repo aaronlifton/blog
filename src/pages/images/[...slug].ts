@@ -17,8 +17,8 @@ export async function getStaticPaths() {
 
 export const GET: APIRoute = async ({ props: _props, params }) => {
   // Define the path to your image file
-  let imagePath;
-  let imageBuffer;
+  let imagePath: string;
+  let imageBuffer: Buffer | undefined;
   if (params.slug !== undefined) {
     imagePath = path.join(process.cwd(), params.slug);
     imageBuffer = await fs.readFile(imagePath);
@@ -31,10 +31,10 @@ export const GET: APIRoute = async ({ props: _props, params }) => {
         "Content-Type": "image/png",
       },
     });
-  } else {
-    return new Response(null, {
-      status: 404,
-      statusText: "Image not found",
-    });
   }
+
+  return new Response(null, {
+    status: 404,
+    statusText: "Image not found",
+  });
 };

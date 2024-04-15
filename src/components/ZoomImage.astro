@@ -1,9 +1,6 @@
 ---
+import { ZoomIn } from "lucide-react";
 import { default as InnerZoomImage } from "./ZoomImage.svelte";
-import { Icon } from "astro-icon/components";
-
-// const html = await Astro.slots.render("default");
-
 interface Props {
   src: string;
   alt: string;
@@ -13,5 +10,5 @@ const props: Props = Astro.props;
 ---
 
 <InnerZoomImage {...props} src={props.src} client:load>
-  <Fragment slot="icon"><Icon name="zoom-scan" /></Fragment>
+  <Fragment slot="icon"><ZoomIn /></Fragment>
 </InnerZoomImage>
