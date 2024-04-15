@@ -1,11 +1,11 @@
-import { describe, beforeEach, expect, test, it, vi, afterEach } from "vitest";
-import { appRouter, type AppRouter } from "$rpc/router.ts";
 import { createContext } from "$rpc/context.ts";
+import { type AppRouter, appRouter } from "$rpc/router.ts";
 import prisma from "$services/prisma.ts";
 import type { inferProcedureInput } from "@trpc/server";
-import prismaMock from "./mocks/prisma.ts";
+import { afterEach, beforeEach, describe, expect, it, test, vi } from "vitest";
 import { mock } from "vitest-mock-extended";
 import githubService from "../rpc-server/services/github.ts";
+import prismaMock from "./mocks/prisma.ts";
 // const createUserContext = (authId?: string, permissions?: string[]) => {
 // 	let userPermissions = "openid profile email";
 // 	if (permissions) {
@@ -36,9 +36,9 @@ vi.mock("../rpc-server/services/github.ts", () => {
               new Promise((res) =>
                 res({
                   path: "data/packages/shared/shallowEqual.js",
-                }),
+                })
               ),
-          }),
+          })
         ),
       getCommits: vi.fn(),
     },
