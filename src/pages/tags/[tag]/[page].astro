@@ -5,6 +5,7 @@ import Pages from "$/components/Pages.svelte";
 import PostPreviewList from "$/components/PostPreviewList.astro";
 import { PAGE_SIZE } from "$/consts";
 import Layout from "$/layouts/Layout.astro";
+import { getPosts, getPostsByTag, getTags } from "$/services/blog";
 import { getIsMobile } from "$/util";
 import { type CollectionEntry, getCollection } from "astro:content";
 
@@ -12,18 +13,15 @@ const isMobile = getIsMobile(Astro);
 
 // @ts-ignore ts-nocheck
 export async function getStaticPaths({ paginate }) {
-  const allPosts = await getCollection("blog");
-  const filteredPosts = allPosts.filter((post) => !post.data.draft);
-
+  const posts = await getPosts();
+  const tags = await getTags();
   const allTags = new Set<string>();
-  filteredPosts.forEach((post) => {
-    post.data.tags && post.data.tags.forEach((tag) => allTags.add(tag));
-  });
+  for (const post of posts) {
+    post.data.tags?.forEach((tag) => allTags.add(tag));
+  }
 
   return Array.from(allTags).flatMap((tag) => {
-    const postsWithTag = allPosts.filter((post) =>
-      post.data.tags.includes(tag)
-    );
+    const postsWithTag = posts.filter((post) => post.data.tags.includes(tag));
     return paginate(postsWithTag, {
       params: { page: 1, tag },
       props: { allTags },
@@ -46,12 +44,10 @@ const { tag } = Astro.params as Params;
 ---
 
 <Layout>
-  <div class="title flex items-center justify-center align-middle leading-4">
+  <div class="flex justify-center items-center title">
     <HeadingWithIcon text={tag} {tag} className="mr-2" />
-    <span class="emdash">—</span>
-    <span
-      class="relative top-[-0.1ch] text-center italic leading-4 text-accent-gray-dark"
-    >
+    <span class="relative emdash top-[-4px]">—</span>
+    <span class="relative italic text-center top-[-4px] text-accent-gray-dark">
       Page {page.currentPage}
     </span>
   </div>

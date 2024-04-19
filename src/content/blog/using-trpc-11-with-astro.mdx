@@ -5,7 +5,7 @@ description:
 pubDate: Mar 24 2024
 cover: ./assets/screenshots/nvim-trpc-router.png
 coverAlt:
-  "An example of a tRPC router, taking from the source code of this site."
+  "An example of a tRPC router, taken from the source code of this site."
 tags: [react, trpc, astro]
 ---
 
@@ -22,18 +22,19 @@ declaration and validation library. Compared to a REST API, a type-safe RPC
 server may include editor support for client-side code completion, and saves the
 developer from having to deal with the implementation details of HTTP or REST.
 
-However, several RPC use HTTP as their protocol, such as GRPC, which is built
-upon HTTP, so as to take advantage of the many great features of HTTP/2:
-bidirectional streaming, such as in websockets, multiplexed requests (concurrent
-server calls over a single connection), and header compression. RPC differs from
-REST in that, the client only needs to call a server method in order to
-communicate with the server. Behind the scenes, the server method is stubbed,
-where serialization, communication, and deserialization take place, hidden from
-the developer-facing API. This enables developers to focus on implementing API
-functionality, such as business logic, rather than the details of the protocol
-used. RPCs also benefit from type-safety - I had worked before in an environment
-that used GRPC to automatically create generate client side APIs for multiple
-languages, so that each team worked with the exact same set of type definitions.
+However, several RPC use HTTP as their protocol, such as GRPC, which takes
+advantage of many great features of HTTP/2: bidirectional streaming (aka
+websockets), multiplexed requests (sending multiple requests over a single
+connection), and header compression. RPC differs from REST in that, the client
+only needs to call a server method in order to communicate with the server.
+Behind the scenes, the server method is stubbed, so that serialization,
+communication, and deserialization are hidden from the developer-facing API.
+This enables developers to focus on implementing API functionality, such as
+business logic, rather than the details of the protocol used. RPCs also benefit
+from type-safety - I had worked before in an environment that used GRPC to
+automatically create generate client-side API libraries for multiple languages,
+so that each microservice communicated with each other via the same type
+definitions.
 
 tRPC integrates with newer best practices like using React Query to hydrate the
 client with data from the server, instead of re-implementing the same logic in
@@ -93,10 +94,10 @@ npm install @trpc/server@next @trpc/client@next @trpc/react-query@next @trpc/nex
    the HTTP request or response, as well as create server-side helpers where
    `req` and `res` are not available
    ([docs](https://trpc.io/docs/client/nextjs/server-side-helpers)). Inner
-   context is always available in your procedures, while outer context depends
-   on the request. This is useful for authentication, because session
-   information would be found in the request. This kind of context is only
-   available for procedures called via HTTP, which makes sense.
+   context is always available in procedures, while outer context depends on the
+   request. Therefore authentication would need information from the outer
+   context, as session information would live in the request. This kind of
+   context is only available for procedures called via HTTP, which makes sense.
 
 1. We can implement both contexts by creating a file named `context.ts` in the
    `rpc-server` folder:
@@ -150,7 +151,7 @@ createHTTPServer({
 }).listen(3333);
 ```
 
-Now that we have context and a server, the last piece on the server side will be
+Now that we have context and a server, the last piece on the server side is
 writing a procedure. Let's start by creating a new procedure call in a file
 named `rpc-server/services/github.ts` that fetches the contents of a file from a
 GitHub repository. First, we'll cURL the Github API to see what the response
@@ -194,41 +195,24 @@ the rate limit. With the right combination of logic based on the headers, the
 rate limit should never be reached. Let's add a metric so we can confirm our
 prediction after this gets deployed, and then a route in the tRPC router that
 will accept only certain metric types, so we can take advantage of type safety
-in both the client and server. Prisma supports upsort operations on most
-database; in this example I was using a SQLite database provided by Turso.
+in both the client and server. In this example, we have a simple metrics table
+where a new row is created for each new event.
 
 ```ts
-interface IncrementMetricInput {
+interface MetricInput {
   metricType: "views" | "gh_ratelimit_errors";
 }
 
 const router = router({
-  incrementMetric: publicProcedure
-    .input(IncrementMetricInput)
-    .mutation((resolver) => {
-      const { prisma } = resolver.ctx;
-      const { metricType, slug } = resolver.input;
-      const upsert = async () =>
-        prisma.metric.upsert({
-          where: {
-            metricType,
-          },
-          create: {
-            metricType,
-            value: 1,
-          },
-          update: {
-            value: {
-              increment: 1,
-            },
-          },
-          select: {
-            metricType: true,
-            value: true,
-          },
-        });
-      return await upsert();
-    }),
+  // Creates a new row with value of 1
+  incrementMetric: publicProcedure.input(MetricInput).mutation((resolver) => {
+    const { prisma } = resolver.ctx;
+    const { metricType, slug } = resolver.input;
+    return await prisma.metric.create({
+      metricType,
+      value: 1,
+    });
+  }),
 });
 ```
 
@@ -238,10 +222,16 @@ Nice! Now our API only allows incrementing of the `views` and
 ## Writing the `getRepoContents` procedure
 
 Let's create a `services` folder in the `rpc-server` folder, and create a
-`github.ts` file in that folder:
+`github.ts` file in that folder. While server-side code in the same repo could
+simply make direct calls to the database with Prisma, re-using the RPC endpoint
+on the server side has benefits of type-safety and less surface area to test.
 
 ```ts
-async (props: { owner: string; repo: string; path: string }) => {
+export const getRepoContents = async (props: {
+  owner: string;
+  repo: string;
+  path: string;
+}) => {
   const { owner, repo, path } = props;
   try {
     const body = await octokit.request(
@@ -259,12 +249,23 @@ async (props: { owner: string; repo: string; path: string }) => {
       throw new Error(`Invalid status code: ${body.status}`);
     }
     // sourcery skip: use-object-destructuring
+    // TODO: handle rate limit headers and parse data
     const rateLimitRemaing = body.headers["x-ratelimit-remaining"];
     const rateLimitReset = body.headers["x-ratelimit-reset"];
-    g;
+    // Example code:
+    // const status = handleRateLimit({ rateLimitRemaining, rateLimitReset });
+    // if (status === "hit") throw new Error("Rate limit hit")
+
+    const caller = createCaller({
+      req: request,
+      resHeaders: new Headers(),
+      prisma: prisma,
+    });
+    const data = await caller.incrementMetric({
+      metricType: "gh_ratelimit_errors",
+    });
 
     const data = body.data;
-    // TODO: handle rate limit headers and parse data
   } catch (error) {
     console.error(error);
     return new Response(JSON.stringify({ error }), { status: 500 });
@@ -272,9 +273,8 @@ async (props: { owner: string; repo: string; path: string }) => {
 };
 ```
 
-Regarding the rate limit headers, github gives us the number of requests we can
-have remaining during a give period, as well as when the limit resets.
-
+Regarding the rate limit headers, Github gives us the number of remaining
+requests we can send during a give period, as well as when the limit resets.
 It's important to keep track of events like rate limit hits, so that we can
 better handle, and most importantly, avoid them.
 
@@ -317,12 +317,16 @@ async (props: { owner: string; repo: string; path: string }) => {
     // TODO: handle rate limit headers and parse data
     const rateLimitRemaining = body.headers["x-ratelimit-remaining"];
     const rateLimitReset = body.headers["x-ratelimit-reset"];
-    // handleRateLimit({ rateLimitRemaining, rateLimitReset });
+
+    // Example code:
+    // const status = handleRateLimit({ rateLimitRemaining, rateLimitReset });
+    // if (status === "hit") throw new Error("Rate limit hit")
 
     const data = body.data;
     if (Array.isArray(data)) {
       //                   ^
-      //          [this scopes the type to the single object version]
+      //          [This line scopes the type to the single object version]
+      //          [for the rest of the method]
       throw new Error("No file found");
     }
 
@@ -403,10 +407,10 @@ export type AppRouter = typeof appRouter;
 export const createCaller = createCallerFactory(appRouter);
 ```
 
-Now our RPC server has a single procedure, `getFile`. In this post, we will call
-this procedure from the server-side. This is useful for micro-frontend
-architectures, where the RPC server may live in a separate package. Calling the
-RPC from the server side involves creating a `caller` via the
+Now our RPC server has a single procedure, `getFile`. This is useful for
+micro-frontend architectures, where the RPC server may live in a separate
+package. If we wanted to call this RPC method from an Astro.js endpoint in a
+micro-frontend architecture, we would create a `caller` via the
 `createCallerFactory` function, as stated
 [here](https://trpc.io/docs/server/server-side-calls). We'll put this endpoint
 in the `src/pages` directory called `api/ops/repo-content.ts`.
@@ -442,7 +446,8 @@ Now, let's test it out. Make sure the astro server is running, and make a GET
 request to
 `http://localhost:3000/api/ops/repo-content?owner=facebook&repo=react&path=data/packages/shallowEqual.js`.
 In your repository, you should now see a new file called `shallowEqual.js` under
-the `data/packages` directory.
+the `data/packages` directory. Next post will cover calling tRPC from the
+frontend.
 
 ## Testing with Vitest
 
@@ -493,3 +498,6 @@ describe("trpc router", () => {
   });
 });
 ```
+
+Note that tRPC provides for us the `inferProcecudeInput` type, which will allow
+us to infer the input type of a procedure. This is useful for mocking.
