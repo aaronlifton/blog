@@ -20,9 +20,7 @@ export async function GET({ props }: Props) {
   const { post } = props;
 
   if (post.data.draft === true || !post.data.cover) {
-    Astro.response.status = 404;
-    Astro.response.statusText = "Not found";
-    return;
+    return new Response(null, { status: 404, statusText: "Not found" });
   }
 
   // using custom font files
