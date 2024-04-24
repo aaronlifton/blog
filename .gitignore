@@ -20,16 +20,14 @@ logs/analytics/*
 *.local
 
 # testing output
-.playwright-report/
+playwright-report/
 playwright/.cache/
 test-results/
 tests_output/
 blob-report/
-
-# custom folders
 tests-examples/
+cypress/
 tmp/
-experimental/
 
 .DS_Store
 .yarn/
@@ -42,3 +40,8 @@ dev.db*
 /data/
 bin/__py*
 **/*.bk*
+
+# experimental
+nightwatch.conf.cjs
+logs/test/
+src/content/blog/draft/

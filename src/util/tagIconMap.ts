@@ -28,7 +28,6 @@ const icons = getAllPaths(path.resolve("src/icons"));
 export const tagIconMap: {
   [key: string]: string;
 } = {
-  rails: "rails",
   "quick tips": "tabler/bulb-light",
   performance: "tabler/rocket",
   optimization: "tabler/speed",

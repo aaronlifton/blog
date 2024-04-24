@@ -1,4 +1,4 @@
-const { fontFamily } = require("tailwindcss/defaultTheme");
+const { fontFamily, fontSize } = require("tailwindcss/defaultTheme");
 const config = require("./src/styles/tailwind.theme.config.cjs");
 const harmonyPalette = require("@evilmartians/harmony/tailwind");
 const angularColors = require("./src/styles/angularColors.cjs");
@@ -11,6 +11,8 @@ function withOpacityValue(variable) {
 function withOKLCHOpacityValue(variable) {
   return `oklch(var(${variable}) / <alpha-value>)`;
 }
+
+const rem = (px) => `${round(px / 16)}rem`;
 
 /** @type {import('tailwindcss').Config} */
 export default {
@@ -32,7 +34,13 @@ export default {
       "toc-closed": "toc=\"closed\"",
     },
     fontFamily: {
-      sans: ["Fira Code", ...fontFamily.sans],
+      sans: ["Open Sans", ...fontFamily.sans],
+    },
+    fontSize: {
+      ...fontSize,
+      sm: "0.8rem",
+      base: "1rem",
+      xl: "1.25rem",
     },
     colors: { ...colors, ...harmonyPalette, ...angularColors },
     extend: {
@@ -209,7 +217,11 @@ export default {
         // },
         DEFAULT: {
           css: {
+            fontSize: "1rem",
             "--tw-prose-headings": theme("colors.pink[900]"),
+            p: {
+              fontSize: "1rem",
+            },
             a: {
               color: colors.dark.primary,
               "&:hover": {
@@ -225,6 +237,7 @@ export default {
               color: colors.dark.primary,
             },
             h1: {
+              fontSize: "1.5rem",
               color: colors.dark.secondary,
             },
             h2: {
@@ -232,6 +245,14 @@ export default {
             },
             h3: {
               color: colors.dark.secondary,
+            },
+            sm: {
+              fontSize: "1rem",
+            },
+            lg: {
+              h1: {
+                fontSize: "1.5rem",
+              },
             },
           },
         },

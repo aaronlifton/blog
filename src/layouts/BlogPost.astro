@@ -74,7 +74,7 @@ const tocEmpty = headings.length === 0;
     <BaseHead
       title={title}
       description={description}
-      cover={cover.src}
+      cover={cover?.src}
       {pubDate}
     />
   </Fragment>
@@ -154,7 +154,7 @@ const tocEmpty = headings.length === 0;
                 }
               </span>
               <PostStats {slug} client:load />
-              <h1 class="text-3xl"><CodeText text={title} /></h1>
+              <h1><CodeText text={title} /></h1>
               <hr class="not-prose" />
             </div>
             <slot />

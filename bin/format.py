@@ -1,4 +1,3 @@
-#! /usr/bin/env python
 import sys
 import mdformat as mdf
 import os

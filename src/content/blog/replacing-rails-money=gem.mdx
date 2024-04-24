@@ -1,0 +1,450 @@
+---
+title:
+  "Implementing a custom money class and currency exchange solution in Rails: a
+  study"
+description:
+  "we can improve the performance and feature-set of money-related rails code
+  via a custom solution by Pulling some inspiration from the Maybe source code."
+pubDate: "Apr 24 2024"
+tags: ["rails", "optimization"]
+draft: false
+featured: true
+---
+
+The [`maybe`](https://github.com/maybe-finance/maybe) codebase is a great
+resource for Rails developers, and I've found several clever solutions in the
+codebase such as a custom `money` class instead of the use of the `money` gem.
+Its a great example of extending Ruby's arithmetic operators, as well as a great
+example of how to implement exchange rates in Ruby. Getting the most performance
+out of Rails may include replacing gems with custom, simpler solutions that have
+less layers of code, and this monetizable concern covers handles multiple types
+of currency, converting one currency to another, and performing arithmetic and
+multiple currency objects or even currency objects and numbers. This is all
+without using gems such as `money-rails`, which implements a similar method and
+several other things such as a validator, migration extension, and a `Money`
+serializer for `ActiveJob`.
+
+I've extracted out the code needed to make this work on your own project:
+
+## Monetizable
+
+`app/models/concerns/monetizable.rb`
+
+```ruby
+module Monetizable
+  extend ActiveSupport::Concern
+
+    class_methods do
+      def monetize(*fields)
+        fields.each do |field|
+          define_method("#{field}_money") do
+            value = self.send(field)
+            value.nil? ? nil : Money.new(value, currency)
+          end
+        end
+      end
+    end
+end
+
+```
+
+To make performing arithmetic operations on money easy, let's take a look at
+`money/arithmetic.rb`:
+
+## Money::Arithmetic
+
+```ruby
+module Money::Arithmetic
+  CoercedNumeric = Struct.new(:value)
+
+  def +(other)
+    if other.is_a?(Money)
+      self.class.new(amount + other.amount, currency)
+    else
+      value = other.is_a?(CoercedNumeric) ? other.value : other
+      self.class.new(amount + value, currency)
+    end
+  end
+
+  def -(other)
+    if other.is_a?(Money)
+      self.class.new(amount - other.amount, currency)
+    else
+      value = other.is_a?(CoercedNumeric) ? other.value : other
+      self.class.new(amount - value, currency)
+    end
+  end
+
+  def -@
+    self.class.new(-amount, currency)
+  end
+
+  def *(other)
+    raise TypeError, "Can't multiply Money by Money, use Numeric instead" if other.is_a?(self.class)
+
+    value = other.is_a?(CoercedNumeric) ? other.value : other
+    self.class.new(amount * value, currency)
+  end
+
+  def /(other)
+    if other.is_a?(self.class)
+      amount / other.amount
+    else
+      raise TypeError, "can't divide Numeric by Money" if other.is_a?(CoercedNumeric)
+
+      self.class.new(amount / other, currency)
+    end
+  end
+
+  def abs
+    self.class.new(amount.abs, currency)
+  end
+
+  def zero?
+    amount.zero?
+  end
+
+  def negative?
+    amount.negative?
+  end
+
+  def positive?
+    amount.positive?
+  end
+
+  # Override Ruby's coerce method so the order of operands doesn't matter
+  # Wrap in Coerced so we can distinguish between Money and other types
+  def coerce(other)
+    [self, CoercedNumeric.new(other)]
+  end
+end
+
+```
+
+## Money::Currency
+
+`lib/money/currency.rb`
+
+```ruby
+# typed: false
+
+class Money::Currency
+  include Comparable
+
+  class UnknownCurrencyError < ArgumentError
+  end
+
+  CONFIG = Rails.root.join("config/currencies.yml")
+
+  # Cached instances by iso code
+  @@instances = {}
+
+  class << self
+    def new(code)
+      iso_code = code.to_s.downcase
+
+      @@instances[iso_code] ||= super(iso_code)
+    end
+
+    def all
+      @all ||= YAML.load_file(CONFIG)
+    end
+
+    def all_instances
+      all.values.map { |currency_data| new(currency_data["iso_code"]) }
+    end
+
+    def popular
+      all
+        .values
+        .sort_by do |currency|
+          currency["priority"]
+        end
+        .first(12)
+        .map { |currency_data| new(currency_data["iso_code"]) }
+    end
+  end
+
+  attr_reader(
+    :name,
+    :priority,
+    :iso_code,
+    :iso_numeric,
+    :html_code,
+    :symbol,
+    :minor_unit,
+    :minor_unit_conversion,
+    :smallest_denomination,
+    :separator,
+    :delimiter,
+    :default_format,
+    :default_precision
+  )
+
+  def initialize(iso_code)
+    currency_data = self.class.all[iso_code]
+    raise UnknownCurrencyError if currency_data.nil?
+
+    @name = currency_data["name"]
+    @priority = currency_data["priority"]
+    @iso_code = currency_data["iso_code"]
+    @iso_numeric = currency_data["iso_numeric"]
+    @html_code = currency_data["html_code"]
+    @symbol = currency_data["symbol"]
+    @minor_unit = currency_data["minor_unit"]
+    @minor_unit_conversion = currency_data["minor_unit_conversion"]
+    @smallest_denomination = currency_data["smallest_denomination"]
+    @separator = currency_data["separator"]
+    @delimiter = currency_data["delimiter"]
+    @default_format = currency_data["default_format"]
+  end
+
+  def step
+    (1.0 / (10**default_precision))
+  end
+
+  def <=>(other)
+    return nil unless other.is_a?(Money::Currency)
+
+    @iso_code <=> other.iso_code
+  end
+end
+```
+
+## Usage
+
+As we can see, we just need a single class to define currencies, and while class
+variables violate the community ruby style guide, they made sense here as a
+global cache:
+
+```ruby
+irb(main):002> cur = Money::Currency.new("usd")
+irb(main):003> cur.class.class_variable_get(:@@instances)
+  #<Money::Currency:0x00000001299b87a8
+   @default_format="%u%n",
+   # ...
+```
+
+Here is a sample of `config/currencies.yml`:
+
+```yaml
+usd:
+  name: United States Dollar
+  priority: 1
+  iso_code: USD
+  iso_numeric: "840"
+  html_code: "&dollar;"
+  symbol: "$"
+  minor_unit: Cent
+  minor_unit_conversion: 100
+  smallest_denomination: 1
+  separator: "."
+  delimiter: ","
+  default_format: "%u%n"
+  default_precision: 2
+eur:
+  name: Euro
+  priority: 2
+  iso_code: EUR
+  iso_numeric: "978"
+  html_code: "&euro;"
+  symbol: "€"
+  minor_unit: Cent
+  minor_unit_conversion: 100
+  smallest_denomination: 1
+  separator: ","
+  delimiter: "."
+  default_format: "%u%n"
+  default_precision: 2
+```
+
+## Testing out `Monetizable`
+
+The `monetizable` concern turns a column into a `Money::Currency` backed number,
+when referenced in Ruby, which in this example opens up the possibility for easy
+arithmetic with other transactions, and a simple exchange rate implementation,
+available as a method on a `Currency` object. To test this out, perform the
+following setup:
+
+1. `rails g model transaction amount:decimal{19-4} currency`. The maybe project
+   uses a very high precision for its decimal column, and this is probably
+   because of 3rd party exchange rate services providing rates with high
+   precision.
+2. After running the migration, add the following code to the `Transaction`
+   model:
+
+```ruby
+class Transaction < ApplicationRecord
+  include Monetizable
+
+  monetize :amount
+end
+```
+
+3. Putting this all together, let's test out the `Monetize` functionality:
+
+```ruby
+irb(main):005> t = Transaction.new(amount: 10, currency: 'usd')
+=> #<Transaction:0x000000010f813c00 id: nil, amount: 0.1e2, currency: "usd", created_at: nil, updated_at: nil>
+irb(main):014> t.amount_money
+#<Money:0x000000010f41a540
+ @amount=0.1e2,
+ @currency=
+  #<Money::Currency:0x000000010dc7a840
+   @default_format="%u%n",
+   @delimiter=",",
+   @html_code="&dollar;",
+   @iso_code="USD",
+   @iso_numeric="840",
+   @minor_unit="Cent",
+   @minor_unit_conversion=100,
+   @name="United States Dollar",
+   @priority=1,
+   @separator=".",
+   @smallest_denomination=1,
+   @symbol="$">,
+ @errors=#<ActiveModel::Errors []>,
+ @source=0.1e2,
+ @validation_context=nil>
+irb(main):015>
+```
+
+As we can see, we now have multi-currency concept of money, with very fine
+decimal precision, and we can add, subtract, multiply, divide, and negate money
+using native ruby syntax:
+
+```ruby
+irb(main):006> t.amount_money + 10
+=>
+#<Money:0x000000011633bd20
+ @amount=0.2e2,
+ @currency=
+  #<Money::Currency:0x0000000116e9da38
+   @default_format="%u%n",
+   @delimiter=",",
+   @html_code="&dollar;",
+   @iso_code="USD",
+   @iso_numeric="840",
+   @minor_unit="Cent",
+   @minor_unit_conversion=100,
+   @name="United States Dollar",
+   @priority=1,
+   @separator=".",
+   @smallest_denomination=1,
+   @symbol="$">,
+ @errors=#<ActiveModel::Errors []>,
+ @source=0.2e2,
+ @validation_context=nil>
+irb(main):007>
+irb(main):007> -t.amount_money
+=>
+#<Money:0x0000000117e9cdf8
+ @amount=-0.1e2,
+ @currency=
+  #<Money::Currency:0x0000000116e9da38
+   @default_format="%u%n",
+   @delimiter=",",
+   @html_code="&dollar;",
+   @iso_code="USD",
+   @iso_numeric="840",
+   @minor_unit="Cent",
+   @minor_unit_conversion=100,
+   @name="United States Dollar",
+   @priority=1,
+   @separator=".",
+   @smallest_denomination=1,
+   @symbol="$">,
+ @errors=#<ActiveModel::Errors []>,
+ @source=-0.1e2,
+ @validation_context=nil>
+
+```
+
+We can even perform arithmetic on two MoneyCurrency objects:
+
+```ruby
+irb(main):008> t.amount_money + Transaction.new(amount: 20, currency: 'usd').amount_money
+=>
+#<Money:0x00000001161d40b8
+ @amount=0.3e2,
+ @currency=
+  #<Money::Currency:0x0000000116e9da38
+   @default_format="%u%n",
+   @delimiter=",",
+   @html_code="&dollar;",
+   @iso_code="USD",
+   @iso_numeric="840",
+   @minor_unit="Cent",
+   @minor_unit_conversion=100,
+   @name="United States Dollar",
+   @priority=1,
+   @separator=".",
+   @smallest_denomination=1,
+   @symbol="$">,
+ @errors=#<ActiveModel::Errors []>,
+ @source=0.3e2,
+ @validation_context=nil>
+irb(main):009>
+```
+
+## Adding Exchange Rate Functionality
+
+In the maybe app, they also have exchange rate functionality. Here is the
+`ExchangeRate` model so you can support this functionality as well. It's pretty
+cool to take a `Money` object and call a method on it to turn it into another
+currency:
+
+### Exchange Rate
+
+```ruby
+class ExchangeRate < ApplicationRecord
+  include Provided
+
+  validates :base_currency, :converted_currency, presence: true
+
+  class << self
+    def find_rate(from:, to:, date:)
+      find_by \
+        base_currency: Money::Currency.new(from).iso_code,
+        converted_currency: Money::Currency.new(to).iso_code,
+        date: date
+    end
+
+    def find_rate_or_fetch(from:, to:, date:)
+      find_rate(from:, to:, date:) || fetch_rate_from_provider(from:, to:, date:).tap(&:save!)
+    end
+
+    def get_rate_series(from, to, date_range)
+      where(base_currency: from, converted_currency: to, date: date_range).order(:date)
+    end
+  end
+end
+```
+
+and `Provided` concern:
+
+```ruby
+module ExchangeRate::Provided
+  extend ActiveSupport::Concern
+
+  class_methods do
+    private
+      def fetch_rate_from_provider(from:, to:, date:)
+        response = exchange_rates_provider.fetch_exchange_rate \
+          from: Money::Currency.new(from).iso_code,
+          to: Money::Currency.new(to).iso_code,
+          date: date
+
+        if response.success?
+          ExchangeRate.new \
+            base_currency: from,
+            converted_currency: to,
+            rate: response.rate,
+            date: date
+        else
+          raise response.error
+        end
+      end
+  end
+end
+```

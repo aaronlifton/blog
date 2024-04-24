@@ -1,0 +1,52 @@
+---
+title: "Neovim Sorbet LSP setup"
+description: "Neovim Sorbet LSP setup"
+pubDate: "Apr 22 2024"
+tags: ["rails"]
+draft: false
+featured: true
+---
+
+If you use Neovim, you can configure the `sorbet` language server as follows:
+
+```lua
+return {
+  {
+    "neovim/nvim-lspconfig",
+    opts = {
+      servers = {
+        -- example of a ruby-lsp based configuration, no need for rubocop ls
+        ruby_ls = {},
+        solargraph = {}
+        yamlls = {}
+        sorbet = {}
+      },
+      setup = {
+        sorbet = function()
+        local function sorbet_root_pattern(...)
+          local patterns = { "sorbet/config" }
+          return require("lspconfig.util").root_pattern(unpack(patterns))(...)
+        end
+
+        require("lspconfig").sorbet.setup({
+          cmd = { "srb", "tc", "--lsp" },
+          filetypes = { "ruby" },
+          root_dir = function(fname)
+            return sorbet_root_pattern(fname)
+          end,
+        })
+      end
+      }
+    }
+  }
+}
+```
+
+The following flags for `srb` may be of use to you:
+`--typed true --enable-all-experimental-lsp-features --lsp --disable-watchman`
+
+Running sorbet as a language server works best with watchman, according to the
+[docs](https://sorbet.org/docs/lsp). To run sorbet with watchman, just make sure
+it is installed; on OSX it is available via brew: `brew install watchman`, and
+on other platforms refer to the offical
+[docs](https://facebook.github.io/watchman/docs/install).

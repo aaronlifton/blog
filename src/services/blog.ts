@@ -1,7 +1,9 @@
 import { type CollectionEntry, getCollection } from "astro:content";
 
-async function getLivePosts(): Promise<CollectionEntry<"blog">[]> {
-  return (await getCollection("blog")).filter((post) => !post.data.draft);
+async function getLivePosts(featured?: boolean): Promise<CollectionEntry<"blog">[]> {
+  return (await getCollection("blog")).filter((post) =>
+    !post.data.draft && (featured ? post.data.featured : !post.data.featured)
+  );
 }
 
 export async function getTags(): Promise<string[]> {
@@ -9,8 +11,8 @@ export async function getTags(): Promise<string[]> {
   return [...new Set(posts.flatMap((post) => post.data.tags))];
 }
 
-export async function getPosts(): Promise<CollectionEntry<"blog">[]> {
-  return (await getLivePosts())
+export async function getPosts(opts: { featured?: boolean } = {}): Promise<CollectionEntry<"blog">[]> {
+  return (await getLivePosts(opts.featured))
     .sort((a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf());
 }
 

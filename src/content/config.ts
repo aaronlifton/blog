@@ -1,7 +1,7 @@
 import type { ImageMetadata } from "astro";
 import { defineCollection, reference, z } from "astro:content";
 
-// const minBlogCoverImgWidth = 2500;
+// const minBlogCoverImgWidth = 1500;
 const minBlogCoverImgWidth = 250;
 const blog = defineCollection({
   type: "content",
@@ -17,11 +17,27 @@ const blog = defineCollection({
         {
           message: `Image must be at least ${minBlogCoverImgWidth}px wide`,
         },
-      ),
-      coverAlt: z.string(),
+      ).optional(),
+      coverAlt: z.string().optional(),
       tags: z.array(z.string()),
       draft: z.boolean().optional(),
+      featured: z.boolean().optional(),
       minutesRead: z.string().optional(),
+    }).superRefine(({ featured, cover, coverAlt }, refinementContext) => {
+      if (!featured && !cover) {
+        return refinementContext.addIssue({
+          code: z.ZodIssueCode.custom,
+          message: "Non-featured posts must have a cover image",
+          path: ["cover"],
+        });
+      }
+      if (!featured && !coverAlt) {
+        return refinementContext.addIssue({
+          code: z.ZodIssueCode.custom,
+          message: "Non-featured posts must have alt text for the cover image",
+          path: ["cover"],
+        });
+      }
     }),
 });
 

@@ -59,15 +59,22 @@ const { post, noTransition } = Astro.props;
         <!--   decoding="async" -->
         <!-- > -->
       </div>
-      <div class="grid gap-y-4 gap-x-16 mt-6 md:grid-cols-2">
-        <h3
-          class="text-lg leading-snug group-hover:underline heading-4 line-clamp-3 text-primary md:heading-3"
-        >
-          {post.data.title}
-        </h3>
-        <p class="text-base leading-snug text-gray-700 line-clamp-3">
-          {post.data.description}
-        </p>
+      <div class="flex flex-col">
+        <!-- <h3 -->
+        <!--   class="mt-4 text-base group-hover:underline heading-4 line-clamp-3 text-primary md:heading-3" -->
+        <!-- > -->
+        <!--   {post.data.title} -->
+        <!-- </h3> -->
+        <div class="grid gap-y-4 gap-x-16 mt-6 md:grid-cols-2">
+          <h3
+            class="text-lg leading-snug sm:text-base group-hover:underline heading-4 line-clamp-3 text-primary md:heading-3"
+          >
+            {post.data.title}
+          </h3>
+          <p class="text-base text-gray-700 sm:text-sm leading-sm line-clamp-3">
+            {post.data.description}
+          </p>
+        </div>
       </div></a>
   </article>
 </div>

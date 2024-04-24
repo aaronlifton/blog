@@ -106,6 +106,8 @@ export default defineConfig({
             "vim",
             "yaml",
             "toml",
+            "rb",
+            "yml",
           ],
         },
       ],

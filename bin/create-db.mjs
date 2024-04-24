@@ -1,5 +1,3 @@
-#!/opt/homebrew/bin/node
-
 import fs from "node:fs/promises";
 import path from "node:path";
 import { createClient } from "@libsql/client";

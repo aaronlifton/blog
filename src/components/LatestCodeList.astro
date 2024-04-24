@@ -44,7 +44,9 @@ for (const post of livePosts) {
   if (!codes) continue;
 
   const codesWithPost: CodeResults = codes.map((code) => ({ ...code, post }));
-  allCodes = allCodes.concat(codesWithPost).sort(codeSort);
+  allCodes = allCodes.concat(codesWithPost).filter(code => !!code.lang).sort(
+    codeSort,
+  );
 }
 ---
 

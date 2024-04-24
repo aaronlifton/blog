@@ -93,8 +93,8 @@ import HamburgerMenu from "./HamburgerMenu.astro";
     @apply bg-header-bg text-header-text;
   }
   nav {
-    @apply flex max-w-[100ch] items-center justify-between transition-colors
-    duration-300 ease-in-out;
+    @apply flex items-center justify-between transition-colors duration-300
+    ease-in-out;
   }
   nav a {
     padding: 1em 0.5em;
@@ -157,7 +157,7 @@ import HamburgerMenu from "./HamburgerMenu.astro";
     }
   }
   nav .internal-links a {
-    @apply -translate-x-1/2 underline decoration-primary/0 underline-offset-8;
+    @apply underline decoration-primary/0 underline-offset-8;
     &.active {
       @apply decoration-purple-400;
     }

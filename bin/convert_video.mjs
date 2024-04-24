@@ -1,4 +1,3 @@
-#!/opt/homebrew/bin/node
 import { exec, spawn } from "child_process"
 import path from "node:path";
 

@@ -15,7 +15,7 @@
   --gray: 96, 115, 159;
   --gray-dark: 34, 41, 57;
   --box-shadow: 0 2px 6px rgba(var(--bg-gray), 25%),
-    0 8px 24px rgba(#ffffff, 33%), 0 16px 32px rgba(#ffffff, 33%);
+    0 8px 24px rgba(#fff, 33%), 0 16px 32px rgba(#fff, 33%);
   --bg-primary: #fff;
   --horizontal-padding: 2rem;
   --content-max-width: 78rem;
@@ -115,7 +115,7 @@
     @apply bg-background rounded-none shadow-none;
   }
 
-  .grid-cols-layout > * {
+  .grid-cols-layout>* {
     @apply col-content;
   }
 }
@@ -168,15 +168,14 @@
 }
 
 body {
-  font-family: "Atkinson", sans-serif;
   text-align: left;
   background-size: 100% 600px;
   word-wrap: break-word;
   overflow-wrap: break-word;
-  font-size: 1.25rem;
   line-height: 1.7;
-  @apply m-0 flex h-full flex-col bg-purple-50 p-0 text-left text-text-primary;
+  @apply flex h-full flex-col bg-purple-50 text-left text-text-primary;
 }
+
 
 main {
   @apply grid grid-cols-layout px-3 py-6;
@@ -193,21 +192,27 @@ dialog.welcome {
   src: url("fonts/iMWritingMonoNerdFont-Italic.ttf") format("truetype");
 }
 
+nav {
+  /* font-family: Open Sans, sans-serif; */
+}
+
 h1,
 h2,
 h3,
 h4,
 h5,
 h6 {
+  font-family: 'Atkinson', sans-serif;
+  /* font-family: "Raleway", sans-serif; */
+  /* font-family: Open Sans, sans-serif; */
   @apply subpixel-antialiased;
-  /* font-family: Inter, sans-serif; Inter-Regular_Black*/
   margin: 0 0 0.5rem 0;
   color: rgb(var(--black));
   line-height: 1.2;
 }
 
 h1 {
-  font-size: 3.052em;
+  font-size: 1.526em;
 }
 
 h2 {
@@ -245,7 +250,9 @@ p {
 }
 
 .prose {
-  @apply prose-slate max-w-none lg:prose-lg;
+  font-size: 1rem;
+  font-family: 'Merriweather', serif;
+  @apply text-base prose-slate max-w-none lg:prose-lg;
   /* @apply prose-slate max-w-none dark:prose-invert lg:prose-lg; */
   /* light:prose-slate dark:prose-dark */
   /* Size Modifiers: https://github.com/tailwindlabs/tailwindcss-typography#size-modifiers */
@@ -269,6 +276,7 @@ p {
 .animate-fill-forwards {
   -webkit-animation-fill-mode: forwards !important;
 }
+
 /* .prose p.mb-0 { */
 /*   margin-bottom: 0; */
 /* } */
@@ -323,7 +331,7 @@ pre {
   }
 }
 
-pre > code {
+pre>code {
   all: unset;
 }
 
