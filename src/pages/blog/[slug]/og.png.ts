@@ -1,5 +1,5 @@
 import { ImageResponse } from "@vercel/og";
-import { getCollection, type CollectionEntry } from "astro:content";
+import { type CollectionEntry, getCollection } from "astro:content";
 import fs from "node:fs";
 import path from "path";
 
@@ -19,7 +19,7 @@ const twString = `w-[${size.width}px] h-[${size.height}px] flex rounded-3xl`;
 export async function GET({ props }: Props) {
   const { post } = props;
 
-  if (post.data.draft === true) {
+  if (post.data.draft === true || !post.data.cover) {
     Astro.response.status = 404;
     Astro.response.statusText = "Not found";
     return;
@@ -36,8 +36,8 @@ export async function GET({ props }: Props) {
   const postCover = fs.readFileSync(
     process.env.NODE_ENV === "development"
       ? path.resolve(
-          post.data.cover.src.replace(/\?.*/, "").replace("/@fs", ""),
-        )
+        post.data.cover.src.replace(/\?.*/, "").replace("/@fs", ""),
+      )
       : path.resolve(post.data.cover.src.replace("/", "dist/server/")),
   );
 
