@@ -5,7 +5,6 @@ import { Image } from "astro:assets";
 import type { CollectionEntry } from "astro:content";
 
 const isMobile = getIsMobile(Astro);
-console.log(isMobile, mobileUserAgent);
 
 interface Props {
   post: CollectionEntry<"blog">;
@@ -15,7 +14,7 @@ interface Props {
 
 const { post, noTransition } = Astro.props;
 
-if (!post.data.cover) return null;
+if (!post.data.cover) return "";
 ---
 
 <div>
