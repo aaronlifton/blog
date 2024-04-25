@@ -89,7 +89,6 @@ caution when writing the normal command!
 <video controls="" autoplay="" loop="true">
   <source src={globalVideo} type="video/webm" />
 </video>
-\
 
 I also found that recording macros using a plugin often requires multiple tries,
 which I found distracting. Recording macros also requires tagging the macros
@@ -122,8 +121,8 @@ normal mode" debate, I tried doing this with a normal mode command.
 1. Result: `a.AdjustPanelSize` and `a.ActivePaneDirection` were updated to have
    a prefix of `act.` instead of `a.`, as well as any other methods that started
    with `act.`. The official wezterm documentation references `act`, and I
-   prefer to not use a single letter for variable names. Fun fact: with Go, this
-   is actually
+   prefer to not use a single letter for variable names. _Fun fact:_ with Go,
+   this is actually
    [kind of acceptable](https://www.reddit.com/r/golang/comments/3aporh/why_so_many_gophers_use_single_letter_variables/).
 
 ## Improvments

@@ -35,6 +35,7 @@ export default {
     },
     fontFamily: {
       sans: ["Open Sans", ...fontFamily.sans],
+      serif: ["Merriweather", ...fontFamily.serif],
     },
     fontSize: {
       ...fontSize,

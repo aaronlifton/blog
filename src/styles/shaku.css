@@ -1,18 +1,19 @@
 /** shaku **/
-.shaku > .code-container > code {
-  background: rgb(33,33,33);
+.shaku>.code-container>code {
+  background: rgb(33, 33, 33);
 }
+
 .shaku-callout {
-  @apply bg-gray-600 text-white antialiased px-2 py-[1ch] my-2 relative inline-block
-    text-amethyst-200 italic;
+  @apply bg-gray-600 antialiased px-2 py-[1ch] my-2 relative inline-block italic text-amethyst-100;
   /* font-family: 'Comic Mono', sans-serif; */
-  font-family: 'iMWritingMono Nerd Font', 'Comic Mono', monospace;
+  font-family: 'Comic Mono', 'iMWritingMono Nerd Font', monospace;
 }
 
 .shaku-callout p {
   @apply bg-gray-600;
   margin: 0;
 }
+
 .shaku-underline p {
   margin: 0;
 }
@@ -67,15 +68,15 @@
   }
 }
 
-.shaku-underline-wavy > .shaku-underline-line {
+.shaku-underline-wavy>.shaku-underline-line {
   text-decoration-style: wavy;
   top: 0.7em;
 }
 
-.shaku-underline-solid > .shaku-underline-line {
+.shaku-underline-solid>.shaku-underline-line {
   text-decoration-style: solid;
 }
 
-.shaku-underline-dotted > .shaku-underline-line {
+.shaku-underline-dotted>.shaku-underline-line {
   text-decoration-style: dotted;
 }

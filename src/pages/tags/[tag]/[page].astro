@@ -6,10 +6,7 @@ import PostPreviewList from "$/components/PostPreviewList.astro";
 import { PAGE_SIZE } from "$/consts";
 import Layout from "$/layouts/Layout.astro";
 import { getPosts, getPostsByTag, getTags } from "$/services/blog";
-import { getIsMobile } from "$/util";
 import { type CollectionEntry, getCollection } from "astro:content";
-
-const isMobile = getIsMobile(Astro);
 
 // @ts-ignore ts-nocheck
 export async function getStaticPaths({ paginate }) {
@@ -51,7 +48,7 @@ const { tag } = Astro.params as Params;
       Page {page.currentPage}
     </span>
   </div>
-  <PostPreviewList posts={page.data} heading="Posts" asCard={true} />
+  <PostPreviewList posts={page.data} heading="Posts" asCard={false} />
   <Pages
     baseUrl={Astro.url.pathname.slice(0, -2)}
     currentPage={page.currentPage}

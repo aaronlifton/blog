@@ -151,13 +151,14 @@
   }
 }
 
-@font-face {
-  font-family: "Atkinson";
-  src: url("/fonts/atkinson-regular.woff") format("woff");
-  font-weight: 400;
-  font-style: normal;
-  font-display: swap;
-}
+/* @font-face { */
+/*   font-family: "Atkinson"; */
+/*   src: url("/fonts/atkinson-regular.woff") format("woff"); */
+/*   font-weight: 400; */
+/*   font-style: normal; */
+/*   font-display: swap; */
+/* } */
+/**/
 
 @font-face {
   font-family: "Atkinson";
@@ -167,6 +168,7 @@
   font-display: swap;
 }
 
+/**/
 body {
   text-align: left;
   background-size: 100% 600px;
@@ -202,9 +204,9 @@ h3,
 h4,
 h5,
 h6 {
-  font-family: 'Atkinson', sans-serif;
+  font-family: Open Sans, sans-serif;
   /* font-family: "Raleway", sans-serif; */
-  /* font-family: Open Sans, sans-serif; */
+  /* font-family: 'Atkinson', sans-serif; */
   @apply subpixel-antialiased;
   margin: 0 0 0.5rem 0;
   color: rgb(var(--black));

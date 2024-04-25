@@ -9,11 +9,11 @@ interface Props {
 const { tags }: Props = Astro.props;
 ---
 
-<div class="tags center mx-auto flex w-full max-w-xl justify-center">
+<div class="flex justify-center mx-auto w-full max-w-xl font-sans tags center">
   {
     tags
     && tags.map((tag, idx) => (
-      <span class="tag mr-1">
+      <span class="mr-4 sm:mr-1 tag line-clamp-1">
         <a href={`/tags/${tag}/1`}>
           {
             iconForTag(tag) && (
@@ -23,9 +23,9 @@ const { tags }: Props = Astro.props;
               />
             )
           }
-          {tag}
+          <span class="hidden sm:inline">{tag}</span>
         </a>
-        {idx !== tags.length - 1 && ", "}
+        <span class="hidden sm:inline">{idx !== tags.length - 1 && ", "}</span>
       </span>
     ))
   }

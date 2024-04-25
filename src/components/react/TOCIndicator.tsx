@@ -46,7 +46,6 @@ const CircleIndicator: FC = () => {
   useEffect(() => {
     let height = 0;
     let firstListEl: HTMLOListElement | null = null;
-    const fallback = 133;
     const nav = document.querySelector("nav");
     const main = document.querySelector("main");
     const toc = document.querySelector(
@@ -60,24 +59,23 @@ const CircleIndicator: FC = () => {
     }
 
     if (height && toc) {
-      const ballHeight = 13.5;
+      const el = indicator.current as HTMLDivElement;
+      const ballHeight = el.getBoundingClientRect().height;
       const firstHeader = toc.querySelector("a");
-      const firstHeaderHeight = firstHeader
-        ? Number.parseInt(window.getComputedStyle(firstHeader).lineHeight)
-        : 27;
 
-      if (firstHeaderHeight !== undefined) {
-        const textOffset = firstHeaderHeight - ballHeight + 2.5;
+      if (firstHeader) {
+        const firstHeaderHeight = Number.parseInt(window.getComputedStyle(firstHeader).lineHeight);
+        const textOffset = firstHeaderHeight - ballHeight;
         yOffset.current = height + textOffset;
       }
     } else {
-      yOffset.current = fallback;
+      yOffset.current = -1;
     }
 
     if (firstListEl) {
       addDepthDataAttributesToUlTree(firstListEl);
     }
-  }, []);
+  }, [indicator.current, getUpperPadding]);
 
   if (isMobile) {
     return null;
@@ -94,6 +92,10 @@ const CircleIndicator: FC = () => {
     }
     return { activeHeader: activeHeader as HTMLLIElement };
   });
+
+  if (yOffset.current === -1) {
+    return null;
+  }
 
   return (
     <div className={Styles.wrapper}>

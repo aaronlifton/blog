@@ -65,7 +65,7 @@ export const isActiveMenuItem = ({
       aria-label="Main navigation"
     >
       <ul
-        class="flex overflow-y-auto flex-col justify-center items-center p-3 w-full h-full list-none bg-purple-50 border-4 bg-amethyst-100/75 border-amethyst-300/55 px-horizontal-padding"
+        class="flex overflow-y-auto flex-col justify-center items-center p-3 w-full h-full list-none bg-purple-50 bg-amethyst-100/75 border-amethyst-300/55 px-horizontal-padding"
       >
         {
           menuItems.map((item) => {
@@ -76,9 +76,9 @@ export const isActiveMenuItem = ({
           });
 
           return (
-            <li class="mb-2 w-full">
+            <li class="mb-2 w-full shadow-sm shadow-gray-200 border-[1px]">
               <a
-                class="text=md not-prose block w-full rounded-full bg-[var(--on-primary)] px-4 py-2 text-center font-bold text-black transition-colors duration-200 ease-in-out focus:bg-amethyst-100 focus:outline-none focus:ring-2 focus:ring-amethyst-300 focus:ring-opacity-50"
+                class="text-md text-gray-800 not-prose block w-full bg-[var(--on-primary)] px-4 py-2 transition-colors duration-75 ease-in-out hover:bg-gray-200 focus:bg-gray-200 active:bg-gray-200 bg-gray-100"
                 href={item.pathname}
                 color={isActive ? "primary" : "secondary"}
                 {...(isActive && { "aria-current": "page" })}
@@ -104,7 +104,7 @@ const maxAnimationDuration = Math.max(
   DIALOG_BACKDROP_ANIMATION_DURATION,
 );
 
-(() => {
+const init = () => {
   const dialogElement = document.querySelector<HTMLElement>(
     "[data-a11y-dialog]",
   );
@@ -171,13 +171,11 @@ const maxAnimationDuration = Math.max(
       console.log(dialog);
       dialog.hide();
     });
-})();
+};
 
-// document.addEventListener("astro:page-load", () => {
-//   const dialogElement =
-//     document.querySelector<HTMLElement>("[data-a11y-dialog]");
-//   const dialog = new A11yDialog(dialogElement);
-// });
+init();
+
+document.addEventListener("astro:page-load", init);
 </script>
 
 <style>
