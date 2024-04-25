@@ -299,8 +299,7 @@ img {
 }
 
 code {
-  @apply rounded-md border bg-bg-gray px-1 text-sm;
-  /* background-color: rgb(var(--gray-light)); */
+  @apply rounded-md border bg-gray-200/55 border-gray-300/75 px-1 text-sm;
 }
 
 pre {

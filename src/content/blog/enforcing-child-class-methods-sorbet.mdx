@@ -1,6 +1,6 @@
 ---
-title: "Enforcing child class methods with Sorbet"
-description: "Enforcing child class methods with Sorbet"
+title: "Enforcing abstract methods with Sorbet"
+description: "Enforcing abstract methods with Sorbet"
 pubDate: "Apr 23 2024"
 cover: ./assets/screenshots/nvim-trpc-router.png
 coverAlt: "todo"
@@ -9,137 +9,111 @@ draft: false
 featured: true
 ---
 
-One error you might encounter with Sorbet, a static type-checker for Ruby, is a
-**dynamic constant reference** error: Sorbet does not support dynamic constants,
-and instead any "existence checks" for methods or constants in subclasses should
-be replaced with a _type constraint_. Below is an example of this type of error.
-In this example, we have a `Transaction` class that has a dynamic constant
-reference in its `min_amount` method, meant to enforce the existence of this
-constant on its sub-classes.
+One pattern I've seen in Rails projects is raising an error in a subclass if
+something isn't implemented. Instead, we can use Sorbet instead to add a type
+constraint to the abstract method so that subclasses must also implement it.
 
-```ruby
-class Transaction < ApplicationRecord
+Here's the situation:
+
+```ruby annotate
+class BaseTransaction < ApplicationRecord
   MIN_AMOUNT = 100
+#    ^
+#    [Dynamic constant references are unsupported https://srb.help/5001]
 
   def min_amount
-    self::class::MIN_AMOUNT || raise("Min amount constant not found)
+    raise("Not implemented")
+#     ^
+#     [This runtime error can be replaced with a type constraint]
   end
+end
 ```
 
-```ruby
-models/bar.rb:24: Dynamic constant references are unsupported https://srb.help/5001
-24 |      self.class::MIN_AMOUNT
-```
+Sorbet does not support **dynamic constant references**, so we can't reference
+something like `self.class::MIN_AMOUNT` inside the method. Upon searching Github
+for `path:\*.rb self:class::`, I found that it's more common to use another
+method to return default value, like `default_min_amount`, which makes more
+sense compared to overriding constants. Either way, nowadays we can can use
+Sorbet instead.
 
-There's 2 issues here: First, it's better to move the minimum amount value into
-a method named `default_amount` because Sorbet doesn't support this kind of
-dynamic constant lookup, and second, moving the value into a method allows us to
-take advantage of annotating it with Sorbet so that child classes need not raise
-an error: child classes would not pass validation if they are missing an
-implementation of a abstract method.
-
-We can mark a method on the parent class as abstract via the `sig{abstract}`
+To do so, mark a method on the parent class as abstract via the `sig{abstract}`
 signature. This type signature means that all subclasses must implement the
-abstract method. This also does away with a pattern I've seen in many projects,
-which is raising an error in a subclass if something isn't implemented. Instead,
-we can use Sorbet instead to describe a method as an abstract method that
-returns a specific type, and that all subclass must respect that signature as
-well. requires that child classes implement the method, rather than raise a
-runtime error. We can rely on Sorbet's static type checking than to use an error
-to enforce a constant:
+abstract method and satisfy its return type. Of course, parameter types are also
+enforcable, and special cases may call for the use of `sig{override}`.
+
+One thing to note about overriding abstract methods is that the child class must
+implement the method with at least _some_ of the same parameters and _some_ of
+the same return types. This is very similiar to how types can defined as
+similiar Typescript. However, I naturally thought that Sorbet would understand
+unions of Enum, but apparantly it doesn't, and only supports enum subsets like
+`T.Any(FooEnum:A, FooEnum:B))`. For example,
 
 ```ruby
 # typed: true
-class Transaction < ApplicationRecord
+class JobStatus < T::Enum
+  # (2) Enum values are declared within an `enums do` block
+  enums do
+    Pending = new
+    Running = new
+    Finished = new
+  end
+end
+
+class Handler
   extend T::Sig
   extend T::Helpers
   abstract!
 
-  sig{abstract.returns(Integer)}
-  def min_amount
-    100
+  sig{abstract.returns(JobStatus)}
+  def run
   end
 end
 ```
 
-This enforces the presence of `min_amount` on any subclass of Transaction:
+_Actually_, extending an enum in Sorbet basically isn't possible. Even with
+creating the following type alias:
 
 ```ruby
-# typed: true
+class RetryableJobStatusImpl < T::Enum
+  # (2) Enum values are declared within an `enums do` block
+  enums do
+    RetriesExhaused = new
+  end
+end
 
-class Transaction
+RetryableJobStatus = T.type_alias { T.any(JobStatus, RetryableJobStatusImpl) }
+```
+
+We run into the following, unfortunate problem:
+
+```ruby annotate
+class RetryableJobHandler < Handler
   extend T::Sig
   extend T::Helpers
-  abstract!
 
-  sig{abstract.returns(Integer)}
-  def min_amount
+  sig { override.returns(RetryableJobStatus) }
+  def run
+    # perform_work...
+    if retries_exhausted?
+      # RetryableJobStatus::RetriesExhaused
+      # ^
+      # [Resolving constants through type aliases is unsupported (no docs)]
+
+      RetryableJobStatusImpl::RetriesExhaused
+      # ^
+      # [Now the underlying implementation is visible.]
+      # [There should be a way to combine enums!]
+    else
+      JobStatus::Pending
+    end
+  end
+
+  private
+  def retries_exhausted?
+    false
   end
 end
-
-
-
-# This will not compile, as it is missing `min_amount`
-class Bulk < Transaction
-end
 ```
 
-This raises the following sorbet error, as `Transaction::Bulk` is missing a
-definition for `min_amount`.
-
-```ruby
-transaction.rb:12: Missing definition for abstract method Transaction#min_amount https://srb.help/5023
-    12 |class Bulk < Transaction
-        ^^^^^^^^^^^^^^^^^^^^^^^^
-    editor.rb:8: min_amount defined here
-     8 |  def min_amount
-          ^^^^^^^^^^^^^^
-  Autocorrect: Use -a to autocorrect
-    editor.rb:13: Insert sig { override.returns(Integer) }
-      def min_amount; end
-    13 |end
-        ^
-Errors: 1
-```
-
-```lua
-return {
-  {
-    "neovim/nvim-lspconfig",
-    opts = {
-      servers = {
-        -- example of a ruby-lsp based configuration, no need for rubocop ls
-        ruby_ls = {},
-        solargraph = {}
-        yamlls = {}
-        sorbet = {}
-      },
-      setup = {
-        sorbet = function()
-        local function sorbet_root_pattern(...)
-          local patterns = { "sorbet/config" }
-          return require("lspconfig.util").root_pattern(unpack(patterns))(...)
-        end
-
-        require("lspconfig").sorbet.setup({
-          cmd = { "srb", "tc", "--lsp" },
-          filetypes = { "ruby" },
-          root_dir = function(fname)
-            return sorbet_root_pattern(fname)
-          end,
-        })
-      end
-      }
-    }
-  }
-}
-```
-
-The following flags for `srb` may be of use to you:
-`--typed true --enable-all-experimental-lsp-features --lsp --disable-watchman`
-
-Running sorbet as a language server works best with watchman, according to the
-[docs](https://sorbet.org/docs/lsp). To run sorbet with watchman, just make sure
-it is installed; on OSX it is available via brew: `brew install watchman`, and
-on other platforms refer to the offical
-[docs](https://facebook.github.io/watchman/docs/install).
+Therefore instead of extending enums in Sorbet, you must put all the enum values
+into a single enum directly.
