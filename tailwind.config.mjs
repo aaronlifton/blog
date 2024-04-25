@@ -65,10 +65,13 @@ export default {
       },
       gridTemplateColumns: {
         layout: `
-  		[full-start] 1fr
-  		[content-start] calc(min(var(--content-max-width), 100%) - var(--horizontal-padding) * 2) [content-end]
-  		1fr [full-end]
-  	`,
+          [full-start] 1fr
+          [content-start] calc(min(var(--content-max-width), 100%) - var(--horizontal-padding) * 2) [content-end]
+          1fr [full-end]`,
+        centered: `
+          [full-start] 1fr
+          [content-start] min(var(--prose-max-width), 100%) [content-end]
+          1fr [full-end] `,
       },
       gridColumn: {
         content: "content",
