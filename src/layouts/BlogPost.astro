@@ -41,6 +41,7 @@ const tocEmpty = headings.length === 0;
 ---
 
 <Layout
+  centered={tocEmpty}
   title={title}
   description={description}
   description={remarkPluginFrontmatter.summary}
@@ -88,7 +89,6 @@ const tocEmpty = headings.length === 0;
       class:list={[
         "group flex flex-col lg:flex-row-reverse lg:gap-8",
         !tocEmpty && "lg:flex-row-reverse",
-        tocEmpty && "justify-center"
       ]}
     >
       {

@@ -1,12 +1,4 @@
-/*
-  The CSS in this style tag is based off of Bear Blog's default CSS.
-  https://github.com/HermanMartinus/bearblog/blob/297026a877bc2ab2b3bdfbd6b9f7961c350917dd/templates/styles/blog/default.css
-  License MIT: https://github.com/HermanMartinus/bearblog/blob/master/LICENSE.md
- */
-/* @import "./base.css"; */
-/* @import url('https://fonts.googleapis.com/css2?family=Recursive:slnt,wght@-15,885&display=swap'); */
 @import url("https://fonts.googleapis.com/css2?family=Recursive:wght,MONO@385,0.5&display=swap");
-/* @import url('https://fonts.googleapis.com/css2?family=Recursive:slnt,wght,CASL,CRSV,MONO@-15..0,885,0..1,0..1,1&display=swap'); */
 
 :root {
   --accent: #2337ff;
@@ -19,9 +11,10 @@
   --bg-primary: #fff;
   --horizontal-padding: 2rem;
   --content-max-width: 78rem;
+  --prose-content-max-width: calc(.6667 * var(--content-max-width));
+  --prose-max-width: 65ch;
   --nav-height: 5rem;
   --footer-height: 5rem;
-  /*243px*/
   --footer-margin-top: 2.5rem;
   --total-footer-height: calc(var(--footer-height) + var(--footer-margin-top));
   --vert-padding: 1rem;
@@ -30,10 +23,10 @@
   --primary: rgb(34, 41, 57);
   --on-primary: oklch(94.72% 0.03 308.97);
   --background: oklch(0.988281 0.0046875 300);
-  /* --on-background: hexToRgb(theme(colors.stone.800)); */
   --on-background: var(--primary);
   --disabled: var(--background);
   --shadow: theme(colors.stone.600);
+
   /**/
   /* --bright-blue: oklch(51.01% .274 263.83); */
   /* --indigo-blue: oklch(51.64% .229 281.65); */
@@ -176,11 +169,6 @@ body {
   overflow-wrap: break-word;
   line-height: 1.7;
   @apply flex h-full flex-col bg-purple-50 text-left text-text-primary;
-}
-
-
-main {
-  @apply grid grid-cols-layout px-3 py-6;
 }
 
 dialog.welcome {

@@ -1,112 +1,118 @@
 ---
+import { type Props as SEOProps, SEO } from "astro-seo";
 import BaseHead from "../components/BaseHead.astro";
-import Header from "../components/Header.astro";
 import Footer from "../components/Footer.astro";
-import { SITE_TITLE, SITE_DESCRIPTION } from "../consts";
-import { SEO, type Props as SEOProps } from "astro-seo";
+import Header from "../components/Header.astro";
+import { SITE_DESCRIPTION, SITE_TITLE } from "../consts";
 
 interface Props {
-	title?: string;
-	description?: string;
-	seo?: Partial<SEOProps>;
+  title?: string;
+  description?: string;
+  seo?: Partial<SEOProps>;
+  centered?: boolean;
 }
 const props: Props = Astro.props;
-const seo = props.seo;
+const { seo, centered } = props;
 const title = props.title ? `${props.title} | ${SITE_TITLE}` : SITE_TITLE;
 const description = props.description ?? SITE_DESCRIPTION;
 ---
 
-<!doctype html>
+<!DOCTYPE html>
 <html
-	lang="en"
-	class:list={[
-		"selection:text-on-primary h-full min-h-0 text-base selection:bg-primary/25 sm:text-lg",
-		"scroll-pt-nav-height scroll-smooth sm:scroll-pt-0",
-	]}
+  lang="en"
+  class:list={[
+    "selection:text-on-primary h-full min-h-0 text-base selection:bg-primary/25 sm:text-lg",
+    "scroll-pt-nav-height scroll-smooth sm:scroll-pt-0",
+  ]}
 >
-	<head>
-		<slot name="head">
-			<BaseHead title={title} description={description} />
-		</slot>
-		<SEO
-			title={title}
-			description={description}
-			openGraph={{
-				basic: {
-					title: props.title || SITE_TITLE,
-					// FIXME: provide a valid URL for a default OG image
-					image: "",
-					type: "website",
-					...seo?.openGraph?.basic,
-				},
-			}}
-			twitter={{
-				card: "summary",
-				creator: "@railsdevdotdev",
-				...seo?.twitter,
-			}}
-			extend={{
-				...seo?.extend,
-				meta: [
-					{
-						name: "twitter:title",
-						content: title,
-					},
-					{
-						name: "twitter:description",
-						content: description,
-					},
-					...(seo?.extend?.meta ?? []),
-				],
-				// FIXME: add last-modified-date meta tags
-			}}
-			{...seo}
-		/>
-		<script>
-			import useWindowSize from "$/util/useWindowSize";
+  <head>
+    <slot name="head">
+      <BaseHead title={title} description={description} />
+    </slot>
+    <SEO
+      title={title}
+      description={description}
+      openGraph={{
+        basic: {
+          title: props.title || SITE_TITLE,
+          // FIXME: provide a valid URL for a default OG image
+          image: "",
+          type: "website",
+          ...seo?.openGraph?.basic,
+        },
+      }}
+      twitter={{
+        card: "summary",
+        creator: "@railsdevdotdev",
+        ...seo?.twitter,
+      }}
+      extend={{
+        ...seo?.extend,
+        meta: [
+          {
+            name: "twitter:title",
+            content: title,
+          },
+          {
+            name: "twitter:description",
+            content: description,
+          },
+          ...(seo?.extend?.meta ?? []),
+        ],
+        // FIXME: add last-modified-date meta tags
+      }}
+      {...seo}
+    />
+    <script>
+    import useWindowSize from "$/util/useWindowSize";
 
-			document.addEventListener("astro:after-swap", () => {
-				if (localStorage.getItem("theme") === "dark") {
-					document.querySelector("html")?.classList.add("dark");
-				}
-			});
+    document.addEventListener("astro:after-swap", () => {
+      if (localStorage.getItem("theme") === "dark") {
+        document.querySelector("html")?.classList.add("dark");
+      }
+    });
 
-			useWindowSize();
-		</script>
-	</head>
-	<body>
-		<slot name="header">
-			<Header />
-		</slot>
-		<main>
-			<div class="px-0 sm:col-content">
-				<slot />
-			</div>
-		</main>
-		<Footer />
-		<script>
-			import { serializeError } from "serialize-error";
-			window.onerror = function (message, url, lineno, colno, error) {
-				//save error and send to server for example.
-				console.error({ message, url, lineno, colno, error });
-				const evt = new ErrorEvent("error", {
-					message: message.toString(),
-					filename: url,
-					lineno,
-					colno,
-				});
-				try {
-					fetch(`/api/blog/errors.json`, {
-						body: JSON.stringify(serializeError(evt)),
-						method: "post",
-					});
-				} catch (e) {
-					console.error("Error capturing error", e);
-				}
-				return false;
-			};
-			// raise an error
-			// throw new Error("This is an error");
-		</script>
-	</body>
+    useWindowSize();
+    </script>
+  </head>
+  <body>
+    <slot name="header">
+      <Header />
+    </slot>
+    <main
+      class:list={[
+        "grid  px-3 py-6",
+        centered ? "grid-cols-centered" : "grid-cols-layout",
+      ]}
+    >
+      <div class:list={["px-0", "sm:col-content"]}>
+        <slot />
+      </div>
+    </main>
+    <Footer />
+    <script>
+    import { serializeError } from "serialize-error";
+    window.onerror = function(message, url, lineno, colno, error) {
+      // save error and send to server for example.
+      console.error({ message, url, lineno, colno, error });
+      const evt = new ErrorEvent("error", {
+        message: message.toString(),
+        filename: url,
+        lineno,
+        colno,
+      });
+      try {
+        fetch(`/api/blog/errors.json`, {
+          body: JSON.stringify(serializeError(evt)),
+          method: "post",
+        });
+      } catch (e) {
+        console.error("Error capturing error", e);
+      }
+      return false;
+    };
+    // raise an error
+    // throw new Error("This is an error");
+    </script>
+  </body>
 </html>
