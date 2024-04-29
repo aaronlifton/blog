@@ -48,6 +48,7 @@ const CircleIndicator: FC = () => {
     let firstListEl: HTMLOListElement | null = null;
     const nav = document.querySelector("nav");
     const main = document.querySelector("main");
+
     const toc = document.querySelector(
       "[data-blog-post-toc-container]",
     ) as HTMLDivElement;

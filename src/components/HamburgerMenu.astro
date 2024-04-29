@@ -36,6 +36,7 @@ export const isActiveMenuItem = ({
   class="fixed z-50 w-full h-full"
   style="visibility: hidden;"
   data-hamburger-nav
+  transition-persist
 >
   <div
     data-a11y-dialog-hide
@@ -74,14 +75,16 @@ export const isActiveMenuItem = ({
             menuItemPathname: item.pathname,
             rootPathname: "/",
           });
+          // breaks treesitter highlight when inside <a>
+          const activeProps = { "ariaCurrent": "page" }
 
           return (
             <li class="mb-2 w-full shadow-sm shadow-gray-200 border-[1px]">
               <a
-                class="text-md text-gray-800 not-prose block w-full bg-[var(--on-primary)] px-4 py-2 transition-colors duration-75 ease-in-out hover:bg-gray-200 focus:bg-gray-200 active:bg-gray-200 bg-gray-100"
+                class="text-md text-gray-800 hover:text-gray-900 no-underline hover:underline hover:decoration-gray-800 not-prose block w-full bg-[var(--on-primary)] px-4 py-2 transition-colors duration-75 ease-in-out hover:bg-gray-200 outline outline-transparent hover:outline-gray-300 focus:bg-gray-200 active:bg-gray-200 bg-gray-100"
                 href={item.pathname}
                 color={isActive ? "primary" : "secondary"}
-                {...(isActive && { "aria-current": "page" })}
+                {...(isActive && activeProps)}
               >
                 {item.name}
               </a>
@@ -98,7 +101,7 @@ export const isActiveMenuItem = ({
 import A11yDialog from "a11y-dialog";
 
 const DIALOG_BACKDROP_ANIMATION_DURATION = 300;
-const DIALOG_CONTENT_ANIMATION_DURATION = 300;
+const DIALOG_CONTENT_ANIMATION_DURATION = 150;
 const maxAnimationDuration = Math.max(
   DIALOG_CONTENT_ANIMATION_DURATION,
   DIALOG_BACKDROP_ANIMATION_DURATION,
@@ -125,28 +128,25 @@ const init = () => {
   const hideSidenav = () => {
     backdrop.style.transition =
       `opacity ${DIALOG_BACKDROP_ANIMATION_DURATION}ms ease`;
-    content.style.transition =
-      `transform ${DIALOG_CONTENT_ANIMATION_DURATION}ms ease`;
     dialogElement.style.transition =
-      `visibility 0ms ${maxAnimationDuration}ms ease`;
+      `opacity ${maxAnimationDuration}ms ease, visibility 0ms ${maxAnimationDuration}ms ease`;
 
-    content.style.transform = "translateX(100%)";
     backdrop.style.opacity = "0";
     dialogElement.style.visibility = "hidden";
+    dialogElement.style.opacity = "0";
 
     document.body.style.overflowY = "visible";
   };
 
   const showSidenav = () => {
-    dialogElement.style.transition = `visibility 0ms`;
-    backdrop.style.transition =
+    dialogElement.style.opacity = "1";
+    dialogElement.style.transition =
       `opacity ${DIALOG_BACKDROP_ANIMATION_DURATION}ms ease`;
-    content.style.transition =
-      `transform ${DIALOG_CONTENT_ANIMATION_DURATION}ms ease`;
+    backdrop.style.transition =
+      `opacity ${maxAnimationDuration}ms ease`;
 
     dialogElement.style.visibility = "visible";
     backdrop.style.opacity = "1";
-    content.style.transform = "translateX(0px)";
 
     dialogElement
       .querySelector<HTMLElement>("button[data-a11y-dialog-hide]")

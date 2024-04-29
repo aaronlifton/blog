@@ -135,8 +135,28 @@ import { activeHeading } from "$state/index";
 const getHeadingsInBlogPost = (blogPost: HTMLElement) => {
   return blogPost?.querySelectorAll("h1, h2, h3, h4, h4, h6") ?? [];
 };
+const onHeaderClick = (event: MouseEvent) => {
+ document.sc
+ document.sc
+ document.sc
+ document.sc
+  op[ s]h3
+  spppppp[]
+ const headerLink = event.target as HTMLLIElement
+ const anchor = headerLink.querySelector("a")?.href
+ const header = 
+  window.scrollTo
+}
+
 const observeHeaders = () => {
   const toc = document.querySelector<HTMLElement>("nav[data-toc-wrapper] ol");
+  const headerLinks = toc?.querySelectorAll("li")
+  if (headerLinks) {
+    for (let i = 0; i < headerLinks.length; i++) {
+      const headerLink = headerLinks[i];
+      headerLink.addEventListener('click', onHeaderClick)
+    }
+  }
 
   const tocContainer = toc?.closest<HTMLElement>("[data-toc-wrapper]");
   const blogPost = document.querySelector("[data-blog-post]") as HTMLElement;
@@ -170,15 +190,8 @@ const observeHeaders = () => {
     return tocAnchorElem.closest("li");
   }
 
-  // let ratios: { [key: string]: number } = {};
-  // let lastMaxRatio = 0;
   const observer = new IntersectionObserver(
     (entries) => {
-      // Find the heading that is most visible in the viewport.
-      // const intersectionRatio = Math.max(
-      //   ...entries.map((entry) => entry.intersectionRatio),
-      // );
-
       entries.forEach((entry): void => {
         if (!tocContainer) {
           return;
