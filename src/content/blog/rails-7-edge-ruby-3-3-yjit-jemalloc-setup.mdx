@@ -1,0 +1,116 @@
+---
+title: "Setting up Rails 7 edge, Ruby 3.3 with YJIT + jemalloc"
+description: "Setting up Rails 7 edge, Ruby 3.3 with YJIT + jemalloc"
+pubDate: "Apr 23 2024"
+cover: ./assets/screenshots/nvim-trpc-router.png
+coverAlt: "TODO"
+tags: ["rails"]
+draft: true
+featured: true
+---
+
+Rails 7.1 stable can be found [here](https://github.com/rails/rails/branches)
+Rails edge is the main branch of Rails, as used by Shopify. A large-scale
+deployment of main branch is a rarity, and Shopify is known to catch bugs early,
+accelerating Rails development.
+
+YJIT is a JIT compiler for Ruby similiar to the
+[Psyco](https://pypi.org/project/psyco/) compiler for Pypi and TruffleRuby, as
+it relies on inline caches. The main idea behind YJIT came from one of its
+engineer's PhD thesis, which I've disected [here]. TruffleRuby currently leads
+the Ruby benchmarks by an
+[incredible margin](https://eregon.me/blog/2022/01/06/benchmarking-cruby-mjit-yjit-jruby-truffleruby.html),
+but YJIT is a more mainstream distribution as opposed to a GraalVM-based JIT,
+which is optimized for the JVM. TruffleRuby does have a native executable, but
+it lacks JVM interop and GraalVM states it may have lower peak performance than
+the JVM version
+[source](https://www.graalvm.org/latest/reference-manual/ruby/RuntimeConfigurations/).
+
+YJIT requires the rust toolchain. `brew update && brew upgrade ruby-build`
+`RUBY_CONFIGURE_OPTS="--enable-yjit" rbenv install 3.3.0`
+
+For edge, run `rails new --edge`, and for the latest stable run `rails new`
+
+```
+# Dockerfile
+ARG RUBY_VERSION=3.3.0
+FROM registry.docker.com/library/ruby:$RUBY_VERSION-slim as base
+```
+
+```
+# Gemfile
+ruby "3.3.0"
+```
+
+I prefer to use Rails as a backend API for React frontends, so I've run the
+following:
+
+```
+bundle exec rails new /Users/aaron/Code/rails/myapp --edge --api --skip-test --database\=postgresql --rc\=2d6f819dbf6583ff
+
+Based on the specified options, the following options will also be activated:
+
+  --skip-javascript [due to --api]
+  --skip-hotwire [due to --skip-javascript]
+  --skip-asset-pipeline [due to --api]
+
+bundle exec rails new /Users/aaron/Code/rails/myapp2 --edge --api --skip-test --database\=postgresql --skip-jbuilder --skip-action-mailer --skip-action-mailbox --rc\=69fb1b1429e54ddd
+Based on the specified options, the following options will also be activated:
+
+  --skip-javascript [due to --api]
+  --skip-hotwire [due to --skip-javascript]
+  --skip-asset-pipeline [due to --api]
+```
+
+My configuration:
+
+```
+/Users/aaron/Code/rails/myapp2
+  --no-rc
+  --edge
+  --api
+  --skip-test
+  --database=postgresql
+  --skip-jbuilder
+  --skip-action-mailer
+  --skip-action-mailbox
+  --rc=69fb1b1429e54ddd
+
+The following nextgen enhancements will also be applied in individual git commits via `rails app:template`:
+Annotate Models, Brakeman, dotenv, Factory Bot, GitHub Actions,
+GitHub PR template, good_migrations, pgcli_rails, rack-canonical-host,
+RuboCop, shoulda, Sidekiq, Staging environment, Thor, VCR
+```
+
+A great thing to have for your team is
+[`pronto`](https://github.com/prontolabs/pronto). It's excellent to have rubocop
+and other lint errors visible on pull requests, posted by a bot via a Github
+automation workflow. This is ideal for enforcing a style guide, and leaving
+"style comments" in PR reviews up to a bot so that engineers have no need to
+focus on reviewing style.
+
+- Authentication
+  - I've had enough of Devise. I'm familiar with it, and have no problem using
+    it, but YJIT has shed light on how metaprogramming has slowed down Rails.
+    Clearance is a newer alternative that has a more developer-friendly API.
+- pronto
+- database_cleaner
+- use puma server [production guide](https://github.com/ankane/production_rails)
+- SendGrid for email
+- Redis for caching
+- PostgreSQL timeouts
+- Centralized logging
+  - Mezmo
+  - AWS CloudWatch
+  - etc.
+- Error reporting
+  - Datadog
+  - Sentry
+- Server insight
+  - Datadog.
+- I find datadog indespensible, it shows exactly what portion of a request is
+  spent in ActiveRecord, vs PostgreSQL. A great way to create tickets for
+  engineers is to sort by the slowest endpoints and add optimizing them to the
+  backlog. Datadog StatsD metrics also are great for implemting quick monitoring
+  for post-deployment. You can view these metrics over time, so you can come up
+  with some clever insights by incrementing metrics in edge cases.

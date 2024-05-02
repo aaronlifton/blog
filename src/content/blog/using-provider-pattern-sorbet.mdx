@@ -1,0 +1,114 @@
+---
+title: "Using a API provider pattern with sorbet"
+description: "Using a API provider pattern with sorbet"
+pubDate: "Apr 24 2024"
+cover: ./assets/screenshots/nvim-trpc-router.png
+coverAlt: "todo"
+tags: ["rails"]
+draft: true
+featured: true
+---
+
+I recently found a ruby library called
+[changepack](https://github.com/changepack/changepack), and I found the use of
+the provider pattern in this repo worthy of implementing myself to become more
+familiar with it.
+
+Here is an example of using a provider pattern in Ruby with sorbet:
+
+```ruby
+class GithubService
+  extend T::Sig
+
+  sig { params(repository: Sawyer::Resource).returns(Hash) }
+  def self.repository(repository)
+    {
+      name: repository.full_name,
+      branch: repository.default_branch,
+      providers: { github: repository.id }
+    }
+  end
+
+  sig { params(commit: Sawyer::Resource).returns(Hash) }
+  def self.commit(commit)
+    {
+      message: commit.commit.message,
+      url: commit.html_url,
+      commited_at: commit.commit.author.date,
+      providers: { github: commit.sha },
+      author: {
+        name: commit.commit.author.name,
+        email: commit.commit.author.email
+      }
+    }
+  end
+end
+```
+
+`app/models/provider.rb`
+
+```ruby
+class Provider
+  extend T::Helpers
+  extend T::Sig
+
+  include ActiveModel::Model
+  include ActiveModel::Attributes
+
+  Results = T.type_alias { T::Array[Hash] }
+  Cursor = T.type_alias { T.nilable T.any(Integer, String) }
+
+  abstract!
+
+  sig { abstract.returns Results }
+  def repositories; end
+
+  sig { params(provider: T::Key).returns(T.untyped) }
+  def self.[](provider)
+    to_h.fetch(provider.to_sym)
+  end
+
+  private
+
+  sig { abstract.returns T.untyped }
+  def client; end
+
+end
+```
+
+`app/models/provider/github.rb`
+
+```ruby
+class Provider
+  class Github < Provider
+    sig { override.params(after: Cursor).returns(Results) }
+    def repositories(after: nil)
+      repositories = paginate(after:) { client.repos }
+      repositories.map { |repo| Mapper.repository(repo) }
+    end
+
+    sig { params(items: Results, after: Cursor).returns(T::Boolean) }
+    def exhausted?(items, after:)
+      next_page.blank? || items.map(&:sha).include?(after)
+    end
+
+    sig { returns T.nilable(String) }
+    def next_page
+     client.last_response
+           .rels
+           .fetch(:next, nil)&.href
+    end
+
+    sig { params(items: Results, after: Cursor).returns(Results) }
+    def paginate(items: [], after: nil)
+      new_items = yield
+      paginated_items = items.concat(new_items)
+
+      if exhausted?(paginated_items, after:)
+        items
+      else
+        paginate(items: paginated_items, after:) { client.get(next_page) }
+      end
+  end
+end
+```

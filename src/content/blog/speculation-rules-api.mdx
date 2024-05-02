@@ -44,12 +44,13 @@ save CPU cycles, as a user may be more likely to browse their favorites.
   )
 </script>
 <script type="speculationrules">
+  const favorites = userFavorites.slice(10)
 
   {
 
     "prerender": [
 
-      {"source": "list", "urls": userFavorites.slice(10)}
+      { "source": "list", "urls": favorites }
 
     ]
 

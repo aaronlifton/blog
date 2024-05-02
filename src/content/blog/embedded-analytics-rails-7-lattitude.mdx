@@ -1,0 +1,22 @@
+---
+title: "Implementing embedded analytics with Rails 7 and Lattitude"
+description: "Implementing embedded analytics with Rails 7 and Lattitude"
+pubDate: "Apr 23 2024"
+cover: ./assets/screenshots/nvim-trpc-router.png
+coverAlt: "TODO"
+tags: ["rails", "analytics"]
+draft: true
+featured: true
+---
+
+Lattiude is a new, open-source source for embedding an analytics platform on top
+of your already-existing SQL-based DB. Postgres, SQLite, DuckDB, and many more
+databases are supported. On the application side, all the developer has to do is
+write custom SQL queries, and these queries will be automatically served on a
+custom endpoint which is read by the Lattitude server. In this example, we'll
+use an example Rails app that has 3 models, `Family`, `Account`, and
+`Transaction`.
+
+First,
+[download](https://raw.githubusercontent.com/latitude-dev/sample-duckdb/main/queries/netflix.csv)
+the sample csv and put it in `db/data/netflix.csv`.
