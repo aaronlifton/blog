@@ -70,6 +70,9 @@ const { Content, headings, remarkPluginFrontmatter } = await post.render();
 let oldAttribute;
 document.addEventListener("scroll", ev => {
   const img = document.getElementById(`img-${slug}`);
+  if (!img) {
+    return;
+  }
   oldAttribute = img.getAttribute("data-astro-transition-scope");
   if (window.scrollY > 1000) {
     img.setAttribute("data-astro-transition-scope", null);
