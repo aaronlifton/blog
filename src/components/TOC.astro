@@ -227,7 +227,7 @@ const assertBouncingBallPosition = (firstTocItem: HTMLLIElement) => {
   // scroll-restoration code upon swap or hard reload early, so move the
   // bouncing ball to the top of the first TOC element.
   const diff = Math.abs(bouncingBallTop - firstTOCLIElementTop)
-  if (diff > 7.25) {
+  if (diff > 5) {
     if (import.meta.env.DEV) console.log("resetting");
     bouncingBall.style.top = `${23}px`;
     activeHeading.set(firstTocItem);
