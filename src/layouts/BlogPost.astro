@@ -9,9 +9,7 @@ import PostStats from "$components/PostStats.svelte";
 import Prose from "$components/Prose.astro";
 import Tags from "$components/Tags.astro";
 import TOC from "$components/TOC.astro";
-import ZoomImage from "$components/ZoomImage.svelte";
 import type { MarkdownHeading } from "astro";
-import { Image } from "astro:assets";
 import type { CollectionEntry } from "astro:content";
 import "@radix-ui/themes/styles.css";
 import { getSlugFromPathname } from "$/util";
@@ -20,7 +18,7 @@ import { formatISO } from "date-fns";
 
 type Props = CollectionEntry<"blog">["data"] & {
   headings: MarkdownHeading[];
-  remarkPluginFrontmatter: Record<string, any>;
+  remarkPluginFrontmatter: Record<string, string>;
 };
 const {
   title,
@@ -28,7 +26,7 @@ const {
   pubDate,
   updatedDate,
   cover,
-  coverAlt,
+  // coverAlt,
   tags,
   headings,
   remarkPluginFrontmatter,
@@ -38,6 +36,7 @@ const slug = getSlugFromPathname(Astro.url.pathname);
 
 const ogImageUrl = `/posts/${slug}/og.png`;
 const tocEmpty = headings.length === 0;
+
 ---
 
 <Layout
@@ -155,7 +154,7 @@ const tocEmpty = headings.length === 0;
                 }
               </span>
               <PostStats {slug} client:load />
-              <h1><CodeText text={title} /></h1>
+              <h1 id="title"><CodeText text={title} /></h1>
               <hr class="not-prose" />
             </div>
             <slot />

@@ -30,10 +30,6 @@ const addDepthDataAttributesToUlTree = (
 const CircleIndicator: FC = () => {
   const [indicator, animate] = useAnimate();
   const isMobile = useBreakpoint(768);
-  //
-  // const { scrollY, scrollYProgress } = useScroll();
-  // const scale = useTransform(scrollYProgress, [0, 1], [0, 100]);
-  // const indicatorRef = useRef<HTMLDivElement | null>(null);
   const yOffset = useRef(0);
 
   function getUpperPadding(element: HTMLElement) {
@@ -102,6 +98,7 @@ const CircleIndicator: FC = () => {
     <div className={Styles.wrapper}>
       <motion.div className={Styles.container}>
         <motion.div
+          id="bouncing-ball"
           style={{
             willChange: "transform",
           }}

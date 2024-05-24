@@ -1,9 +1,9 @@
 ---
-import Layout from "$/layouts/Layout.astro";
-import { Icon } from "astro-icon/components";
-import { getCollection, type CollectionEntry } from "astro:content";
-import { unique } from "$/util/array";
 import TagList from "$/components/TagList.astro";
+import Layout from "$/layouts/Layout.astro";
+import { unique } from "$/util/array";
+import { Icon } from "astro-icon/components";
+import { type CollectionEntry, getCollection } from "astro:content";
 
 const blogPosts: CollectionEntry<"blog">[] = await getCollection("blog");
 const filteredPosts = blogPosts.filter((post) => !post.data.draft);
@@ -15,7 +15,7 @@ const allTags = unique(data.flat());
   <TagList tags={allTags}>
     <Fragment slot="header">
       <h5>
-        <Icon name="tabler/tags" class="relative top-[-0.1ch] inline" />Tags
+        <Icon name="tabler/tags" class="inline relative top-[-0.1ch]" />Tags
       </h5>
     </Fragment>
   </TagList>

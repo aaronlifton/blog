@@ -1,5 +1,5 @@
-import * as React from "react";
 import clsx from "clsx";
+import * as React from "react";
 import { twMerge } from "tailwind-merge";
 
 interface Props extends React.ComponentPropsWithRef<"button"> {
@@ -22,12 +22,10 @@ const IconButton = React.forwardRef<HTMLButtonElement, Props>(
           "transition-colors",
           "duration-300",
           {
-            "min-w-[40px] h-[40px] flex justify-center items-center rounded-full px-2":
-              variant === "rounded-full",
-            "rounded border border-divider p-1 shadow-sm shadow-shadow":
-              variant === "rounded",
+            "min-w-[40px] h-[40px] flex justify-center items-center rounded-full px-2": variant === "rounded-full",
+            "rounded border border-divider p-1 shadow-sm shadow-shadow": variant === "rounded",
             "hover:white bg:black": variant === "menu",
-            "absolute right-0 bottom-0 [&_svg_*]:text-white z-20": variant === "inset"
+            "absolute right-0 bottom-0 [&_svg_*]:text-white z-20": variant === "inset",
           },
           providedClassName,
         ),

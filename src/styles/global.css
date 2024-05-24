@@ -243,10 +243,11 @@ p {
   font-size: 1rem;
   font-family: 'Merriweather', serif;
   @apply text-base prose-slate max-w-none lg:prose-lg;
-  /* @apply prose-slate max-w-none dark:prose-invert lg:prose-lg; */
-  /* light:prose-slate dark:prose-dark */
-  /* Size Modifiers: https://github.com/tailwindlabs/tailwindcss-typography#size-modifiers */
-  /* Color Themes: https://github.com/tailwindlabs/tailwindcss-typography#color-modifiers */
+
+  ol,
+  li {
+    font-size: 1rem;
+  }
 }
 
 .prose code {

@@ -17,11 +17,11 @@ import valeDiagnosticsImg from "./assets/vale-diagnostics-sample_qgdcfz_c_pad,h_
 import Admonition from "$components/Admonition.astro";
 
 <Admonition type="tip" isQuote={false} title="Note" date={"Apr 11, 2024"}>
-  Does Neovim run slow in your terminal? I've since switched to the Kitty
-  terminal to make Neovim faster. Kitty + `smart-splits.nvim` let's you navigate
-  between Neovim and other terminal panes, even when Kitty is in stacked mode.
-  This may replace the need for a multiplexer like tmux, which will make Neovim
-  faster as there is no pseudoterminal in between.
+  Does Neovim run slow in your terminal? On OSX, Kitty appears to run Neovim the
+  fastest, and `smart-splits.nvim` lets you navigate between Neovim and other
+  terminal panes, even when Kitty is in stacked mode. This may replace the need
+  for a multiplexer like tmux, which will make Neovim faster as there is no
+  pseudoterminal in between.
   <Fragment slot="image">
     <Image
       class="h-32 object-contain"
@@ -32,11 +32,11 @@ import Admonition from "$components/Admonition.astro";
   </Fragment>
 </Admonition>
 
-You can do some pretty cool stuff with the Wezterm API. Here is an example to
-get you started. Here, we are defining a list of workspaces that the user can
-switch to. Using `InputSelector`, the user is then prompted to select a
-workspace from the list, causing the terminal to switch to that workspace upon
-selection. Each workspace has its own set of panes, windows, and tabs.
+Here is an example of how to use Wezterm's workspace API. Below, we are defining
+a list of workspaces that the user can switch to. Using `InputSelector`, the
+user is prompted to select a workspace from the list, causing the terminal to
+switch to that workspace upon selection. Each workspace has its own set of
+panes, windows, and tabs.
 
 Here we use the `InputSelector` action to create a list of workspaces that
 wezterm will then use to prompt the user to select from it:
@@ -90,7 +90,7 @@ wezterm will then use to prompt the user to select from it:
 
 ## Video demo
 
-<video src={wezVideo2} autoplay loop controls />
+<video style="height:637.5px" src={wezVideo2} autoplay loop controls />
 
 ## Adding a shortcut to create workspaces on the fly
 

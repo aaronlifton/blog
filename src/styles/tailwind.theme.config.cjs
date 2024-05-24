@@ -48,9 +48,9 @@ module.exports = {
         accent: colors.gray[600],
       },
       card: {
+        DEFAULT: harmonyPalette.indigo[100],
         link: "oklch(0.4176 0.057 358.34)",
         border: "oklch(58% 0.175 304.94 / 57.44%)", // colors.gray[100], // 'oklab(1 0 0 / 0.148751)',
-        bg: harmonyPalette.indigo[100], // colors.gray[50], //'rgba(0, 0, 0, 0.06)'
         img: "oklch(0.5109 0.133 47.51)",
       },
     },

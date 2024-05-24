@@ -1,6 +1,6 @@
 ---
-import { getEntry, type CollectionEntry } from "astro:content";
 import { getFirstCodeFromMdx } from "$/util";
+import { type CollectionEntry, getEntry, getEntryBySlug } from "astro:content";
 
 interface Props extends Pick<CollectionEntry<"blog">, "slug"> {}
 const { slug }: Props = Astro.props;

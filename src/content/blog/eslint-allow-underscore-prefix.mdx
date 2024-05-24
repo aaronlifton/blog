@@ -1,26 +1,30 @@
 ---
-title: "ESLint - Ignore underscore-prefixed variables for `eslint-disable-unused-vars` rule"
-description: "Keep using `eslint-disable-unused-vars` by setting up a rule to ignore underscore-prefixed variables."
+title:
+  "ESLint - Ignore underscore-prefixed variables for
+  `eslint-disable-unused-vars` rule"
+description:
+  "Keep using `eslint-disable-unused-vars` by setting up a rule to ignore
+  underscore-prefixed variables."
 pubDate: "Jan 15 2024"
 cover: "./assets/screenshots/nvim-no-unused-vars.png"
-coverAlt: "Neovim screenshot showing eslint unused vars error"
+coverAlt: "Neovim screenshot showing ESLint unused vars error"
 tags: ["eslint", "react", "typescript", "javascript"]
 ---
 
 import { Code } from "astro:components";
-import { Image } from "astro:assets"
-import ZoomImage from "$components/ZoomImage.svelte"
+import { Image } from "astro:assets";
+import ZoomImage from "$components/ZoomImage.svelte";
 import image1 from "./assets/screenshots/nvim-no-unused-vars2.png";
 
 Ever encounter this error?
+
 ```sh
 "eslint: '\_myVar' is assigned a value but never used"
 ```
-Ideally the `@typescript-eslint/no-unused-vars` rule can be left enabled
-and specific variables can be ignored when prefixed with an underscore `_`. You
-can do exactly this in a few simple steps.
 
-## The Steps
+Ideally the `@typescript-eslint/no-unused-vars` rule can be left enabled and
+specific variables can be ignored when prefixed with an underscore `_`. You can
+do exactly this in a few simple steps.
 
 First, update your `.eslintrc.json` as follows:
 
@@ -45,8 +49,8 @@ First, update your `.eslintrc.json` as follows:
 This allows you to prefix any variable with `_` to be ignored by `ESLint`,
 including those in destructuring assignments.
 
-After updating the `.eslintrc.json` as follows, I could then prefix any
-  variable with an underscore to have it be ignored by `ESLint`:
+After updating the `.eslintrc.json` as follows, I could then prefix any variable
+with an underscore to have it be ignored by `ESLint`:
 
 ```js annotate
 const [_isZoomVisible, setZoomVisible] = useState(false);

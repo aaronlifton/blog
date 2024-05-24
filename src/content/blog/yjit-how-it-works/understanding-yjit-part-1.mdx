@@ -1,0 +1,197 @@
+---
+title: "Understanding YJIT Part 1: Inline caching"
+description: An introduction to how YJIT Ruby's new JIT compiler works
+url: https://blog.discourse.org/2024/02/ruby-now-produces-machine-code-on-the-fly/
+pubDate: May 15, 2024
+tags: [ruby, rails, performance, compilers]
+draft: false
+slug: ruby-now-produces-machine-code-on-the-fly2
+featured: true
+---
+
+Ruby has received a significant performance boost by being lazily compiled into
+bytecode by a JIT compiler, producing machine code executed by the CPU, rather
+than the way it's been traditionally run – as an interpreted language that
+doesn't usually win in the benchmarks.
+[YJIT](https://docs.ruby-lang.org/en/master/yjit/yjit_md.html) gives a
+performance boost because it generates bytecode that gets processed directly by
+the CPU, rather than a VM or interpreter, with CPU instructions being the
+fastest execution path of the three. But how does it work? There's been a lot of
+mentions of BBV, or "Basic Block Versioning", and actually this is not an
+entirely new concept; the excellent paper
+[Evaluating YJIT’s Performance in a Production Context: A Pragmatic Approach](https://dl.acm.org/doi/pdf/10.1145/3617651.3622982)
+written by some of the YJIT authors, shows that similar techniques power both
+the Psyco compiler for Pypi and TruffleRuby. In this article, we will attempt to
+understand how inline caching works in a compiler.
+
+## Understanding YJIT in Ruby
+
+The JIT compiler that powers YJIT incorporates the idea of Basic Block
+Versioning (BBV), a JIT architecture introduced in the PhD thesis of the lead
+YJIT engineer, Maxime Chevalier-Boisvert ([source]()). I'm guessing that Shopify
+realized the way to truly optimize Ruby performance without adopting a JVM
+solution like TruffleRuby, a project they had been sponsoring for years, was to
+hire compiler experts.
+
+BBV can be summarized by the following: it provides an optimization path for a
+dynamically typed language like Ruby by generating and caching paths of
+type-specialized machine code on-the-fly. These paths are generated at runtime
+based on actual type information passed into methods, as the compiler is able to
+peek at runtime type data during execution. This is a form of inline caching,
+which is needed for optimal JIT compilation because Ruby is dynamically typed
+and cannot be easily statically analyzed. Sorbet may be a future way to better
+statically analyze Ruby, and I imagine that a future JIT Ruby Compiler can
+extract type information from Sorbet, eschewing the need for BBV for fully-typed
+Sorbet projects.
+
+<blockquote>
+YJIT relies on the promotion of run-time values to implement a mechanism that is
+functionally similar to polymorphic inline caches. When generating code for an
+instance variable read instruction, we peek at the run-time value and determine
+its class, so that we can generate specialized machine code for reading the
+requested property on the class that was encountered
+
+</blockquote>
+
+To illustrate, consider a code block in Ruby where a variable `num` might be an
+integer or a floating-point number:
+
+```ruby
+def calculate(num)
+    return num * 2
+end
+```
+
+During execution, the JIT compiler would create two versions of this basic code
+block. First, if `num` is an integer during a particular execution, the compiler
+generates and caches a version optimized for handling integers. Finally, in a
+most-likely rare case, if `num` is a string, the compiler would then produce a
+third specialized branch for strings, since Ruby can "multiply" strings with
+numbers. Once these code paths have been visited, future method calls would use
+the optimized versions of the code blocks, resulting in faster execution.
+
+In other words, depending on the type of `num`, the JIT compiler will select the
+matching optimized block for execution, given that the blocks were compiled from
+previous code execution already. This makes tons of sense for server
+applications like Ruby on Rails where endpoints are called thousands of times,
+each of which may have one of several bytecode patterns cached based on
+different request types. Since the YJIT compiler generates and uses machine code
+customized for specific data types based on actual execution patterns, I believe
+excess metaprogramming or overly-generalized code could impede YJIT's
+optimization techniques.
+
+### TruffleRuby
+
+TruffleRuby is currently the fastest Ruby implementation by far, based on
+[these benchmarks](https://eregon.me/blog/2022/01/06/benchmarking-cruby-mjit-yjit-jruby-truffleruby.html).
+TruffleRuby is built upon GraalVM, which is a very highly optimized and
+experimental JIT compiler that contains state-of-the-art optimizations and runs
+on the JVM. GraalVM is also language-agnostic at its core. The code base is
+quite complex [(Github)](https://github.com/oracle/truffleruby/tree/master), and
+based on the benchmarks, it doesn't seem that any Ruby compiler will ever be
+faster than it is. It uses a very highly self-optimizing JIT compiler with
+performance tweaks such as its String implementation, called
+[Ropes](https://eregon.me/blog/assets/research/specializing-ropes-for-ruby.pdf).
+Shopify has sponsored TruffleRuby development for quite some time, and one of
+the researchers at Oracle who worked on TruffleRuby now works at Shopify. A new
+Ruby compiler may be developed in the future, but it won't beat the speed of
+TruffleRuby's string implementation unless it copies it or a even faster string
+implementation is devised. Other optimizations besides the string implementation
+exist too. The benchmarks make me think that an entire rewrite of Ruby, taking
+inspiration from GraalVM's optimizations, may one day worth the effort.
+
+<blockquote>
+  Ropes are an immutable data structure for representing character strings via a
+  binary tree of operation-labeled nodes. Ropes were designed to perform well
+  with large strings, and in particular, concatenation of large strings. We
+  present our finding that Ropes are a good choice for strings of any length
+</blockquote>
+
+I do see the need for a non-Graal, non-JVM JIT compiler for Ruby, and I wonder
+if it's possible without re-implementing most of GraalVM. I believe ideally, the
+fastest version of Ruby would take the best principles from GraalVM and reduce
+the scope of the project. However, because so much time and effort has been put
+into TruffleRuby, it really seems unlikely YJIT or another compiler will match
+its speed any time soon. I would say the speed of TruffleRuby is worth running a
+JVM for Rails applications that need to scale up to millions of requests per
+second.
+
+## So, what is a basic block?
+
+A basic block a straight-line sequence of code with no internal branches. These
+blocks are _versioned_ in YJIT: they get tailored to specific type or value
+assumptions that hold true within a particular execution path.
+
+Since Ruby is a dynamically typed language, the JIT compiler has to be careful
+when it comes to type-specialized code. Simply put, there is only so much
+optimization that can take place without type analysis, and that's the key
+takeaway of YJIT for me: My beloved language, Ruby, now lives in a world where
+scaling up to millions of requests per second is commonplace, and in order to be
+a viable backend language in the future, further optimizations are absolutely
+necessary. Besides type information, the JIT compiler would also benefit from
+already-optimized code. I was listening to a talk by one of the YJIT engineers,
+and one of their strategies to understand how to optimize Ruby was to generate a
+syntax call tree of the Ruby code, and then JIT compile Ruby, and compare the
+tree with the machine code version. I was able to find Shopify's compiler graph
+tool for the GraalVM [(here)](https://github.com/Shopify/seafoam), but I
+couldn't find if they open sourced their YJIT version. Overall, I think it's
+fascinating that a language like Ruby has been able to be optimized to the
+levels both TruffleRuby and YJIT have achieved.
+
+## Ruby faster than C?
+
+Suppose you're processing a large array of numbers in Ruby. A C extension might
+be the traditional performance choice, and as of late Rust has also been used
+for FFI extensions as well.
+
+However, with YJIT, if the array consistently holds integers, YJIT can optimize
+for integer calculations directly and produce specialized bytecode. If only a
+small part of the array manipulation is a performance bottleneck, YJIT can focus
+on that section, because YJIT analyzes its performance as it runs, and it can
+optimize for individual blocks. In these scenarios optimized Ruby code might
+outperform the C solution, especially considering the overhead of calling into
+C. Without a self-optimizing compiler, it would be difficult to optimize pure
+Ruby code with statically compiled C.
+
+## Object shapes and the Ruby GC
+
+YJIT also included an improvement to Ruby's internal object representation.
+Object shapes, which capture the layout of an object's attributes and types, are
+used to help optimize memory layouts of ruby objects, which in turns unlocks GC
+performance improvements.
+([source](https://rubykaigi.org/2021-takeout/data/slides/Maxime-YJIT-RubyKaigi-2021-slides.pdf)).
+The Ruby GC can now free memory in a more targeted way, given that the object's
+shape is known. These object shapes are stored in a heap, so it essential for
+Ruby's memory layouts to be optimized, given Ruby's server applications.
+Interestingly, the GC has always been extremely simple, and has never before
+been optimized. This is another win for server applications, as storing memory
+in a more efficient layout unlocks optimized performance, and can potentially
+save memory usage
+([source](https://rubykaigi.org/2023/presentations/maximecb.html)).
+
+## The future
+
+While Ruby's speed also depends on important libraries implemented in C, I've
+been following attempts to create FFI bindings for Ruby via Rust and Zig, and I
+imagine some future version of YJIT Ruby might use Sorbet to provide type
+information to the JIT compiler.
+
+To summarize, BBV is the most important part of why YJIT is the most performant
+JIT Ruby implementation so far. To recap, a basic block is a sequence of
+instructions with a single entry and exit points. The versions of a basic block
+accommodate different execution paths for Ruby methods passed different types,
+resulting in efficient bytecode generation for a dynamically typed language like
+Ruby.
+
+References:
+
+- [Evaluating YJIT’s Performance in a Production Context: A Pragmatic Approach](https://dl.acm.org/doi/pdf/10.1145/3617651.3622982)
+- [Shopify Engineering](https://shopify.engineering/ruby-yjit-is-production-ready)
+
+- [Ruby Official YJIT Documentation](https://docs.ruby-lang.org/en/master/yjit/yjit_md.html)
+
+- [Shopify YJIT GitHub Repo](https://github.com/Shopify/yjit)
+
+- [RubyKaigi 2021](https://rubykaigi.org/2021-takeout/data/slides/Maxime-YJIT-RubyKaigi-2021-slides.pdf)
+
+- [RubyKaigi 2023](https://rubykaigi.org/2023/presentations/maximecb.html)

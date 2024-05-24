@@ -93,8 +93,9 @@ const description = props.description ?? SITE_DESCRIPTION;
     <script>
     import { serializeError } from "serialize-error";
     window.onerror = function(message, url, lineno, colno, error) {
-      // save error and send to server for example.
-      console.error({ message, url, lineno, colno, error });
+      if (import.meta.env.DEV) {
+        console.error({ message, url, lineno, colno, error });
+      }
       const evt = new ErrorEvent("error", {
         message: message.toString(),
         filename: url,
@@ -111,8 +112,8 @@ const description = props.description ?? SITE_DESCRIPTION;
       }
       return false;
     };
-    // raise an error
-    // throw new Error("This is an error");
+    // raise an error to test error capturing
+    throw new Error("This is an error");
     </script>
   </body>
 </html>

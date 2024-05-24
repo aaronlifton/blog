@@ -267,9 +267,8 @@ available as a method on a `Currency` object. To test this out, perform the
 following setup:
 
 1. `rails g model transaction amount:decimal{19-4} currency`. The maybe project
-   uses a very high precision for its decimal column, and this is probably
-   because of 3rd party exchange rate services providing rates with high
-   precision.
+   uses a high precision for its decimal column, and this is probably because of
+   3rd party exchange rate services providing rates with high precision.
 2. After running the migration, add the following code to the `Transaction`
    model:
 

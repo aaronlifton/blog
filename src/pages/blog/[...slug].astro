@@ -1,6 +1,6 @@
 ---
 import Prose from "$components/Prose.astro";
-import ZoomImage from "$components/ZoomImage.svelte";
+import ZoomImage from "$components/react/ZoomImage.tsx";
 import BlogPost from "$layouts/BlogPost.astro";
 import { Image } from "astro:assets";
 import { type CollectionEntry, getCollection } from "astro:content";
@@ -19,37 +19,33 @@ type Props = CollectionEntry<"blog">;
 
 const post = Astro.props;
 const { Content, headings, remarkPluginFrontmatter } = await post.render();
-
-// let width: number;
-// let height: number;
-// if (post.data.cover) {
-//   let width = post.data.cover.width;
-//   let height = post.data.cover.height;
-//   if (post.data.cover.width > 1000) {
-//     width = 2500;
-//     height = 1406.25;
-//   }
-// }
 ---
 
 <BlogPost {...post.data} {headings} {remarkPluginFrontmatter}>
   {
     post.data.cover && (
       <div class="flex flex-col items-center w-full">
-        <Image
-          id={`img-${post.slug}`}
-          src={post.data.cover}
-          width={1500}
-          height={643}
-          alt={post.data.coverAlt || ""}
-          loading="lazy"
-          decoding="async"
-          format="webp"
-          transition:name={`img-${post.slug}`}
-          transition:animate="fade"
-        />
-        <Prose className={"my-0 prose-gray"}>
-          <figcaption class="my-0 italic" id="header-image__caption">
+        <ZoomImage
+          dialogId="main-image"
+          src={post.data.cover.src}
+          alt={post.data.coverAlt}
+          client:load
+        >
+          <Image
+            id={`img-${post.slug}`}
+            src={post.data.cover}
+            width={1500}
+            height={643}
+            alt={post.data.coverAlt || ""}
+            loading="lazy"
+            decoding="async"
+            format="webp"
+            transition:name={`img-${post.slug}`}
+            transition:animate="fade"
+          />
+        </ZoomImage>
+        <Prose className={"mt-2 mb-6 prose-gray"}>
+          <figcaption class="italic" id="header-image__caption">
             {post.data.coverAlt}
           </figcaption>
         </Prose>
@@ -61,14 +57,16 @@ const { Content, headings, remarkPluginFrontmatter } = await post.render();
 
 <style>
 #header-image__caption {
-  margin-top: 0;
+  @apply my-0;
+  font-size: 0.75em;
 }
 </style>
 
 <script is:inline define:vars={{ slug: post.slug }}>
-// Disable the image from flying in from the top of the page
+// Disable the image from flying in from the top of the page, which is default
+// Astro behavior
 let oldAttribute;
-document.addEventListener("scroll", ev => {
+document.addEventListener("scroll", () => {
   const img = document.getElementById(`img-${slug}`);
   if (!img) {
     return;

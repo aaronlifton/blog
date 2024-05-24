@@ -28,7 +28,7 @@ import Admonition from "$components/Admonition.astro";
     <Image
       inferSize={true}
       src={valeDiagnosticsImg}
-      alt="Vale diagnoistics results in a terminal"
+      alt="Vale diagnostics results in a terminal"
       style={"width: 400px;"}
     />
   </Fragment>
@@ -101,7 +101,7 @@ vim.cmd("set spell syntax=off")
 
 Here's how you do it:
 
-1. On osx, `brew install vale`.
+1. On OSX, `brew install vale`.
 2. Create a `.vale.ini` file in your project root. Many projects on github have
    great examples of vale configurations tailored for technical writing. Here's
    mine for some inspiration. with the following content:
@@ -145,8 +145,8 @@ mdx = md
 
 3. Vale will automatically fetch the Style rules for you and save them into your
    `StylesPath`.
-4. Set up a keybinging in Neovim to append `<cword>`, the word under the cursor,
+4. Set up a keybinding in Neovim to append `<cword>`, the word under the cursor,
    to the custom spell file. Since this configuration specifies `Vocab = Me`,
    the spellfile should be created at
    `./vale/styles/config/vocabularies/accept.txt`, and it will simply be a list
-   of words to ignore seperated by newlines.
+   of words to ignore separated by newlines.

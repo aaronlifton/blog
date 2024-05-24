@@ -10,8 +10,8 @@ tags: [react, astro]
 ---
 
 import { Image } from "astro:assets";
-import ZoomImage from "$components/ZoomImage.svelte";
-import image1 from "./assets/screenshots/octokit-response-type.png";
+import ZoomImage from "$components/react/ZoomImage";
+import image1 from "./assets/screenshots/octokit2.png";
 import CodeDescription from "$components/CodeDescription.astro";
 
 ## Using tRPC v11.1 with Astro, Prisma, and the Github API
@@ -279,14 +279,14 @@ It's important to keep track of events like rate limit hits, so that we can
 better handle, and most importantly, avoid them.
 
 One nuance of the Github API is that it returns an array of objects if the path
-is a directory, and a single object if the path is a file. We can handle this by
-giving the typescript compiler a hint, by returning early if the response is an
-array.
+is a directory, and a single object if the path is a file. Because of this, we
+must the type by giving the typescript compiler a hint: returning early if the
+response is an array.
 
 <ZoomImage
+  dialogId="screenshot1"
   src={image1.src}
-  alt={"Full-size neovim screenshot"}
-  caption="Neovim screenshot showing the Typescript type of an OctokitResponse"
+  alt="Neovim screenshot showing the Typescript type of an OctokitResponse."
   client:load
 >
   <Image
@@ -325,7 +325,7 @@ async (props: { owner: string; repo: string; path: string }) => {
     const data = body.data;
     if (Array.isArray(data)) {
       //                   ^
-      //          [This line scopes the type to the single object version]
+      //          [This line narrows the type from array to object]
       //          [for the rest of the method]
       throw new Error("No file found");
     }
