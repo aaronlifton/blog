@@ -1,8 +1,7 @@
 ---
+import TOCScroll from "$components/react/TOCIndicator.tsx";
 import type { MarkdownHeading } from "astro";
 import { Icon } from "astro-icon/components";
-// @ts-ignore -  Missing declaration file
-import TOCScroll from "$components/react/TOCIndicator.tsx";
 import { TOC as TableOfContents } from "astro-toc";
 
 type Props = {
@@ -39,7 +38,6 @@ if (minimumDepth > 1) {
     </div>
   </div>
 
-  <!-- <TOCProgress client:load /> -->
   <nav
     data-toc-wrapper
     class:list={[
@@ -137,43 +135,20 @@ if (minimumDepth > 1) {
 <script>
 import { activeHeading } from "$state/index";
 const getHeadingsInBlogPost = (blogPost: HTMLElement) => {
-  return blogPost?.querySelectorAll("h1, h2, h3, h4, h4, h6") ?? [];
+  return blogPost?.querySelectorAll(
+    "h1:not(#title), h2, h3:not(#admonition-title), h4, h4, h6",
+  ) ?? [];
 };
+let headingsInBlogPost: HTMLHeadingElement[] = [];
 
-let lastClickedHeader: HTMLElement | null = null;
 const observeHeaders = () => {
   const toc = document.querySelector<HTMLElement>("nav[data-toc-wrapper] ol");
-  const headerLinks = toc?.querySelectorAll("li");
-  const blogPost = document.querySelector("[data-blog-post]") as HTMLElement;
-  const headingsInBlogPost = getHeadingsInBlogPost(blogPost);
-  const tocContainer = toc?.closest<HTMLElement>("[data-toc-wrapper]");
   const firstTocItem = toc?.querySelector("li");
-
-  const onHeaderClick = (event: MouseEvent) => {
-    const headerLink = event.target as HTMLLIElement;
-    const anchor = headerLink.getAttribute("href");
-    const header = Array.from(headingsInBlogPost).find((header) =>
-      header.id === anchor?.split("#")[1]
-    );
-
-    if (header) {
-      lastClickedHeader = header as HTMLElement;
-      activeHeading.set(headerLink);
-    }
-  };
-
-  if (headerLinks) {
-    for (let headerLink of headerLinks) {
-      headerLink.addEventListener("click", onHeaderClick);
-    }
-  }
-
-  function activate(listItem: HTMLLIElement): void {
-    if (listItem.parentElement?.parentElement?.tagName === "li") {
-      listItem.parentElement.setAttribute("data-active", "");
-    }
-    listItem.setAttribute("data-active", "");
-  }
+  if (firstTocItem) assertBouncingBallPosition(firstTocItem);
+  const blogPost = document.querySelector("[data-blog-post]") as HTMLElement;
+  headingsInBlogPost = Array.from(
+    getHeadingsInBlogPost(blogPost),
+  ) as HTMLHeadingElement[];
 
   function deactivate(listItem: HTMLLIElement): void {
     listItem.parentElement?.removeAttribute("data-active");
@@ -184,76 +159,79 @@ const observeHeaders = () => {
     toc?.querySelectorAll("li").forEach(deactivate);
   }
 
-  function getTocItemByHeading(
-    heading: HTMLHeadingElement,
-  ): HTMLLIElement | null {
-    const headingId = heading.getAttribute("id");
-    const tocAnchorElem = toc?.querySelector(`li a[href="#${headingId}"]`);
+  const getTOCLIElement = (id: string | null) => {
+    if (!id) return null;
+    return document.querySelector(`nav li a[href="#${id}"]`)?.parentElement as
+      | HTMLLIElement
+      | null;
+  };
+  const activateTOCLIElement = (TOCLIElement: HTMLLIElement) => {
+    TOCLIElement?.setAttribute("data-active", "true");
+  };
 
-    if (!tocAnchorElem) {
-      return null;
+  const firstTocItemInViewPort = () => {
+    const heading = headingsInBlogPost[0];
+    if (!heading) return null;
+    const headingTop = heading.getBoundingClientRect().top;
+    return (headingTop < window.innerHeight);
+  };
+  let lastActivatedTocItem = firstTocItemInViewPort()
+    ? firstTocItem
+    : null;
+
+  const observer = new IntersectionObserver(entries => {
+    for (const entry of entries) {
+      const id = entry.target.getAttribute("id");
+      if (entry.intersectionRatio > 0) {
+        deactivateAllTocItems();
+        const TOCLIElement = getTOCLIElement(id);
+        if (TOCLIElement) {
+          activeHeading.set(TOCLIElement);
+          lastActivatedTocItem = TOCLIElement;
+          activateTOCLIElement(TOCLIElement);
+        }
+        break;
+      } else {
+        getTOCLIElement(id)?.removeAttribute("data-active");
+      }
     }
-    return tocAnchorElem.closest("li");
-  }
-
-  const observer = new IntersectionObserver(
-    (entries) => {
-      entries.forEach((entry): void => {
-        if (!tocContainer) {
-          return;
-        }
-
-        const heading = entry.target;
-
-        if (entry.isIntersecting) {
-          const tocItem = getTocItemByHeading(heading as HTMLHeadingElement);
-
-          if (!tocItem) {
-            return;
-          }
-
-          deactivateAllTocItems();
-          if (lastClickedHeader && heading === lastClickedHeader) {
-            activate(tocItem);
-            activeHeading.set(tocItem);
-            lastClickedHeader = null;
-            // activeHeading.set(tocItem);
-          } else if (!lastClickedHeader) {
-            activate(tocItem);
-            activeHeading.set(tocItem);
-          }
-          const tocContainerCoords = tocContainer.getBoundingClientRect();
-          const tocItemCoords = tocItem.getBoundingClientRect();
-
-          if (tocItem === firstTocItem) {
-            tocContainer.scrollTop = 0;
-            return;
-          }
-
-          // Is the item not visible because it's above the scrollable area? Then
-          // make it visible by scrolling up.
-          if (tocContainerCoords.top > tocItemCoords.top) {
-            tocContainer.scrollTop -= tocContainerCoords.top
-              - tocItemCoords.top;
-            return;
-          }
-
-          if (tocItemCoords.bottom > tocContainerCoords.bottom) {
-            tocContainer.scrollTop += tocItemCoords.bottom
-              - tocContainerCoords.bottom;
-          }
-        }
-      });
-    },
-    {
-      threshold: 1,
-    },
-  );
+    const numActive = document.querySelectorAll(`nav li[data-active]`).length;
+    if (numActive === 0 && lastActivatedTocItem) {
+      activateTOCLIElement(lastActivatedTocItem);
+    }
+  });
 
   for (const headingInBlogPost of headingsInBlogPost) {
     observer.observe(headingInBlogPost);
   }
 };
+
+// TODO: Submit bug-report to Astro
+const assertBouncingBallPosition = (firstTocItem: HTMLLIElement) => {
+  if (!firstTocItem) return;
+  if (window.scrollY > 0) return;
+
+  const bouncingBall = document.getElementById("bouncing-ball");
+  if (!bouncingBall) return;
+
+  const firstTOCLIElementRect = firstTocItem.getBoundingClientRect();
+  const bouncingBallRect = bouncingBall.getBoundingClientRect();
+  const firstTOCLIElementTop = firstTOCLIElementRect.top
+    + parseFloat(getComputedStyle(firstTocItem).marginTop);
+  const bouncingBallTop = bouncingBallRect.top + bouncingBallRect.height / 2;
+
+  // Normally the distance between the center of the ball and the top of the
+  // first TOC element is 7.25px, so we'll go with 10px.
+  //
+  // If greater than 10 px difference, there is a bug caused by exiting Astro's
+  // scroll-restoration code upon swap or hard reload early, so move the
+  // bouncing ball to the top of the first TOC element.
+  if (Math.abs(bouncingBallTop - firstTOCLIElementTop) > 5) {
+    if (import.meta.env.DEV) console.log("resetting");
+    activeHeading.set(firstTocItem);
+  }
+};
+
 let wasSwapped = false;
 document.addEventListener("astro:after-swap", () => {
   observeHeaders();
@@ -294,9 +272,6 @@ document.addEventListener("astro:page-load", () => {
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   -webkit-box-decoration-break: clone;
-}
-summary h2 {
-  @apply m-0 text-[var(--tw-prose-body)];
 }
 details {
   summary::-webkit-details-marker {

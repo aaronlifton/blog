@@ -27,10 +27,10 @@ if (!title) {
 
 <div class:list={["admonition", `admonition-${type}` ]}>
   {icon && <Icon name={icon} />}
-  <h3 class="mb-0 leading-0">{title}</h3>
+  <h3 id="admonition-title">{title}</h3>
   {date && <span class="text-sm text-gray-500">{date}</span>}
   <div class="flex flex-col sm:flex-row justify-between items-center [&_*]:m-0 [&_*]:p-0
-    [&_*]:first-of-type:pr-2">
+    [&_*]:first-of-type:pr-2 [&_p]:text-sm">
     {isQuote ? <blockquote><slot /></blockquote>  : <div class="message"><slot /></div>}
       <slot name="image" />
   </div>
@@ -38,7 +38,7 @@ if (!title) {
 <style type="text/css">
   .admonition {
     h3 {
-      @apply mt-0 mb-0 pb-0;
+      @apply mt-0 mb-0 pb-0 text-[1em] leading-[1em];
     }
     blockquote, .message {
       @apply text-base text-black m-0;
