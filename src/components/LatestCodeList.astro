@@ -3,6 +3,7 @@ import PlayPause from "$components/react/PlayPause";
 import { type CodeResults, getCodesFromMdx } from "$util/markdown";
 import { Code } from "astro:components";
 import { type CollectionEntry, getCollection } from "astro:content";
+import LatestCodeScroller from "./LatestCodeScroller.tsx";
 
 const codeOrder = [
   "vim",
@@ -57,6 +58,7 @@ h5 {
 .codes-container {
   @apply overflow-scroll scroll-smooth scrollbar-thin scrollbar-track-card-bg/0
   scrollbar-thumb-amethyst-300;
+  scroll-behavior: smooth;
 }
 .codes-container > div {
   font-size: 0.7rem;
@@ -76,6 +78,7 @@ h5 {
 }
 </style>
 
+<LatestCodeScroller client:only="react" />
 <div
   class:list={[
     "codes-header flex flex-col items-baseline md:flex-row landscape:flex-col",
@@ -109,14 +112,15 @@ h5 {
           code={code.text}
           lang={code.lang}
           class="code-container"
-          style="font-size:13px;"
+          style="font-size:13px;max-width:700px"
         />
       </div>
     ))
   }
 </div>
 <script>
-import { isPaused } from "$state/index";
+import { isPaused, scrollLeft } from "$state/index";
+import { animate, scroll } from "framer-motion/dom";
 
 const onLoad = () => {
   const codesContainer = document.querySelector(
@@ -127,6 +131,7 @@ const onLoad = () => {
   );
 
   let currentIndex = 0;
+  let isScrolling = false;
   const intervalTime = 5000;
 
   const scrollNext = () => {
@@ -137,8 +142,9 @@ const onLoad = () => {
         currentIndex = 0;
       }
 
-      codesContainer.scrollLeft = codes[currentIndex].offsetLeft
+      const newScrollLeft = codes[currentIndex].offsetLeft
         - codesContainer.offsetLeft;
+      scrollLeft.set(newScrollLeft);
       // codes.forEach((code) => code.classList.remove("active"));
       // codes[(currentIndex + 1) % codes.length].classList.add("active");
       currentIndex++;
@@ -146,15 +152,6 @@ const onLoad = () => {
   };
 
   setInterval(scrollNext, intervalTime);
-
-  // const mouseEventWithinRect = (event: MouseEvent, rect: DOMRect): boolean => {
-  //   return (
-  //     event.clientX >= rect.left &&
-  //     event.clientX <= rect.right &&
-  //     event.clientY >= rect.top &&
-  //     event.clientY <= rect.bottom
-  //   );
-  // };
 
   function onManualScroll() {
     if (!isPaused.get() || !codesContainer) return;
