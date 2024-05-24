@@ -39,14 +39,17 @@ Sorbet instead.
 To do so, mark a method on the parent class as abstract via the `sig{abstract}`
 signature. This type signature means that all subclasses must implement the
 abstract method and satisfy its return type. Of course, parameter types are also
-enforcable, and special cases may call for the use of `sig{override}`.
+enforceable, and special cases may call for the use of `sig{override}`.
 
 One thing to note about overriding abstract methods is that the child class must
 implement the method with at least _some_ of the same parameters and _some_ of
-the same return types. This is very similiar to how types can defined as
-similiar Typescript. However, I naturally thought that Sorbet would understand
-unions of Enum, but apparantly it doesn't, and only supports enum subsets like
-`T.Any(FooEnum:A, FooEnum:B))`. For example,
+the same return types. This is similar to how types can defined in Typescript. I
+naturally thought type unions worked throughout Sorbet, but I could not create
+unions of enums. Apparently this is not supported, and instead unions can only
+be made of subsets of a single enum, such as `T.Any(FooEnum:A, FooEnum:B))`.
+
+For example, say we have a `JobStatus` enum and we want to extend it to include
+a `RetryableJobStatus` enum.
 
 ```ruby
 # typed: true
@@ -70,8 +73,8 @@ class Handler
 end
 ```
 
-_Actually_, extending an enum in Sorbet basically isn't possible. Even with
-creating the following type alias:
+Extending an enum in Sorbet basically isn't possible. Coming from Typescript, I
+thought I could use the following type alias, but it didn't work.
 
 ```ruby
 class RetryableJobStatusImpl < T::Enum
@@ -84,7 +87,8 @@ end
 RetryableJobStatus = T.type_alias { T.any(JobStatus, RetryableJobStatusImpl) }
 ```
 
-We run into the following, unfortunate problem:
+Apparently, Sorbet does not support combining enums via `T.any`, and you would
+have to access the enum value from the implementation class directly.
 
 ```ruby annotate
 class RetryableJobHandler < Handler
@@ -101,7 +105,7 @@ class RetryableJobHandler < Handler
 
       RetryableJobStatusImpl::RetriesExhaused
       # ^
-      # [Now the underlying implementation is visible.]
+      # [Need to access it from the underlying implementation.]
       # [There should be a way to combine enums!]
     else
       JobStatus::Pending
@@ -117,3 +121,15 @@ end
 
 Therefore instead of extending enums in Sorbet, you must put all the enum values
 into a single enum directly.
+
+```ruby
+class JobStatus < T::Enum
+  # (2) Enum values are declared within an `enums do` block
+  enums do
+    Pending = new
+    Running = new
+    Finished = new
+    RetriesExhaused = new
+  end
+end
+```

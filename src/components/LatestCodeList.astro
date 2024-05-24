@@ -97,8 +97,18 @@ for (const post of livePosts) {
 import { isPaused, scrollLeft, scrollDone } from "$state/index";
 
 const activeTransitionsEnabled = false
+const initialDelay = 1750;
+const intervalTime = 5000;
+
+function startInterval(func: Function) {
+  setTimeout(function() {
+    func();
+    setInterval(func, intervalTime);
+  }, initialDelay);
+}
 
 const onLoad = () => {
+  console.log("onLoad")
   const codesContainer = document.querySelector(
     ".codes-container",
   ) as HTMLDivElement;
@@ -107,7 +117,6 @@ const onLoad = () => {
   );
 
   let currentIndex = 0;
-  const intervalTime = 5000;
 
   if (activeTransitionsEnabled) {
     scrollDone.subscribe((sd) => {
@@ -133,7 +142,7 @@ const onLoad = () => {
     }
   };
 
-  setInterval(scrollNext, intervalTime);
+  startInterval(scrollNext);
 
   function onManualScroll() {
     if (!isPaused.get() || !codesContainer) return;
@@ -170,25 +179,26 @@ const onLoad = () => {
     { passive: true },
   );
 
-  codesContainer?.addEventListener("touchend", function() {
+  const onTouchEnd = function() {
     if (!codesContainer) return;
 
     isPaused.set(false);
     onManualScroll();
-  });
-
-  codesContainer?.addEventListener("mouseenter", function() {
+  }
+  const onTouchStart = function() {
     isPaused.set(true);
-  });
+  }
+  codesContainer?.addEventListener("touchend", onTouchEnd);
+  codesContainer?.addEventListener("touchcancel", onTouchEnd);
   codesContainer?.addEventListener("mouseleave", function() {
     if (!codesContainer) return;
 
     isPaused.set(false);
   });
+  codesContainer?.addEventListener("mouseenter", onTouchStart);
   codesContainer?.addEventListener("scroll", onManualScroll);
 
   const iconContainer = document.querySelector("div[class*=_iconContainer]");
-
   iconContainer?.addEventListener("click", function() {
     const isPausedVal = isPaused.get();
     isPaused.set(!isPausedVal);
@@ -196,7 +206,7 @@ const onLoad = () => {
 };
 
 document.addEventListener("astro:page-load", onLoad);
-onLoad();
+// onLoad();
 </script>
 
 <style>

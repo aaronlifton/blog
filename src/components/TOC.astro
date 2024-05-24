@@ -141,7 +141,7 @@ const getHeadingsInBlogPost = (blogPost: HTMLElement) => {
 };
 let headingsInBlogPost: HTMLHeadingElement[] = [];
 
-const observeHeaders = () => {
+const observeHeaders = (shouldReset: boolean = false) => {
   const toc = document.querySelector<HTMLElement>("nav[data-toc-wrapper] ol");
   const firstTocItem = toc?.querySelector("li");
   if (firstTocItem) assertBouncingBallPosition(firstTocItem);
@@ -223,10 +223,11 @@ const assertBouncingBallPosition = (firstTocItem: HTMLLIElement) => {
   // Normally the distance between the center of the ball and the top of the
   // first TOC element is 7.25px, so we'll go with 10px.
   //
-  // If greater than 10 px difference, there is a bug caused by exiting Astro's
+  // If greater than 7.25px difference, there is a bug caused by exiting Astro's
   // scroll-restoration code upon swap or hard reload early, so move the
   // bouncing ball to the top of the first TOC element.
-  if (Math.abs(bouncingBallTop - firstTOCLIElementTop) > 5) {
+  const diff = Math.abs(bouncingBallTop - firstTOCLIElementTop)
+  if (diff > 7.25) {
     if (import.meta.env.DEV) console.log("resetting");
     bouncingBall.style.top = `${23}px`;
     activeHeading.set(firstTocItem);
