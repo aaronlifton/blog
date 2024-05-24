@@ -2,7 +2,11 @@
   "typescript": {},
   "json": {},
   "markdown": {},
-  "biome": {},
+  "biome": {
+    "associations": [
+      "*.astro"
+    ]
+  },
   "excludes": ["**/node_modules", "**/*-lock.json"],
   "plugins": [
     "https://plugins.dprint.dev/typescript-0.90.4.wasm",

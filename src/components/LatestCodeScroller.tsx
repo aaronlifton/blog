@@ -1,4 +1,4 @@
-import { scrollLeft } from "$state/index";
+import { scrollDone, scrollLeft } from "$state/index";
 import { useStore } from "@nanostores/react";
 import { useAnimate } from "framer-motion";
 import { type FC, useEffect, useRef } from "react";
@@ -18,8 +18,14 @@ const LatestCodeScroller: FC = () => {
     if (!scope.current) return;
 
     animate(scope.current.scrollLeft, scrollLeftValue, {
+      onPlay: () => {
+        scrollDone.set(false);
+      },
       onUpdate: left => {
         scope.current.scrollTo({ left });
+      },
+      onComplete: () => {
+        scrollDone.set(true);
       },
     });
   }, [scope, animate, scrollLeftValue]);

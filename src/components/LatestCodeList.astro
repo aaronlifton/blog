@@ -51,33 +51,6 @@ for (const post of livePosts) {
 }
 ---
 
-<style>
-h5 {
-  @apply mb-0;
-}
-.codes-container {
-  @apply overflow-scroll scroll-smooth scrollbar-thin scrollbar-track-card-bg/0
-  scrollbar-thumb-amethyst-300;
-  scroll-behavior: smooth;
-}
-.codes-container > div {
-  font-size: 0.7rem;
-}
-.codes-container pre.astro-code {
-  @apply scrollbar-thumb-amethyst-300;
-}
-.code {
-  @apply mx-4 min-w-[433px] max-w-[80ch] snap-start border border-gray-200 p-4
-  transition-colors duration-300 ease-in-out scrollbar-thin lg:min-w-min;
-}
-.code-container {
-  @apply scrollbar-track-card-bg/0 scrollbar-thumb-amethyst-300;
-}
-.code.active {
-  @apply border-amethyst-400;
-}
-</style>
-
 <LatestCodeScroller client:only="react" />
 <div
   class:list={[
@@ -86,9 +59,11 @@ h5 {
   ]}
 >
   <h5>Latest code</h5>
+  <!-- <a href="https://github.com/aaronlifton/blog/blob/main/src/components/LatestCodeList.astro" -->
+  <!--   class="text-gray-400 hover:text-gray-500 hover:underline text-[12px] decoration-1 underline-offset-auto hover:decoration-gray-500" -->
+  <!--   target="_blank" >Source</a> -->
   {/* @ts-ignore */}
   <PlayPause client:load className="icon-container" />
-  <!-- <div class="output"></div> -->
 </div>
 <!-- if mobile needs more performance, use will-change-scroll -->
 <div
@@ -119,7 +94,9 @@ h5 {
   }
 </div>
 <script>
-import { isPaused, scrollLeft } from "$state/index";
+import { isPaused, scrollLeft, scrollDone } from "$state/index";
+
+const activeTransitionsEnabled = false
 
 const onLoad = () => {
   const codesContainer = document.querySelector(
@@ -130,8 +107,16 @@ const onLoad = () => {
   );
 
   let currentIndex = 0;
-  let isScrolling = false;
   const intervalTime = 5000;
+
+  if (activeTransitionsEnabled) {
+    scrollDone.subscribe((sd) => {
+      if (sd == true) {
+        codes.forEach((code) => code.classList.remove("active"));
+        codes[currentIndex % codes.length].classList.add("active");
+      }
+    })
+  }
 
   const scrollNext = () => {
     if (!codesContainer) return;
@@ -144,8 +129,6 @@ const onLoad = () => {
       const newScrollLeft = codes[currentIndex].offsetLeft
         - codesContainer.offsetLeft;
       scrollLeft.set(newScrollLeft);
-      // codes.forEach((code) => code.classList.remove("active"));
-      // codes[(currentIndex + 1) % codes.length].classList.add("active");
       currentIndex++;
     }
   };
@@ -210,27 +193,35 @@ const onLoad = () => {
     const isPausedVal = isPaused.get();
     isPaused.set(!isPausedVal);
   });
-
-  // const observer = new window.IntersectionObserver(
-  //   (entries) => {
-  //     entries.forEach(console.log);
-  //     const leftmostEntry = entries.reduce((leftmost, entry) =>
-  //       entry.intersectionRatio < leftmost.intersectionRatio ? entry : leftmost,
-  //     );
-  //     // add active class to leftmost element
-  //     // if (leftmostEntry.isIntersecting) {
-  //     codes.forEach((code) => code.classList.remove("active"));
-  //     leftmostEntry.target.classList.add("active");
-  //     // } else {
-  //     //   leftmostEntry.target.classList.remove("active");
-  //     // }
-  //   },
-  //   { threshold: 1 },
-  // );
-  //
-  // codes.forEach((code) => observer.observe(code));
 };
 
 document.addEventListener("astro:page-load", onLoad);
 onLoad();
 </script>
+
+<style>
+h5 {
+  @apply mb-0;
+}
+.codes-container {
+  @apply overflow-scroll scroll-smooth scrollbar-thin scrollbar-track-card-bg/0
+  scrollbar-thumb-amethyst-300;
+  scroll-behavior: smooth;
+}
+.codes-container > div {
+  font-size: 0.7rem;
+}
+.codes-container pre.astro-code {
+  @apply scrollbar-thumb-amethyst-300;
+}
+.code {
+  @apply mx-4 min-w-[433px] max-w-[80ch] snap-start border border-gray-200 p-4
+  transition-colors duration-300 ease-in-out scrollbar-thin lg:min-w-min;
+}
+.code-container {
+  @apply scrollbar-track-card-bg/0 scrollbar-thumb-amethyst-300;
+}
+.code.active {
+  @apply border-amethyst-400;
+}
+</style>
