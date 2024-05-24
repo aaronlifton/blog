@@ -8,10 +8,11 @@ const LatestCodeScroller: FC = () => {
   const [scope, animate] = useAnimate();
 
   useEffect(() => {
+    // @ts-ignore
     scope.current = document.querySelector(
       ".codes-container",
     ) as HTMLDivElement;
-  }, []);
+  }, [scope]);
 
   useEffect(() => {
     if (!scope.current) return;
@@ -21,7 +22,7 @@ const LatestCodeScroller: FC = () => {
         scope.current.scrollTo({ left });
       },
     });
-  }, [scrollLeftValue]);
+  }, [scope, animate, scrollLeftValue]);
 
   return null;
 };
