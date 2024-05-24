@@ -228,6 +228,7 @@ const assertBouncingBallPosition = (firstTocItem: HTMLLIElement) => {
   // bouncing ball to the top of the first TOC element.
   if (Math.abs(bouncingBallTop - firstTOCLIElementTop) > 5) {
     if (import.meta.env.DEV) console.log("resetting");
+    bouncingBall.style.top = `${23}px`;
     activeHeading.set(firstTocItem);
   }
 };

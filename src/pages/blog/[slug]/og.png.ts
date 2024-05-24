@@ -39,7 +39,6 @@ export async function GET({ props }: Props) {
       : path.resolve(post.data.cover.src.replace("/", "dist/server/")),
   );
 
-  // console.log("HERE!!!!");
   // const __dirname = path.dirname(fileURLToPath(import.meta.url));
   // console.log({ src: post.data.cover.src, dirname: __dirname });
   // const downsizedPostCover = await getImage({

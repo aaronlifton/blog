@@ -113,7 +113,7 @@ const description = props.description ?? SITE_DESCRIPTION;
       return false;
     };
     // raise an error to test error capturing
-    throw new Error("This is an error");
+    if (import.meta.env.DEV) throw new Error("This is an error");
     </script>
   </body>
 </html>
