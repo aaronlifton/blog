@@ -8,14 +8,12 @@ export const client = createClient({
   authToken: import.meta.env.TURSO_DB_AUTH_TOKEN,
 });
 
-const isLocalhost = import.meta.env.MODE === "development";
 export const getViewsBySlug = async (slug: string, shouldIncrement = false) => {
-  if (isLocalhost || !slug) {
-    console.log("getViewsBySlug: localhost detected, returning 0.");
+  if (import.meta.env.DEV || !slug) {
+    console.log("Development mode: localhost detected, returning 0.");
     return 0;
   }
 
-  const initialViewCount = 0;
   const upsert = async () =>
     prisma.metric.upsert({
       where: {
@@ -24,7 +22,7 @@ export const getViewsBySlug = async (slug: string, shouldIncrement = false) => {
       create: {
         postSlug: slug,
         metricType: "views",
-        value: initialViewCount,
+        value: 0,
       },
       update: {
         value: {
@@ -42,8 +40,7 @@ export const getViewsBySlug = async (slug: string, shouldIncrement = false) => {
   const find = async () =>
     await prisma.metric.findUnique({
       // Since where only contains one field, which is unique, prisma will use a
-      // DB upsert, which avoids unique constraint violations
-      // and eschews the need for a transaction.
+      // DB upsert, which avoids unique constraint violations and eschews the need for a transaction.
       // See: https://www.prisma.io/docs/orm/reference/prisma-client-reference#database-upserts
       where: {
         postSlug: slug,
@@ -63,11 +60,8 @@ export const getViewsBySlug = async (slug: string, shouldIncrement = false) => {
       metric = await upsert();
     } else {
       metric = await find();
-      if (!metric) {
-        metric = await upsert();
-      }
     }
-    return metric.value;
+    return metric?.value || 0;
   } catch (e) {
     if ((e as PrismaClientKnownRequestError).code === "P2002") {
       // https://www.prisma.io/docs/concepts/components/prisma-client/handling-errors
@@ -83,9 +77,9 @@ export const getViewsBySlug = async (slug: string, shouldIncrement = false) => {
 
 export const getViews = async () => {
   // return a hash of views by slug
-  if (isLocalhost) {
+  if (import.meta.env.DEV) {
     console.log(
-      "getViews: localhost detected, saving resulting in memory instead of using Turso API.",
+      "getViews: Development mode: returning results from memory instead of using Turso API.",
     );
     return {};
   }
@@ -120,9 +114,7 @@ export const saveError = async (evt: Zod.infer<typeof models.ErrorModel>) => {
       stackTrace: evt.stackTrace,
     };
     const validatedError = models.ErrorModel.parse(errorObj);
-    const savedError = prisma.error.create({ data: validatedError });
-    console.log("Saved error", savedError);
-    return savedError;
+    return prisma.error.create({ data: validatedError });
   } catch (e) {
     console.error(e);
   }

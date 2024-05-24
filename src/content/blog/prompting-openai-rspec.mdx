@@ -1,0 +1,202 @@
+---
+title:
+  'Prompting OpenAI to create proper RSpec tests & creating a Neovim "Generate
+  RSpec Tests" command'
+description:
+  "Learn how to prompt OpenAI so that it generates proper RSpec tests and create
+  a Neovim command for this."
+pubDate: "May 24 2024"
+tags: ["neovim", "openai", "rails"]
+featured: true
+---
+
+Asking OpenAI to generate RSpec tests for your Rails application can be a
+powerful way to tackle a large amount of tech debt programmatically, or generate
+specs when it's appropriate for a developer to not do so manually, such as
+simple CRUD operations, and even more complicated specs depending on how much
+you trust your AI's responses.
+
+I found that by default, OpenAI's GPT-3.5 and GPT-4 model would generate
+requests specs using `get ":create"` or `post ":update"` instead of the proper
+routes, such as `api_v1_users_path` or `api_v1_user_path(user.id)`. It was
+slightly tricky to generate a prompt that could so so, as well as take an
+"argument" to use a preset list of FactoyBot models. I was able to use the
+Neovim plugin `ChatGPT.nvim` to create a custom
+`/Users/aaron/.config/nvim/lua/config/gpt/actions/rails.json`. That is the
+default place where `ChatGPT.nvim` looks for custom actions. I was not able to
+find a single `gpt/actions/*.json` file on Github, so I thought I actually might
+be the first one to do this, at least publicly on GitHub.
+
+I hope you find this helpful!
+
+## RSpec prompt
+
+<p class="font-sm">
+  _Note that the backticks are there to cause AI to finish a "started" markdown
+  code block_
+</p>
+
+````text
+For the following instructions, do not use \"get :create\" etc and
+instead use full routes like \"api_v1_birds_path\". Implement RSpec tests for
+the following code.\n\nCode:\n```{{filetype}}\n{{input}}\n```\n\nTests:\n```{{filetype}}
+````
+
+## "Missing method" prompt
+
+````text
+You are a Ruby on Rails programmer.
+Implement the {{method}} method(s) for the following code.\n\nExisting
+code:\n```{{filetype}}\n{{input}}\n```\n\n```{{filetype}}
+````
+
+## `actions.json`
+
+````json
+{
+  "WriteRailsMethod": {
+    "type": "chat",
+    "opts": {
+      "template": "You are a Ruby on Rails programmer. Implement the {{method}} method(s) for the following code.\n\nExisting code:\n```{{filetype}}\n{{input}}\n```\n\n```{{filetype}}",
+      "title": "Write Rails code",
+      "strategy": "replace",
+      "params": {
+        "model": "gpt-3.5-turbo",
+        "stop": ["```"]
+      }
+    },
+    "args": {
+      "method": {
+        "type": "string",
+        "optional": "true",
+        "default": "empty"
+      }
+    }
+  },
+  "WriteRSpecTests": {
+    "type": "chat",
+    "opts": {
+      "title": "Write RSpec tests",
+      "template": "For the folllowing instructions, do not use \"get :create\" etc and instead use full routes like \"api_v1_birds_path\". Implement RSpec tests for the following code.\n\nCode:\n```{{filetype}}\n{{input}}\n```\n\nTests:\n```{{filetype}}",
+      "strategy": "append",
+      "params": {
+        "model": "gpt-3.5-turbo",
+        "stop": ["```"],
+        "max_tokens": 2048
+      }
+    },
+    "args": {
+      "use_shoulda": {
+        "type": "string",
+        "optional": "true",
+        "default": "false"
+      },
+      "factory_bot_models": {
+        "type": "string",
+        "optional": "true",
+        "default": ""
+      }
+    }
+  },
+  "WriteRSpecShouldaFactoryBotTests": {
+    "type": "chat",
+    "opts": {
+      "title": "Write RSpec tests",
+      "template": "For the following command, usee shoulda_matchers, and treat the non-empty strings in ths following array as existing FactoryBot models :[{{m1}},{{m2}}, {{m3}}]. Implement RSpec tests for the following code.\n\nCode:\n```{{filetype}}\n{{input}}\n```\n\nTests:\n```{{filetype}}",
+      "strategy": "append",
+      "params": {
+        "model": "gpt-3.5-turbo",
+        "stop": ["```"]
+      }
+    },
+    "args": {
+      "use_shoulda": {
+        "type": "string",
+        "optional": "true",
+        "default": "false"
+      },
+      "factory_bot_models": {
+        "type": "string",
+        "optional": "true",
+        "default": ""
+      }
+    }
+  }
+}
+````
+
+## ChatGPT.nvim Neovim command configuration
+
+For lazyvim, configure the `keys` section of ChatGPT.nvim like so:
+
+```lua
+  {
+    "jackMort/ChatGPT.nvim",
+    dependencies = {
+      "MunifTanjim/nui.nvim",
+      "nvim-lua/plenary.nvim",
+      "nvim-telescope/telescope.nvim",
+    },
+    cond = function()
+      local api_key = os.getenv("OPENAI_API_KEY")
+      return api_key and api_key ~= "" and true or false
+    end,
+    opts = {
+      actions_paths = {
+        -- Add the path to the actions.json file you've created, mine was called rails.json
+        actions_config_path .. "/rails.json",
+      },
+      api_key_cmd = 'op item get "Neovim ChatGPT" --fields credential',
+      openai_params = {
+        model = "gpt-3.5-turbo-16k", -- "gpt-4"
+        frequency_penalty = 0,
+        presence_penalty = 0,
+        max_tokens = 300,
+        temperature = 0.3,
+        top_p = 0.3,
+        n = 1,
+        -- Lower temperature and top_p can help with repetitive responses and make the AI more creative
+        -- temperature = 0,
+        -- top_p = 1,
+      },
+      openai_edit_params = {
+        model = "gpt-3.5-turbo-16k",
+        -- model = "gpt-4",
+        frequency_penalty = 0,
+        presence_penalty = 0,
+        temperature = 0,
+        top_p = 1,
+        n = 1,
+      },
+      show_quickfixes_cmd = "Trouble quickfix",
+    },
+    cmd = {
+      "ChatGPT",
+      "ChatGPTActAs",
+      "ChatGPTCompleteCode",
+      "ChatGPTEditWithInstructions",
+      "ChatGPTRun",
+    },
+    -- stylua: ignore
+    keys = {
+      -- ... default keys above
+      { "<leader>Ra", "<cmd>ChatGPTRun WriteRailsMethod<cr>", desc = "Write Rails code" },
+      { "<leader>Rt", "<cmd>ChatGPTRun WriteRSpecTests<cr>", desc = "Write Rails code", mode = "v" },
+    }
+  }
+```
+
+import WriteRailsMethodVideo from "./assets/videos/WriteRailsMethod.mov";
+import WriteRSpecTestsVideo from "./assets/videos/WriteRSpecTests.mov";
+
+## WriteRailsMethod video
+
+<video controls="" autoplay="false" loop="true">
+  <source src={WriteRailsMethodVideo} type="video/webm" />
+</video>
+
+## WriteRSpecMethod video
+
+<video controls="" autoplay="false" loop="true">
+  <source src={WriteRSpecTestsVideo} type="video/webm" />
+</video>
