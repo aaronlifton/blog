@@ -1,7 +1,7 @@
 ---
 import { PAGE_SIZE } from "$/consts";
 import { getCollection } from "astro:content";
-export const prerender = true;
+export const prerender = false;
 
 export async function getStaticPaths() {
   const allPosts = await getCollection("blog");
