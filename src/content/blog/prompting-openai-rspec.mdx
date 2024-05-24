@@ -12,20 +12,18 @@ featured: true
 
 Asking OpenAI to generate RSpec tests for your Rails application can be a
 powerful way to tackle a large amount of tech debt programmatically, or generate
-specs when it's appropriate for a developer to not do so manually, such as
-simple CRUD operations, and even more complicated specs depending on how much
-you trust your AI's responses.
+specs, depending on how much you trust your AI's responses.
 
-I found that by default, OpenAI's GPT-3.5 and GPT-4 model would generate
-requests specs using `get ":create"` or `post ":update"` instead of the proper
+I found that by default, OpenAI's GPT-3.5 and GPT-4 model would generate RSpec
+request specs using `get ":create"` or `post ":update"` instead of the proper
 routes, such as `api_v1_users_path` or `api_v1_user_path(user.id)`. It was
-slightly tricky to generate a prompt that could so so, as well as take an
-"argument" to use a preset list of FactoyBot models. I was able to use the
-Neovim plugin `ChatGPT.nvim` to create a custom
-`/Users/aaron/.config/nvim/lua/config/gpt/actions/rails.json`. That is the
-default place where `ChatGPT.nvim` looks for custom actions. I was not able to
-find a single `gpt/actions/*.json` file on Github, so I thought I actually might
-be the first one to do this, at least publicly on GitHub.
+slightly tricky to generate a prompt with the exact wording so that OpenAI would
+only use proper routes. To implement this, I was able to use the Neovim plugin
+`ChatGPT.nvim` and create a custom actions file in the default folder where
+`ChatGPT.nvim` looks for custom actions:
+`/Users/aaron/.config/nvim/lua/config/gpt/actions/rails.json`. I couldn't find
+another example of a `gpt/actions/*.json` file on Github, so I thought I
+actually might be the first one to do this, at least publicly on GitHub.
 
 I hope you find this helpful!
 
@@ -33,7 +31,7 @@ I hope you find this helpful!
 
 <p class="font-sm">
   _Note that the backticks are there to cause AI to finish a "started" markdown
-  code block_
+  code block, and the curly braces are template inputs for the Neovim command._
 </p>
 
 ````text
@@ -84,41 +82,17 @@ code:\n```{{filetype}}\n{{input}}\n```\n\n```{{filetype}}
         "stop": ["```"],
         "max_tokens": 2048
       }
-    },
-    "args": {
-      "use_shoulda": {
-        "type": "string",
-        "optional": "true",
-        "default": "false"
-      },
-      "factory_bot_models": {
-        "type": "string",
-        "optional": "true",
-        "default": ""
-      }
     }
   },
   "WriteRSpecShouldaFactoryBotTests": {
     "type": "chat",
     "opts": {
       "title": "Write RSpec tests",
-      "template": "For the following command, usee shoulda_matchers, and treat the non-empty strings in ths following array as existing FactoryBot models :[{{m1}},{{m2}}, {{m3}}]. Implement RSpec tests for the following code.\n\nCode:\n```{{filetype}}\n{{input}}\n```\n\nTests:\n```{{filetype}}",
+      "template": "For the following command, use shoulda_matchers and assume FactoryBot factories exist for all models. Implement RSpec tests for the following code.\n\nCode:\n```{{filetype}}\n{{input}}\n```\n\nTests:\n```{{filetype}}",
       "strategy": "append",
       "params": {
         "model": "gpt-3.5-turbo",
         "stop": ["```"]
-      }
-    },
-    "args": {
-      "use_shoulda": {
-        "type": "string",
-        "optional": "true",
-        "default": "false"
-      },
-      "factory_bot_models": {
-        "type": "string",
-        "optional": "true",
-        "default": ""
       }
     }
   }
@@ -181,7 +155,7 @@ For lazyvim, configure the `keys` section of ChatGPT.nvim like so:
     keys = {
       -- ... default keys above
       { "<leader>Ra", "<cmd>ChatGPTRun WriteRailsMethod<cr>", desc = "Write Rails code" },
-      { "<leader>Rt", "<cmd>ChatGPTRun WriteRSpecTests<cr>", desc = "Write Rails code", mode = "v" },
+      { "<leader>Rt", "<cmd>ChatGPTRun WriteRSpecTests<cr>", desc = "Write RSpec tests", mode = "v" },
     }
   }
 ```
