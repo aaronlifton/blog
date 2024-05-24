@@ -14,24 +14,19 @@ import macroVideo from "./assets/videos/macro.webm";
 import macroVideo2 from "./assets/videos/macro2.webm";
 import globalVideo from "./assets/videos/global1.webm";
 
-<video controls="" autoplay="" loop="true">
-  <source src={macroVideo} type="video/webm" />
-</video>
-
 In Neovim, which is better to use: **macros** or **normal** mode? If you
 answered macros, you might be surprised by the power of normal mode and the
 **execute** command when compared to managing macros with plugins. With a simple
 Lua table, you can get the most out of normal mode and emulate a macro library.
 
-<div class="hidden">
-  Additionally, in this article I will show you how to make a simple macro
-  manager with NUI.
-</div>
-
 The macro commands that are too complicated to be written on-the-go can be saved
 in a new file, such as `config/macros.lua`. One example of a command I've saved
 is one that converts traditional Typescript functions into const functions.
 There's a video of this in action below.
+
+<video controls="" autoplay="" loop="true">
+  <source src={macroVideo} type="video/webm" />
+</video>
 
 ## Why normal mode
 
@@ -45,7 +40,7 @@ which was cumbersome, and no plugin seemed to match up with the plugin I
 imagined in my head. If you do need a macro manager plugin, I would recommend
 [telescope-macros](https://github.com/svermeulen/vim-macrobatics) though.
 
-### Use motions
+### Motions
 
 You should note that regardless of how you are recording your commands, is that
 it's better to use <kbd>fFtT</kbd> and <kbd>hjkl</kbd> than <kbd>wb</kbd>, since
@@ -74,7 +69,7 @@ object-oriented syntax, we would execute the following command:
 Executing `:g /function /execute "norm cwconst^[f(i = ^[f{i=> ^["` will change
 the function syntax to arrow function syntax for all instances of the word
 `function`. Note that the `^]` symbols are special - in most terminals, these
-scape codes can be inserted via <kbd>Ctrl-V</kbd> and then <kbd>Esc</kbd>. Note
+escape codes can be inserted via <kbd>Ctrl-V</kbd> and then <kbd>Esc</kbd>. Note
 how the escape codes are purple in the video.
 
 <video controls="" autoplay="" loop="true">
@@ -83,8 +78,8 @@ how the escape codes are purple in the video.
 
 Another trick is the `:g/found/v/notfound/{cmd}` syntax &mdash; in this example,
 a command is ran on lines that contain `function`, but _do not_ contain `test`.
-This a potentially way to delete all your code but keep your tests, so exercise
-caution when writing the normal command!
+This a potentially way to delete all your code, but keep your tests, so exercise
+caution when writing this kind of normal command!
 
 <video controls="" autoplay="" loop="true">
   <source src={globalVideo} type="video/webm" />
@@ -95,9 +90,9 @@ which I found distracting. Recording macros also requires tagging the macros
 with a description, which added an extra step before re-using a newly created
 macro.
 
-## Another example
+### Another example
 
-In my [Wezterm] config, I wanted to see if I could replace all instead of
+In my Wezterm config, I wanted to see if I could replace all instead of
 `a.[Wezterm method]` with `act.[Wezterm method]`. A Wezterm method is a command
 available in the Wezterm action API, like `wezterm.action.SendKey` or
 `wezterm.action.SplitHorizontal`. I could have used find and replace with a
@@ -121,11 +116,12 @@ normal mode" debate, I tried doing this with a normal mode command.
 1. Result: `a.AdjustPanelSize` and `a.ActivePaneDirection` were updated to have
    a prefix of `act.` instead of `a.`, as well as any other methods that started
    with `act.`. The official wezterm documentation references `act`, and I
-   prefer to not use a single letter for variable names. _Fun fact:_ with Go,
-   this is actually
-   [kind of acceptable](https://www.reddit.com/r/golang/comments/3aporh/why_so_many_gophers_use_single_letter_variables/).
+   needed an example for this article.
 
-## Improvements
+1. Alternative method: You can use `s/act.[A-Z*]/a.[A-Z*]/g` to replace the text
+   as well, which requires writing regex in the command line.
+
+## Execute commands
 
 It felt powerful to use the search register in a normal command with a line
 range, but there are still improvements to be made to the technique. In normal
@@ -158,28 +154,29 @@ _into this:_
 {a = 1,b = 2,c = 3}
 ```
 
-\
-In Neovim, macros are a string representation of keyboard input, which makes them
-hard to parse. To add a description to a macro, a plugin is needed. This turned out
-to be more tricky than I had expected, as this is a case when the most popular plugins
-on Github didn't work well for me. The first result, [NeoComposer](https://github.com/ecthelionvi/NeoComposer.nvim),
-made little sense to use unless you want to choose a macro from a list with no descriptions.
-Macros are displayed as virtual text, and stored in registers, which I found to be
-easy to overwrite with other commands. I did enjoy being able to "scroll" through
-the macros in insert mode via <kbd>C-n</kbd> and <kbd>C-p</kbd> though.
+## Finding a plugin
 
-<video controls="" autoplay="" loop="true">
-  <source src={macroVideo} type="video/webm" />
-</video>
+In Neovim, macros are a string representation of keyboard input, which makes
+them hard to parse. To add a description to a macro, a plugin is needed. This
+turned out to be more tricky than I had expected, as this is a case when the
+most popular plugins on Github didn't work well for me. The first result,
+[NeoComposer](https://github.com/ecthelionvi/NeoComposer.nvim), wasn't what I
+was looking for because I had to choose a macro from a list with no
+descriptions. Macros are displayed as virtual text, and stored in registers,
+which I found to be easy to overwrite with other commands. I did enjoy being
+able to "scroll" through the macros in insert mode via <kbd>C-n</kbd> and
+
+<kbd>C-p</kbd> though. If you can remember your macros and use them often, this plugin
+may be for you.
 
 I considered forking the project, but I had discovered several other macro
 plugins. The next most popular plugin was
 [Macrobatics](https://github.com/svermeulen/vim-macrobatics), which looked to be
 exactly what I wanted; but I didn't enjoy the lack of a Lua API, as it's
-recommended in a modern Neovim setup to stick to Lua; as Vimscript will become
+recommended in a modern Neovim setup to stick to Lua as Vimscript will become
 deprecated over time. Additionally, I had trouble with the plugin since it
-doesn't work well with the `lazy.nvim` package manager in mind. After that, I
-searched Github until I found one that actually worked well —
+doesn't work well with the `lazy.nvim` package manager. After that, I searched
+Github until I found one that actually worked well —
 [telescope-macros](https://github.com). Adding a telescope finder is a clever
 and simple solution and I applaud the author, since an editable list is the only
 thing needed to manage a macro library, and I find using Telescope for UI
@@ -188,7 +185,8 @@ components to be a good pattern to follow rather than reinventing the wheel.
 If I have a macro assigned to the `@l` register, using `telescope-macros`, I can
 apply it repeatedly via <kbd>leader->ml</kbd>: <kbd>leader->m</kbd> opens the
 telescope macros list, `l` finds the macro under the `@l` register, and `<cr>`
-closes the window and applies the macro.
+closes the window and applies the macro. This is what's used in the first video
+in the article.
 
 <div class="hidden">
 I felt some modifications were essential to make —  for instance, adding a key
