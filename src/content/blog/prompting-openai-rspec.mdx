@@ -12,13 +12,13 @@ featured: true
 
 Asking OpenAI to generate RSpec tests for your Rails application can be a
 powerful way to tackle a large amount of tech debt programmatically, or generate
-specs, depending on how much you trust your AI's responses.
+specs -- depending on how much you trust your AI's responses.
 
 I found that by default, OpenAI's GPT-3.5 and GPT-4 model would generate RSpec
-request specs using `get ":create"` or `post ":update"` instead of the proper
-routes, such as `api_v1_users_path` or `api_v1_user_path(user.id)`. It was
-slightly tricky to generate a prompt with the exact wording so that OpenAI would
-only use proper routes. To implement this, I was able to use the Neovim plugin
+request specs using `get ":create"` or `post ":update"` instead of proper routes
+such as `api_v1_users_path` or `api_v1_user_path(user.id)`. It was slightly
+tricky to generate a prompt with the exact wording so that OpenAI would only use
+proper routes. To implement this, I was able to use the Neovim plugin
 `ChatGPT.nvim` and create a custom actions file in the default folder where
 `ChatGPT.nvim` looks for custom actions:
 `/Users/aaron/.config/nvim/lua/config/gpt/actions/rails.json`. I couldn't find
@@ -66,8 +66,7 @@ code:\n```{{filetype}}\n{{input}}\n```\n\n```{{filetype}}
     "args": {
       "method": {
         "type": "string",
-        "optional": "true",
-        "default": "empty"
+        "optional": "true"
       }
     }
   },
