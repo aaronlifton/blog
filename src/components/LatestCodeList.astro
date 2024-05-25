@@ -94,21 +94,22 @@ for (const post of livePosts) {
   }
 </div>
 <script>
-import { isPaused, scrollLeft, scrollDone } from "$state/index";
+import { isPaused, scrollLeft, scrollDone, currentIndex } from "$state/index";
 
 const activeTransitionsEnabled = false
 const initialDelay = 1750;
 const intervalTime = 5000;
+let eventListeners: {target: Element | null, type: string, listener: () => void }[] = []
+let interval: number | null = null;
 
 function startInterval(func: Function) {
   setTimeout(function() {
     func();
-    setInterval(func, intervalTime);
+    interval = setInterval(func, intervalTime);
   }, initialDelay);
 }
 
 const onLoad = () => {
-  console.log("onLoad")
   const codesContainer = document.querySelector(
     ".codes-container",
   ) as HTMLDivElement;
@@ -116,13 +117,11 @@ const onLoad = () => {
     ".codes-container .code",
   );
 
-  let currentIndex = 0;
-
   if (activeTransitionsEnabled) {
     scrollDone.subscribe((sd) => {
       if (sd == true) {
         codes.forEach((code) => code.classList.remove("active"));
-        codes[currentIndex % codes.length].classList.add("active");
+        codes[currentIndex.get() % codes.length].classList.add("active");
       }
     })
   }
@@ -131,18 +130,20 @@ const onLoad = () => {
     if (!codesContainer) return;
 
     if (!isPaused.get()) {
-      if (currentIndex >= codes.length) {
-        currentIndex = 0;
+      if (currentIndex.get() >= codes.length) {
+        currentIndex.set(0)
       }
 
-      const newScrollLeft = codes[currentIndex].offsetLeft
+      const newScrollLeft = codes[currentIndex.get()].offsetLeft
         - codesContainer.offsetLeft;
       scrollLeft.set(newScrollLeft);
-      currentIndex++;
+      currentIndex.set(currentIndex.get() + 1);
     }
   };
 
-  startInterval(scrollNext);
+  if (!interval) {
+    startInterval(scrollNext);
+  }
 
   function onManualScroll() {
     if (!isPaused.get() || !codesContainer) return;
@@ -159,15 +160,15 @@ const onLoad = () => {
         closestIndex = index;
       }
     });
-    if (closestIndex !== undefined) currentIndex = closestIndex;
+    if (closestIndex !== undefined) currentIndex.set(closestIndex);
     if (
       codes[codes.length - 1].getBoundingClientRect().right
         <= containerRect.left + codesContainer.clientWidth
     ) {
-      currentIndex = 0;
+      currentIndex.set(0)
     }
-    if (currentIndex >= codes.length - 1) {
-      currentIndex = 0;
+    if (currentIndex.get() >= codes.length - 1) {
+      currentIndex.set(0)
     }
   }
 
@@ -188,25 +189,46 @@ const onLoad = () => {
   const onTouchStart = function() {
     isPaused.set(true);
   }
-  codesContainer?.addEventListener("touchend", onTouchEnd);
-  codesContainer?.addEventListener("touchcancel", onTouchEnd);
-  codesContainer?.addEventListener("mouseleave", function() {
-    if (!codesContainer) return;
-
-    isPaused.set(false);
-  });
-  codesContainer?.addEventListener("mouseenter", onTouchStart);
-  codesContainer?.addEventListener("scroll", onManualScroll);
-
   const iconContainer = document.querySelector("div[class*=_iconContainer]");
-  iconContainer?.addEventListener("click", function() {
-    const isPausedVal = isPaused.get();
-    isPaused.set(!isPausedVal);
-  });
+
+  eventListeners = [
+    { target: codesContainer, type: "touchstart", listener: onTouchStart },
+    { target: codesContainer, type: "touchend", listener: onTouchEnd },
+    { target: codesContainer, type: "touchcancel", listener: onTouchEnd },
+    { target: codesContainer, type: "mouseleave", listener: function() {
+      if (!codesContainer) return;
+      isPaused.set(false);
+    }},
+    { target: codesContainer, type: "mouseenter", listener: onTouchStart },
+    { target: codesContainer, type: "scroll", listener: onManualScroll },
+    { target: iconContainer, type: "click", listener: function() {
+      const isPausedVal = isPaused.get();
+      isPaused.set(!isPausedVal);
+    }},
+  ]
+
+  eventListeners.forEach(({ target, type, listener }) => {
+    target?.addEventListener(type, listener)
+  })
 };
 
-document.addEventListener("astro:page-load", onLoad);
-// onLoad();
+document.addEventListener("astro:page-load", onLoad, { once: true});
+document.addEventListener("astro:before-swap", (props) => {
+  const { to } = props;
+
+  if (to.pathname !== "/") {
+    eventListeners.forEach(({ target, type, listener }) => {
+      target?.removeEventListener(type, listener)
+    })
+    if (interval) {
+      clearInterval(interval);
+      interval = null
+    }
+  }
+  if (to.pathname === "/") {
+    document.addEventListener("astro:page-load", onLoad, { once: true});
+  }
+})
 </script>
 
 <style>

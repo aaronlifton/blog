@@ -133,10 +133,10 @@ already-optimized code. I was listening to a talk by one of the YJIT engineers,
 and one of their strategies to understand how to optimize Ruby was to generate a
 syntax call tree of the Ruby code, and then JIT compile Ruby, and compare the
 tree with the machine code version. I was able to find Shopify's compiler graph
-tool for the GraalVM [(here)](https://github.com/Shopify/seafoam), but I
-couldn't find if they open sourced their YJIT version. Overall, I think it's
-fascinating that a language like Ruby has been able to be optimized to the
-levels both TruffleRuby and YJIT have achieved.
+tool for the GraalVM [here](https://github.com/Shopify/seafoam), but I couldn't
+find if they open sourced their YJIT version. Overall, I think it's fascinating
+that a language like Ruby has been able to be optimized to the levels both
+TruffleRuby and YJIT have achieved.
 
 ## Ruby faster than C?
 
@@ -158,7 +158,7 @@ Ruby code with statically compiled C.
 YJIT also included an improvement to Ruby's internal object representation.
 Object shapes, which capture the layout of an object's attributes and types, are
 used to help optimize memory layouts of ruby objects, which in turns unlocks GC
-performance improvements.
+performance improvements
 ([source](https://rubykaigi.org/2021-takeout/data/slides/Maxime-YJIT-RubyKaigi-2021-slides.pdf)).
 The Ruby GC can now free memory in a more targeted way, given that the object's
 shape is known. These object shapes are stored in a heap, so it essential for
@@ -176,12 +176,11 @@ been following attempts to create FFI bindings for Ruby via Rust and Zig, and I
 imagine some future version of YJIT Ruby might use Sorbet to provide type
 information to the JIT compiler.
 
-To summarize, BBV is the most important part of why YJIT is the most performant
-JIT Ruby implementation so far. To recap, a basic block is a sequence of
-instructions with a single entry and exit points. The versions of a basic block
-accommodate different execution paths for Ruby methods passed different types,
-resulting in efficient bytecode generation for a dynamically typed language like
-Ruby.
+To summarize, a basic block is functionally similar to a polymorphic inline
+cache: it is a sequence of instructions with a single entry and exit points; the
+versions of a basic block accommodate different execution paths for Ruby methods
+passed different types, resulting in efficient bytecode generation for a
+dynamically typed language like Ruby.
 
 References:
 
