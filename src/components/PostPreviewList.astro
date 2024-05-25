@@ -35,7 +35,7 @@ const { posts, heading, noTransition, asCard = false } = Astro.props;
     <ul>
       {
         posts.map((post) => (
-          <li>
+          <li class="mb-2 sm:mb-0">
             <a href={`/blog/${post.slug}`}>{post.data.title}</a>
           </li>
         ))
