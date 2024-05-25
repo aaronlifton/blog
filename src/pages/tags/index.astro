@@ -4,11 +4,13 @@ import Layout from "$/layouts/Layout.astro";
 import { unique } from "$/util/array";
 import { Icon } from "astro-icon/components";
 import { type CollectionEntry, getCollection } from "astro:content";
+import { getTags } from "$/services/blog";
 
-const blogPosts: CollectionEntry<"blog">[] = await getCollection("blog");
-const filteredPosts = blogPosts.filter((post) => !post.data.draft);
-const data = filteredPosts.map((post) => post.data.tags);
-const allTags = unique(data.flat());
+// const blogPosts: CollectionEntry<"blog">[] = await getCollection("blog");
+// const filteredPosts = blogPosts.filter((post) => !post.data.draft);
+// const data = filteredPosts.map((post) => post.data.tags);
+// const allTags = unique(data.flat());
+const allTags = await getTags();
 ---
 
 <Layout>

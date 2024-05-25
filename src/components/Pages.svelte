@@ -1,11 +1,11 @@
 <script lang="ts">
-  export let baseUrl: string;
-  export let currentPage: number;
-  export let totalPages: number;
+export let baseUrl: string;
+export let currentPage: number;
+export let totalPages: number;
 
-  const prevPage = `${baseUrl}/${currentPage - 1}`;
-  const nextPage = `${baseUrl}/${currentPage + 1}`;
-  const pageUrl = (page: number) => `${baseUrl}/${page}`;
+const prevPage = `${baseUrl}/${currentPage - 1}`;
+const nextPage = `${baseUrl}/${currentPage + 1}`;
+const pageUrl = (page: number) => `${baseUrl}/${page}`;
 </script>
 
 <nav>
@@ -22,14 +22,14 @@
 </nav>
 
 <style>
-  nav {
-    @apply my-4 flex w-full justify-center;
-  }
-  a {
-    @apply mx-1 rounded-lg px-3 py-1 text-accent-gray-dark;
-  }
+nav {
+  @apply my-4 flex w-full justify-center;
+}
+a {
+  @apply mx-1 rounded-lg px-3 py-1 text-accent-gray-dark;
+}
 
-  a.selected {
-    @apply bg-primary text-white;
-  }
+a.selected {
+  @apply bg-primary text-white;
+}
 </style>

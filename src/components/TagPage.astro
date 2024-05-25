@@ -1,0 +1,48 @@
+---
+import type { CollectionEntry } from 'astro:content';
+import PostPreviewList from "$/components/PostPreviewList.astro";
+import Layout from "$/layouts/Layout.astro";
+import HeadingWithIcon from "$/components/HeadingWithIcon.astro";
+import Pages from "$/components/Pages.svelte";
+
+type Props =  {
+  page: {
+    currentPage: number;
+    lastPage: number;
+    data: CollectionEntry<"blog">[];
+  };
+  tag: string;
+  }
+const { page, tag }: Props = Astro.props;
+const pathnameEndsInDigit = /\d$/.test(Astro.url.pathname);
+const baseUrl = pathnameEndsInDigit ? Astro.url.pathname.slice(0, -2) : Astro.url.pathname;
+---
+<Layout>
+  <div class="flex justify-center items-center title">
+    <HeadingWithIcon text={tag} {tag} className="mr-2" />
+    <span class="relative emdash top-[-4px]">—</span>
+    <span class="relative italic text-center top-[-4px] text-accent-gray-dark">
+      Page {page.currentPage}
+    </span>
+  </div>
+  <PostPreviewList posts={page.data} heading="Posts" asCard={false} />
+  <Pages
+    baseUrl={baseUrl}
+    currentPage={page.currentPage}
+    totalPages={page.lastPage}
+  />
+</Layout>
+<style>
+.emdash {
+  span + span {
+    position: relative;
+    top: -4px;
+  }
+}
+
+.title span {
+  align-items: middle;
+  line-height: 6;
+}
+</style>
+

@@ -14,7 +14,7 @@ const { tags }: Props = Astro.props;
     tags
     && tags.map((tag, idx) => (
       <span class="mr-4 sm:mr-1 tag line-clamp-1">
-        <a href={`/tags/${tag}/1`}>
+        <a href={`/tags/${tag}`}>
           {
             iconForTag(tag) && (
               <Icon

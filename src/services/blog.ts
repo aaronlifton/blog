@@ -6,8 +6,12 @@ async function getLivePosts(featured?: boolean): Promise<CollectionEntry<"blog">
   );
 }
 
+export async function getAllPosts(): Promise<CollectionEntry<"blog">[]> {
+  return (await getCollection("blog")).filter((post) => !post.data.draft);
+}
+
 export async function getTags(): Promise<string[]> {
-  const posts = await getLivePosts();
+  const posts = await getAllPosts();
   return [...new Set(posts.flatMap((post) => post.data.tags))];
 }
 

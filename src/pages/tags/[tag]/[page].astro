@@ -1,16 +1,13 @@
 ---
-export const prerender = true;
-import HeadingWithIcon from "$/components/HeadingWithIcon.astro";
-import Pages from "$/components/Pages.svelte";
-import PostPreviewList from "$/components/PostPreviewList.astro";
 import { PAGE_SIZE } from "$/consts";
-import Layout from "$/layouts/Layout.astro";
-import { getPosts, getPostsByTag, getTags } from "$/services/blog";
-import { type CollectionEntry, getCollection } from "astro:content";
+import { getAllPosts, getTags } from "$/services/blog";
+import TagPage from "$components/TagPage.astro";
+import type { CollectionEntry } from "astro:content"
+export const prerender = true;
 
 // @ts-ignore ts-nocheck
 export async function getStaticPaths({ paginate }) {
-  const posts = await getPosts();
+  const posts = await getAllPosts();
   const tags = await getTags();
   const allTags = new Set<string>();
   for (const post of posts) {
@@ -42,31 +39,4 @@ const { page } = Astro.props as Props;
 const { tag } = Astro.params as Params;
 ---
 
-<Layout>
-  <div class="flex justify-center items-center title">
-    <HeadingWithIcon text={tag} {tag} className="mr-2" />
-    <span class="relative emdash top-[-4px]">—</span>
-    <span class="relative italic text-center top-[-4px] text-accent-gray-dark">
-      Page {page.currentPage}
-    </span>
-  </div>
-  <PostPreviewList posts={page.data} heading="Posts" asCard={false} />
-  <Pages
-    baseUrl={Astro.url.pathname.slice(0, -2)}
-    currentPage={page.currentPage}
-    totalPages={page.lastPage}
-  />
-</Layout>
-<style>
-.emdash {
-  span + span {
-    position: relative;
-    top: -4px;
-  }
-}
-
-.title span {
-  align-items: middle;
-  line-height: 6;
-}
-</style>
+<TagPage tag={tag} page={page} />

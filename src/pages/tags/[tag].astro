@@ -1,22 +1,35 @@
 ---
 import { PAGE_SIZE } from "$/consts";
-import { getCollection } from "astro:content";
-export const prerender = false;
+import TagPage from "$components/TagPage.astro";
+import { getTags, getAllPosts } from "$/services/blog.ts"
+export const prerender = true;
 
 export async function getStaticPaths() {
-  const allPosts = await getCollection("blog");
-  const filteredPosts = allPosts.filter((post) => !post.data.draft);
-  const allTags = new Set<string>();
-  for (const post of filteredPosts) {
-    post.data.tags?.map((tag) => allTags.add(tag));
-  }
+  const posts = await getAllPosts();
+  const tags = await getTags();
 
-  return Array.from(allTags).map((tag) => ({
-    params: { page: 1, tag: tag },
-    pageSize: PAGE_SIZE,
-  }));
+  return tags.map((tag) => {
+    const postsWithTag = posts.filter((post) => post.data.tags.includes(tag));
+    return {
+      params: {
+        tag,
+      },
+      props: {
+        posts: postsWithTag,
+      },
+    };
+  });
 }
 
-const tagName = Astro.params.tag;
-return Astro.redirect(`${tagName}/1`);
+type Props = { posts: any[]; };
+type Params = { tag: string; }
+const { posts } = Astro.props as Props;
+const { tag } = Astro.params as Params;
+const page = { 
+  currentPage: 1,
+  lastPage: Math.ceil(posts.length / PAGE_SIZE),
+  data: posts.slice(0, PAGE_SIZE),
+}
 ---
+
+<TagPage tag={tag} page={page} />
