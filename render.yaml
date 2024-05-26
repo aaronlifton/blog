@@ -11,8 +11,5 @@ services:
     region: ohio
     dockerContext: .
     dockerfilePath: ./Dockerfile
-    domains:
-      - railsdev.dev
-      - www.railsdev.dev
     pullRequestPreviewsEnabled: true
 version: "1"
