@@ -3,7 +3,7 @@ services:
   - type: web
     name: blog
     runtime: docker
-    repo: https://github.com/aaronlifton/blog
+    repo: https://github.com/aaronlifton/blog2
     plan: starter
     envVars:
       - key: env
