@@ -1,10 +1,8 @@
 ---
-import { getMonthName, mobileUserAgent } from "$/util";
-import { getIsMobile } from "$/util";
+import { getMonthName } from "$/util";
 import { Image } from "astro:assets";
 import type { CollectionEntry } from "astro:content";
-
-const isMobile = getIsMobile(Astro);
+import { format } from "date-fns";
 
 interface Props {
   post: CollectionEntry<"blog">;
@@ -15,6 +13,8 @@ interface Props {
 const { post, noTransition } = Astro.props;
 
 if (!post.data.cover) return "";
+
+const formattedDate = format(post.data.pubDate, "yyyy-MM-dd");
 ---
 
 <div>
@@ -28,7 +28,7 @@ if (!post.data.cover) return "";
       <header>
         <time
           class="text-gray-200 code"
-          datetime="2024-04-11T00:00:00.000Z"
+          datetime={formattedDate}
         >
           {
             `${new Date(post.data.pubDate).getDate()} ${

@@ -6,25 +6,6 @@ import { afterEach, beforeEach, describe, expect, it, test, vi } from "vitest";
 import { mock } from "vitest-mock-extended";
 import githubService from "../rpc-server/services/github.ts";
 import prismaMock from "./mocks/prisma.ts";
-// const createUserContext = (authId?: string, permissions?: string[]) => {
-// 	let userPermissions = "openid profile email";
-// 	if (permissions) {
-// 		userPermissions = `${userPermissions} ${permissions.join(" ")}`;
-// 	}
-// 	return {
-// 		session: {
-// 			sub: authId,
-// 			permissions: userPermissions,
-// 		},
-// 		user: `{"sub": "${authId}", "permissions": "${userPermissions}"}`,
-// 	};
-// };
-// const mockGithubService = mock(githubService, () => {
-//   return {
-//     getRepoContents: vi.fn().mockImplementation(() => {}),
-//     getCommits: vi.fn().mockImplementation(() => {}),
-//   };
-// });
 
 vi.mock("../rpc-server/services/github.ts", () => {
   return {
@@ -108,23 +89,4 @@ describe("appRouter", () => {
       path: "data/packages/shared/shallowEqual.js",
     });
   });
-
-  // it("should increment views", async () => {
-  // 	const ctx = await createContext({});
-  // 	const caller = appRouter.createCaller(ctx);
-  //
-  // 	const input: inferProcedureInput<AppRouter["getFile"]> = {
-  // 		owner: "facebook",
-  // 		repo: "react",
-  // 		path: "data/packages/shared/shallowEqual.js",
-  // 	};
-  //
-  // 	const result = await caller.getFile(input);
-  //
-  // 	expect(result).toMatchObject({
-  // 		id: "1",
-  // 		title: "Buy milk",
-  // 		completed: false,
-  // 	});
-  // });
 });

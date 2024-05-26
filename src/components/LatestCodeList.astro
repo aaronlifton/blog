@@ -94,28 +94,35 @@ for (const post of livePosts) {
   }
 </div>
 <script>
-import { isPaused, scrollLeft, scrollDone, currentIndex } from "$state/index";
+import { isPaused, scrollDone, scrollLeft, currentIndex } from "$state/index";
 
 const activeTransitionsEnabled = false
 const initialDelay = 1750;
 const intervalTime = 5000;
 let eventListeners: {target: Element | null, type: string, listener: () => void }[] = []
 let interval: number | null = null;
+let timeout: Timer | null = null;
+
+const getCodesContainer  = () => {
+  return document.querySelector(".codes-container") as HTMLDivElement;
+}
+const getCodes = (container: HTMLDivElement): NodeListOf<HTMLDivElement> => {
+  return container.querySelectorAll(".code");
+}
+const getScrollLeft = (codes: NodeListOf<HTMLDivElement>, container: HTMLDivElement) => {
+  return codes[currentIndex.get()].offsetLeft - container.offsetLeft;
+}
 
 function startInterval(func: Function) {
-  setTimeout(function() {
+  timeout = setTimeout(function() {
     func();
     interval = setInterval(func, intervalTime);
   }, initialDelay);
 }
 
 const onLoad = () => {
-  const codesContainer = document.querySelector(
-    ".codes-container",
-  ) as HTMLDivElement;
-  const codes: NodeListOf<HTMLDivElement> = document.querySelectorAll(
-    ".codes-container .code",
-  );
+  const codesContainer = getCodesContainer()
+  const codes = getCodes(codesContainer)
 
   if (activeTransitionsEnabled) {
     scrollDone.subscribe((sd) => {
@@ -134,8 +141,7 @@ const onLoad = () => {
         currentIndex.set(0)
       }
 
-      const newScrollLeft = codes[currentIndex.get()].offsetLeft
-        - codesContainer.offsetLeft;
+      const newScrollLeft = getScrollLeft(codes, codesContainer);
       scrollLeft.set(newScrollLeft);
       currentIndex.set(currentIndex.get() + 1);
     }
@@ -216,17 +222,32 @@ document.addEventListener("astro:page-load", onLoad, { once: true});
 document.addEventListener("astro:before-swap", (props) => {
   const { to } = props;
 
+  if (interval) {
+    clearInterval(interval);
+    interval = null
+  }
+  if (timeout) {
+    clearTimeout(timeout)
+    timeout = null
+  };
   if (to.pathname !== "/") {
     eventListeners.forEach(({ target, type, listener }) => {
       target?.removeEventListener(type, listener)
     })
-    if (interval) {
-      clearInterval(interval);
-      interval = null
-    }
   }
   if (to.pathname === "/") {
     document.addEventListener("astro:page-load", onLoad, { once: true});
+  }
+})
+document.addEventListener("astro:after-swap", (event) => {
+  // @ts-expect-error
+  const pathname = event.target?.location?.pathname;
+  if (pathname === "/") {
+    const codesContainer = getCodesContainer()
+    const codes = getCodes(codesContainer)
+    const newScrollLeft = getScrollLeft(codes, codesContainer);
+    scrollLeft.set(newScrollLeft);
+    codesContainer.scrollTo({ left: newScrollLeft, behavior: "instant" });
   }
 })
 </script>

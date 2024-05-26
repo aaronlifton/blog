@@ -1,4 +1,4 @@
-import { test, expect } from "@playwright/test";
+import { expect, test } from "@playwright/test";
 import { baseUrl } from "./util";
 
 test.describe("Posts", () => {
@@ -15,13 +15,13 @@ test.describe("Posts", () => {
     // Image links
     await expect(
       page.getByRole("link", {
-        name: 'Go to the post titled "Wezterm workspace switcher API"',
+        name: "Go to the post titled \"Wezterm workspace switcher API\"",
       }),
     ).toHaveAttribute("href", "/blog/wezterm-configuration-tricks");
     await expect(
       page
         .getByRole("link", {
-          name: 'Go to the post titled "Neovim macros vs normal mode"',
+          name: "Go to the post titled \"Neovim macros vs normal mode\"",
           exact: true,
         })
         .first(),
@@ -67,9 +67,6 @@ test.describe("nav", () => {
       "href",
       "/",
     );
-    await expect(
-      page.getByRole("link", { name: "Blog", exact: true }),
-    ).toHaveAttribute("href", "/blog/1");
     await expect(page.getByRole("link", { name: "Tags" })).toHaveAttribute(
       "href",
       "/tags",

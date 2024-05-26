@@ -32,6 +32,7 @@ const LatestCodeScroller: FC = () => {
         scrollDone.set(true);
       },
     });
+    return () => controls.current?.stop();
   }, [scope, animate, scrollLeftValue]);
 
   useEffect(() => {

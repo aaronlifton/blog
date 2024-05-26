@@ -1,6 +1,8 @@
 ---
+import { getMonthName } from "$/util";
 import type { CollectionEntry } from "astro:content";
 import PostPreview from "./PostPreview.astro";
+import { format } from "date-fns";
 
 interface Props {
   posts: CollectionEntry<"blog">[];
@@ -34,11 +36,21 @@ const { posts, heading, noTransition, asCard = false } = Astro.props;
   : (
     <ul>
       {
-        posts.map((post) => (
-          <li class="mb-2 sm:mb-0">
-            <a href={`/blog/${post.slug}`}>{post.data.title}</a>
-          </li>
-        ))
+        posts.map((post) => {
+          const formattedDate = format(post.data.pubDate, "yyyy-MM-dd");
+          return (
+            <li class="mb-2 sm:mb-0">
+              <a href={`/blog/${post.slug}`}>{post.data.title}</a>
+              <time class="ml-2 text-gray-400" datetime={formattedDate}>
+              {
+                `${new Date(post.data.pubDate).getDate()} ${
+                  getMonthName(post.data.pubDate)
+                } ${new Date(post.data.pubDate).getFullYear()}`
+              }
+              </span>
+            </li>
+          )
+        })
       }
     </ul>
   )

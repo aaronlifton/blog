@@ -1,4 +1,4 @@
-import { test, expect } from "@playwright/test";
+import { expect, test } from "@playwright/test";
 import { baseUrl } from "./util";
 
 test.describe("Blog", () => {
@@ -16,7 +16,7 @@ test.describe("Blog", () => {
       "/blog/ruby-now-produces-machine-code-on-the-fly",
     );
     await expect(
-      page.getByRole("link", { name: 'Go to the post titled "Ruby' }),
+      page.getByRole("link", { name: "Go to the post titled \"Ruby" }),
     ).toHaveAttribute(
       "href",
       "/blog/ruby-now-produces-machine-code-on-the-fly",
