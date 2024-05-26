@@ -1,4 +1,4 @@
-import { isPaused, scrollDone, scrollLeft } from "$state/index";
+import { isPaused, scrollDone, scrollLeft } from "~state";
 import { useStore } from "@nanostores/react";
 import { type AnimationPlaybackControls, useAnimate } from "framer-motion";
 import { type FC, useEffect, useRef } from "react";

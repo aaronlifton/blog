@@ -1,4 +1,4 @@
-import { activeHeading, lastActiveHeading } from "$state/index";
+import { activeHeading, lastActiveHeading } from "~state";
 import {
   motion,
   useAnimate,

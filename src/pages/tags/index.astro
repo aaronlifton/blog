@@ -1,10 +1,10 @@
 ---
-import TagList from "$/components/TagList.astro";
-import Layout from "$/layouts/Layout.astro";
-import { unique } from "$/util/array";
+import TagList from "~components/TagList.astro";
+import Layout from "~layouts/Layout.astro";
+import { unique } from "~utils/array";
 import { Icon } from "astro-icon/components";
 import { type CollectionEntry, getCollection } from "astro:content";
-import { getTags } from "$/services/blog";
+import { getTags } from "~services/api";
 
 // const blogPosts: CollectionEntry<"blog">[] = await getCollection("blog");
 // const filteredPosts = blogPosts.filter((post) => !post.data.draft);

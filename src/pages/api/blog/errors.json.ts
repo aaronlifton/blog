@@ -1,44 +1,20 @@
 import type { APIRoute } from "astro";
-import { getErrors } from "$services/turso.js";
-import { ErrorModel } from "$prisma/zod/error";
+import { db, ErrorTable, isDbError } from "astro:db";
 
-export const GET: APIRoute = async () => {
-  const errors = await getErrors();
-  return new Response(
-    JSON.stringify(
-      { errors },
-      (_, value) => (typeof value === "bigint" ? value.toString() : value), // return everything else unchanged
-    ),
-  );
-};
 export const POST: APIRoute = async ({ params: _params, request }) => {
-  const data = await request.json();
-  console.log({ data });
-  const errorObj = {
-    message: data.message,
-    stacktrace: data.stack,
-  };
-  console.log({ ErrorModel, errorObj });
-  return new Response("", { status: 200 });
-  // const validatedError = ErrorModel.parse(errorObj);
-
-  // try {
-  //   const error = await saveError(validatedError);
-  //   if (error !== undefined) {
-  //     console.log("Created Error#%s", error.id);
-  //   }
-  //   return new Response(
-  //     JSON.stringify({
-  //       message: "Success!",
-  //     }),
-  //     { status: 200 },
-  //   );
-  // } catch (e) {
-  //   return new Response(
-  //     JSON.stringify({
-  //       message: "Could not save error: " + e.message,
-  //     }),
-  //     { status: 500 },
-  //   );
-  // }
+  try {
+    const data = await request.json();
+    const error = {
+      message: data.message,
+      stacktrace: data.stack,
+    };
+    await db.insert(ErrorTable).values(error);
+    return new Response("", { status: 200 });
+  } catch (e) {
+    if (isDbError(e)) {
+      return new Response("Cannot insert error", { status: 400 });
+    }
+    console.error(e);
+    return new Response("An unexpected error occurred", { status: 500 });
+  }
 };

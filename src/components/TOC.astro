@@ -1,5 +1,5 @@
 ---
-import TOCScroll from "$components/react/TOCIndicator.tsx";
+import TOCScroll from "~components/react/TOCIndicator.tsx";
 import type { MarkdownHeading } from "astro";
 import { Icon } from "astro-icon/components";
 import { TOC as TableOfContents } from "astro-toc";
@@ -133,7 +133,7 @@ if (minimumDepth > 1) {
 </script>
 
 <script>
-import { activeHeading } from "$state/index";
+import { activeHeading } from "~state";
 const getHeadingsInBlogPost = (blogPost: HTMLElement) => {
   return blogPost?.querySelectorAll(
     "h1:not(#title), h2, h3:not(#admonition-title), h4, h4, h6",

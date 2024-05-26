@@ -1,11 +1,11 @@
 ---
-import { SITE_DESCRIPTION } from "$/consts";
-import Layout from "$/layouts/Layout.astro";
-import { getPosts } from "$/services/blog";
-import LatestCodeList from "$components/LatestCodeList.astro";
-import PostPreviewList from "$components/PostPreviewList.astro";
-import PostPreviewListFooter from "$components/PostPreviewListFooter.astro";
-import Prose from "$components/Prose.astro";
+import { SITE_DESCRIPTION } from "~/consts";
+import Layout from "~layouts/Layout.astro";
+import { getPosts } from "~services/api";
+import LatestCodeList from "~components/LatestCodeList.astro";
+import PostPreviewList from "~components/PostPreviewList.astro";
+import PostPreviewListFooter from "~components/PostPreviewListFooter.astro";
+import Prose from "~components/Prose.astro";
 
 export const prerender = true;
 

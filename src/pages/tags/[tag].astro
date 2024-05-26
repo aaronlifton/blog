@@ -1,7 +1,7 @@
 ---
-import { PAGE_SIZE } from "$/consts";
-import TagPage from "$components/TagPage.astro";
-import { getTags, getAllPosts } from "$/services/blog.ts"
+import { PAGE_SIZE } from "~consts";
+import TagPage from "~components/TagPage.astro";
+import { getTags, getAllPosts } from "~services/api"
 export const prerender = true;
 
 export async function getStaticPaths() {

@@ -1,4 +1,4 @@
-import prisma from "$services/prisma";
+import prisma from "~services/prisma";
 import type { FetchCreateContextFnOptions } from "@trpc/server/adapters/fetch";
 // import type { CreateNextContextOptions } from '@trpc/server/adapters/next';
 import githubService from "./services/github";

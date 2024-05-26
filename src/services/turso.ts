@@ -1,5 +1,5 @@
 import * as models from "$prisma/zod";
-import prisma from "$services/prisma";
+import prisma from "~services/prisma";
 import { createClient } from "@libsql/client";
 import type { PrismaClientKnownRequestError } from "@prisma/client/runtime/library";
 

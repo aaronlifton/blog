@@ -1,27 +1,34 @@
 {
-	"extends": "astro/tsconfigs/strict",
-	"compilerOptions": {
-		"baseUrl": "./",
-		"paths": {
-			"$/*": ["./src/*"],
-			"$api/*": ["./src/pages/api/*"],
-			"$util/*": ["./src/util/*"],
-			"$components/*": ["./src/components/*"],
-			"$state/*": ["./src/components/state/*"],
-			"$layouts/*": ["./src/layouts/*"],
-			"$prisma/*": ["./prisma/*"],
-			"$services/*": ["./src/services/*"],
-			"$rpc/*": ["./rpc-server/*"]
-		},
-		"jsx": "react-jsx",
-		"esModuleInterop": true
-	},
-	"include": ["src/**/*", "plugins", "scripts", "tests"],
-	"exclude": [
-		"src/components/devicons",
-		"src/tmpscripts",
-		"src/tmp",
-		"src/test",
-		"src/tests"
-	]
+  "extends": "astro/tsconfigs/strict",
+  "compilerOptions": {
+    "baseUrl": "./",
+    "paths": {
+      "$/*": ["./src/*"],
+      "~api/*": ["./src/pages/api/*"],
+      "$components/*": ["./src/components/*"],
+      "~state": ["./src/components/state"],
+      "~state/*": ["./src/components/state/*"],
+      "$prisma/*": ["./prisma/*"],
+      "~services/*": ["./src/services/*"],
+      "~rpc/*": ["./rpc-server/*"],
+      "~/*": ["./src/*"],
+      "~layouts/*": ["./src/layouts/*"],
+      "~components/*": ["./src/components/*"],
+      "~utils": ["./src/utils"],
+      "~utils/*": ["./src/utils/*"],
+      "~consts": ["./src/consts.ts"],
+      "~icons/*": ["./src/icons/*"],
+      "~styles/*": ["./src/styles/*"]
+    },
+    "jsx": "react-jsx",
+    "esModuleInterop": true
+  },
+  "include": ["src/**/*", "plugins", "scripts", "tests"],
+  "exclude": [
+    "src/components/devicons",
+    "src/tmpscripts",
+    "src/tmp",
+    "src/test",
+    "src/tests"
+  ]
 }

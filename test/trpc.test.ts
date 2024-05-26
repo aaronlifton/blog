@@ -1,6 +1,6 @@
-import { createContext } from "$rpc/context.ts";
-import { type AppRouter, appRouter } from "$rpc/router.ts";
-import prisma from "$services/prisma.ts";
+import { createContext } from "~rpc/context.ts";
+import { type AppRouter, appRouter } from "~rpc/router.ts";
+import prisma from "~services/prisma.ts";
 import type { inferProcedureInput } from "@trpc/server";
 import { afterEach, beforeEach, describe, expect, it, test, vi } from "vitest";
 import { mock } from "vitest-mock-extended";

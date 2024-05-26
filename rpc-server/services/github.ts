@@ -1,4 +1,4 @@
-import octokit from "$services/octokit";
+import octokit from "~services/octokit";
 import type { RestEndpointMethodTypes } from "@octokit/plugin-rest-endpoint-methods";
 import type { EndpointOptions } from "@octokit/types";
 import type { APIRoute } from "astro";

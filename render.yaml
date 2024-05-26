@@ -1,0 +1,18 @@
+# Exported from Render on 2024-05-26T19:40:43Z
+services:
+  - type: web
+    name: blog
+    runtime: docker
+    repo: https://github.com/aaronlifton/blog
+    plan: starter
+    envVars:
+      - key: env
+        sync: false
+    region: ohio
+    dockerContext: .
+    dockerfilePath: ./Dockerfile
+    domains:
+      - railsdev.dev
+      - www.railsdev.dev
+    pullRequestPreviewsEnabled: true
+version: "1"
