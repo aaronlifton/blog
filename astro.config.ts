@@ -38,7 +38,9 @@ export default defineConfig({
   // prefetch: true,
   integrations: [
     customImageResizer,
-    expressiveCode(),
+    expressiveCode(
+      { themes: ["dracula", "solarized-light"] },
+    ),
     mdx(),
     sitemap(),
     tailwind({
@@ -55,46 +57,21 @@ export default defineConfig({
     remarkPlugins: [
       // @ts-expect-error - This is a valid plugin that returns a Transformer,
       // but the type definition is not compatible with the expected [unified.Plugin, string[]] type.
-      [
-        remarkShakuCodeAnnotate,
-        {
-          fallbackToShiki: true,
-          theme: "material-theme-darker",
-          langs: [
-            "bash",
-            "fish",
-            "go",
-            "html",
-            "javascript",
-            "json",
-            "jsonc",
-            "jsx",
-            "lua",
-            "ruby",
-            "sh",
-            "ts",
-            "ts",
-            "tsx",
-            "typescript",
-            "vim",
-            "yaml",
-            "toml",
-            "rb",
-            "yml",
-          ],
-        },
-      ],
+      [remarkShakuCodeAnnotate, {
+        fallbackToShiki: true,
+        theme: "material-theme-darker",
+        // dprint-ignore
+        langs: [ "bash", "fish", "go", "html", "javascript", "json", "jsonc", "jsx", "lua", "ruby", "sh", "ts", "ts", "tsx", "typescript", "vim", "yaml", "toml", "rb", "yml" ],
+      }],
     ],
-    rehypePlugins: [
-      [
-        rehypeAutolinkHeadings,
-        {
-          behavior: "append",
-        },
-      ],
-    ],
+    rehypePlugins: [[
+      rehypeAutolinkHeadings,
+      {
+        behavior: "append",
+      },
+    ]],
     shikiConfig: {
-      theme: "material-theme-darker",
+      theme: "tokyo-night",
       transformers: [
         transformerNotationDiff(),
         transformerNotationHighlight(),

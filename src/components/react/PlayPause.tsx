@@ -8,7 +8,7 @@ import Pause from "$/icons/tabler/pause.svg?react";
 // @ts-ignore
 import PauseFilled from "$/icons/tabler/pause-filled.svg?react";
 import Styles from "$components/styles/PlayPause.module.css";
-import { isManuallyPaused, isPaused } from "$state/index";
+import { isManuallyPaused, isPaused } from "$state";
 import clsx from "clsx";
 
 interface Props extends PropsWithChildren {

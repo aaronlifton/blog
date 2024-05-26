@@ -1,4 +1,4 @@
-import { windowWidth } from "$state/index";
+import { windowWidth } from "$state";
 
 const useWindowSize = () => {
   const resizeObserver = new ResizeObserver((e: ResizeObserverEntry[]) => {
