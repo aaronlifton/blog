@@ -1,18 +1,23 @@
 import type { APIRoute } from "astro";
-import { count, db, eq, isDbError, Metric } from "astro:db";
+import { and, count, db, eq, isDbError, Metric } from "astro:db";
 
 export const prerender = false;
 
 export const GET: APIRoute = async ({ params, request }) => {
   try {
+    if (!params.slug) {
+      return new Response("Missing slug", { status: 400 });
+    }
     const res = await db.insert(Metric).values({
       metricType: "pageview",
       postSlug: params.slug,
       value: 1,
     }).returning();
     const metrics = await db.select({ count: count() }).from(Metric).where(
-      eq(Metric.postSlug, params.slug),
-      eq(Metric.metricType, "pageview"),
+      and(
+        eq(Metric.postSlug, params.slug),
+        eq(Metric.metricType, "pageview"),
+      ),
     );
     const numViews = metrics[0]?.count || 0;
 

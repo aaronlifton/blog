@@ -1,9 +1,9 @@
-import { createContext } from "~rpc/context.ts";
-import { type AppRouter, appRouter } from "~rpc/router.ts";
-import prisma from "~services/prisma.ts";
 import type { inferProcedureInput } from "@trpc/server";
+import { db } from "astro:db";
 import { afterEach, beforeEach, describe, expect, it, test, vi } from "vitest";
 import { mock } from "vitest-mock-extended";
+import { createContext } from "~rpc/context.ts";
+import { type AppRouter, appRouter } from "~rpc/router.ts";
 import githubService from "../rpc-server/services/github.ts";
 import prismaMock from "./mocks/prisma.ts";
 

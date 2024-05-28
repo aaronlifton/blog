@@ -6,7 +6,7 @@ export const Metric = defineTable({
   columns: {
     id: column.number({ primaryKey: true }),
     metricType: column.text(),
-    postSlug: column.text(),
+    postSlug: column.text({ optional: true }),
     value: column.number(),
     date: column.date({ default: NOW }),
   },

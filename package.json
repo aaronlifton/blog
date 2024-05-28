@@ -5,7 +5,7 @@
   "scripts": {
     "dev": "astro dev",
     "start": "astro dev",
-    "build": "astro check && astro build",
+    "build": "astro check && astro build --remote",
     "preview": "astro preview",
     "astro": "astro",
     "create-db": "node --env-file=.env bin/create-db",
@@ -13,20 +13,10 @@
     "format": "prettier --write .",
     "formatmd": "cbfmt --best-effort src/content/autoFormatTest/**.mdx && markdownlint-cli2 --fix \"src/content/autoFormatTest/**/*mdx\" \"#node_modules\"",
     "check": "prettier --check src && eslint . && astro check && tsc --noEmit",
-    "cypress-run": "npx cypress run",
-    "cypress-ci": "npx cypress run",
-    "cypress": "npx cypress open",
-    "try-deno": "deno run --allow-net --allow-read --allow-env ./dist/server/entry.mjs",
     "vitest": "vitest run test",
     "test": "npx playwright test --ui",
     "docker-build": "DOCKER_BUILDKIT=1 docker build --secret id=env,src=.env -t blog .",
     "docker-run": "docker run -p 4321:4321 -it --rm blog",
-    "turso-dev": "turso dev --db-file ./dev.db",
-    "prisma-generate": "prisma generate && node ./prisma/fix-prisma-module-specifier.js",
-    "init-db": "prisma migrate dev --name init",
-    "add-migration": "prisma migrate dev --name",
-    "turso-load-migration": "turso db shell devblog < ",
-    "turso-db-shell": "turso db shell devblog",
     "dev:rpc-server": "tsx watch ./rpc-server/router.ts"
   },
   "dependencies": {
@@ -82,6 +72,7 @@
     "cors": "^2.8.5",
     "cypress": "^13.6.4",
     "cz-git": "^1.9.1",
+    "drizzle-zod": "^0.5.1",
     "easing-coordinates": "^2.0.2",
     "framer-motion": "^11.0.6",
     "gsap": "^3.12.5",
@@ -189,6 +180,5 @@
   },
   "optionalDependencies": {
     "@rollup/rollup-darwin-arm64": "^4.9.5"
-  },
-  "module": "index.ts"
+  }
 }

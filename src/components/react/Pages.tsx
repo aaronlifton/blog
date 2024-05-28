@@ -37,3 +37,5 @@ const Pages: FC<Props> = ({ baseUrl, currentPage, totalPages }) => {
     </nav>
   );
 };
+
+export default Pages;
