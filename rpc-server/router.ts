@@ -1,9 +1,10 @@
 import { initTRPC } from "@trpc/server";
+import { Metric } from "astro:db";
+import { createInsertSchema, createSelectSchema } from "drizzle-zod";
 import { z } from "zod";
-import type { Context } from "./context";
-import { IncrementMetricInput } from "./types";
+import type { Context, NodeContext } from "./context";
 
-export const t = initTRPC.context<Context>().create({
+export const t = initTRPC.context<NodeContext>().create({
   allowOutsideOfServer: true,
 });
 const { createCallerFactory, router } = t;
@@ -23,32 +24,16 @@ export const apiProcedure = publicProcedure.use((opts) => {
 
 export const appRouter = t.router({
   incrementMetric: publicProcedure
-    .input(IncrementMetricInput)
+    .input(createInsertSchema(Metric).pick({ metricType: true, postSlug: true }))
     .mutation(async (resolver) => {
-      const { prisma } = resolver.ctx;
-      const { metricType, slug } = resolver.input;
-      const upsert = async () =>
-        prisma.metric.upsert({
-          where: {
-            postSlug: slug,
-          },
-          create: {
-            postSlug: slug,
-            metricType,
-            value: 1,
-          },
-          update: {
-            value: {
-              increment: 1,
-            },
-          },
-          select: {
-            postSlug: true,
-            value: true,
-            metricType: true,
-          },
-        });
-      return await upsert();
+      const { db } = resolver.ctx;
+      const { metricType, postSlug } = resolver.input;
+      const values: typeof Metric.$inferInsert = {
+        metricType,
+        postSlug,
+        value: 1,
+      };
+      const res = await db.insert(Metric).values(values).returning();
     }),
   getCommits: publicProcedure.query((resolver) => {
     const { githubService } = resolver.ctx;
@@ -56,13 +41,11 @@ export const appRouter = t.router({
   }),
   // publicProcedure because it's only called on server side
   getFile: publicProcedure
-    .input(
-      z.object({
-        owner: z.string(),
-        repo: z.string(),
-        path: z.string(),
-      }),
-    )
+    .input(z.object({
+      owner: z.string(),
+      repo: z.string(),
+      path: z.string(),
+    }))
     .query(async (resolver) => {
       const { githubService } = resolver.ctx;
       const response = await githubService.getRepoContents(resolver.input);

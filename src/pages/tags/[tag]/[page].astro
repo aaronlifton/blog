@@ -1,7 +1,7 @@
 ---
-import { PAGE_SIZE } from "$/consts";
-import { getAllPosts, getTags } from "$/services/blog";
-import TagPage from "$components/TagPage.astro";
+import { PAGE_SIZE } from "~consts";
+import { getAllPosts, getTags } from "~services/api";
+import TagPage from "~components/TagPage.astro";
 import type { CollectionEntry } from "astro:content"
 export const prerender = true;
 

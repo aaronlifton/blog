@@ -144,14 +144,6 @@
   }
 }
 
-/* @font-face { */
-/*   font-family: "Atkinson"; */
-/*   src: url("/fonts/atkinson-regular.woff") format("woff"); */
-/*   font-weight: 400; */
-/*   font-style: normal; */
-/*   font-display: swap; */
-/* } */
-/**/
 
 @font-face {
   font-family: "Atkinson";
@@ -161,7 +153,6 @@
   font-display: swap;
 }
 
-/**/
 body {
   text-align: left;
   background-size: 100% 600px;
@@ -300,7 +291,8 @@ img {
 }
 
 code {
-  @apply rounded-md border bg-gray-200/55 border-gray-300/75 px-1 text-sm;
+  @apply rounded-md border  px-1 text-sm;
+  background: #1A1B26 !important;
 }
 
 pre {
@@ -308,6 +300,10 @@ pre {
   -moz-font-smoothing: auto;
   padding: 1.5em;
   border-radius: 8px;
+
+  &.twoslash {
+    overflow-x: visible !important;
+  }
 
   /* font-family: 'Recursive', monospace; */
   /* font-size: 1.125em; */
@@ -343,6 +339,12 @@ hr {
 
   main {
     padding: 1em;
+  }
+}
+
+.twoslash {
+  .twoslash-popup-container {
+    background: black !important;
   }
 }
 

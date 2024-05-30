@@ -1,3 +1,4 @@
+import db from "@astrojs/db";
 import mdx from "@astrojs/mdx";
 import node from "@astrojs/node";
 import react from "@astrojs/react";
@@ -10,7 +11,6 @@ import {
   transformerNotationWordHighlight,
 } from "@shikijs/transformers";
 import { transformerTwoslash } from "@shikijs/twoslash";
-import expressiveCode from "astro-expressive-code";
 import icon from "astro-icon";
 import robotsTxt from "astro-robots-txt";
 import { defineConfig, squooshImageService } from "astro/config";
@@ -18,7 +18,7 @@ import path, { dirname } from "node:path";
 import { fileURLToPath } from "node:url";
 import rehypeAutolinkHeadings from "rehype-autolink-headings";
 import { remarkShakuCodeAnnotate } from "remark-shaku-code-annotate";
-import remarkShikiTwoSlash from "remark-shiki-twoslash";
+import tokyoNight from "tm-themes/themes/tokyo-night.json";
 import svgr from "vite-plugin-svgr";
 import customImageResizer from "./bin/processImages.mjs";
 import { remarkReadingTime } from "./src/plugins/remark-reading-time";
@@ -29,6 +29,7 @@ const __dirname = dirname(fileURLToPath(import.meta.url));
  * @type {import('astro').AstroConfig}
  */
 
+// https://astro.build/config
 export default defineConfig({
   output: "server",
   adapter: node({
@@ -38,9 +39,6 @@ export default defineConfig({
   // prefetch: true,
   integrations: [
     customImageResizer,
-    expressiveCode(
-      { themes: ["dracula", "solarized-light"] },
-    ),
     mdx(),
     sitemap(),
     tailwind({
@@ -52,34 +50,33 @@ export default defineConfig({
     react({}),
     robotsTxt(),
     sitemap(),
+    db(),
   ],
   markdown: {
     remarkPlugins: [
       // @ts-expect-error - This is a valid plugin that returns a Transformer,
       // but the type definition is not compatible with the expected [unified.Plugin, string[]] type.
       [remarkShakuCodeAnnotate, {
-        fallbackToShiki: true,
-        theme: "material-theme-darker",
+        fallbackToShiki: false,
+        theme: tokyoNight,
         // dprint-ignore
-        langs: [ "bash", "fish", "go", "html", "javascript", "json", "jsonc", "jsx", "lua", "ruby", "sh", "ts", "ts", "tsx", "typescript", "vim", "yaml", "toml", "rb", "yml" ],
+        langs: ["bash", "fish", "go", "html", "javascript", "json", "jsonc", "jsx", "lua", "ruby", "sh", "ts", "ts", "tsx", "typescript", "vim", "yaml", "toml", "rb", "yml"],
       }],
     ],
-    rehypePlugins: [[
-      rehypeAutolinkHeadings,
-      {
-        behavior: "append",
-      },
-    ]],
+    rehypePlugins: [[rehypeAutolinkHeadings, {
+      behavior: "append",
+    }]],
     shikiConfig: {
       theme: "tokyo-night",
       transformers: [
+        transformerTwoslash({
+          explicitTrigger: true,
+        }),
         transformerNotationDiff(),
         transformerNotationHighlight(),
         transformerNotationWordHighlight(),
       ],
     },
-    extendDefaultPlugins: true,
-    syntaxHighlight: false,
   },
   vite: {
     ssr: {
@@ -90,23 +87,15 @@ export default defineConfig({
         $: path.resolve(__dirname, "./src"),
       },
     },
-    plugins: [
-      svgr({
-        include: "**/*.svg?react",
-        svgrOptions: {
-          plugins: ["@svgr/plugin-svgo", "@svgr/plugin-jsx"],
-          svgoConfig: {
-            plugins: [
-              "preset-default",
-              "removeTitle",
-              "removeDesc",
-              "removeDoctype",
-              "cleanupIds",
-            ],
-          },
+    plugins: [svgr({
+      include: "**/*.svg?react",
+      svgrOptions: {
+        plugins: ["@svgr/plugin-svgo", "@svgr/plugin-jsx"],
+        svgoConfig: {
+          plugins: ["preset-default", "removeTitle", "removeDesc", "removeDoctype", "cleanupIds"],
         },
-      }),
-    ],
+      },
+    })],
   },
   image: {
     service: squooshImageService(),

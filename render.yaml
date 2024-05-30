@@ -1,0 +1,15 @@
+# Exported from Render on 2024-05-26T19:40:43Z
+services:
+  - type: web
+    name: blog
+    runtime: docker
+    repo: https://github.com/aaronlifton/blog2
+    plan: starter
+    envVars:
+      - key: env
+        sync: false
+    region: ohio
+    dockerContext: .
+    dockerfilePath: ./Dockerfile
+    pullRequestPreviewsEnabled: true
+version: "1"

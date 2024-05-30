@@ -4,6 +4,7 @@ import BaseHead from "../components/BaseHead.astro";
 import Footer from "../components/Footer.astro";
 import Header from "../components/Header.astro";
 import { SITE_DESCRIPTION, SITE_TITLE } from "../consts";
+import "@shikijs/twoslash/style-rich.css"
 
 interface Props {
   title?: string;
@@ -64,7 +65,7 @@ const description = props.description ?? SITE_DESCRIPTION;
       {...seo}
     />
     <script>
-    import useWindowSize from "$/util/useWindowSize";
+    import useWindowSize from "~utils/useWindowSize";
 
     document.addEventListener("astro:after-swap", () => {
       if (localStorage.getItem("theme") === "dark") {

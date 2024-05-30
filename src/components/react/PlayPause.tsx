@@ -1,15 +1,15 @@
 import { type PropsWithChildren, useCallback, useEffect, useMemo, useRef, useState } from "react";
 // @ts-ignore
-import Play from "$/icons/tabler/play.svg?react";
+import Play from "~/icons/tabler/play.svg?react";
 // @ts-ignore
-import PlayFilled from "$/icons/tabler/play-filled.svg?react";
+import PlayFilled from "~/icons/tabler/play-filled.svg?react";
 // @ts-ignore
-import Pause from "$/icons/tabler/pause.svg?react";
+import Pause from "~/icons/tabler/pause.svg?react";
 // @ts-ignore
-import PauseFilled from "$/icons/tabler/pause-filled.svg?react";
-import Styles from "$components/styles/PlayPause.module.css";
-import { isManuallyPaused, isPaused } from "$state";
 import clsx from "clsx";
+import PauseFilled from "~/icons/tabler/pause-filled.svg?react";
+import Styles from "~components/styles/PlayPause.module.css";
+import { isManuallyPaused, isPaused } from "~state";
 
 interface Props extends PropsWithChildren {
   className: string;

@@ -1,6 +1,6 @@
-import { useDimensions } from "$components/react/hooks/useDimensions.ts";
-import IconButton from "$components/react/IconButton";
-import { menuItems } from "$util/menu.ts";
+import { useDimensions } from "~components/react/hooks/useDimensions.ts";
+import IconButton from "~components/react/IconButton";
+import { menuItems } from "~utils/menu.ts";
 import { motion, sync, useCycle } from "framer-motion";
 import { SquareMenu } from "lucide-react";
 import { useRef } from "react";

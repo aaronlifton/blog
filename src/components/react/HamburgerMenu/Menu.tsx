@@ -1,4 +1,4 @@
-import { menuItems } from "$util/menu";
+import { menuItems } from "~utils/menu";
 import { motion } from "framer-motion";
 import type { default as React } from "react";
 import Styles from "./HamburgerMenu.module.css";

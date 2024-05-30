@@ -1,9 +1,9 @@
 ---
-import { PAGE_SIZE, SITE_TITLE } from "$/consts.ts";
-import Pages from "$components/Pages.svelte";
-import PostPreviewList from "$components/PostPreviewList.astro";
-import PostPreviewListFooter from "$components/PostPreviewListFooter.astro";
-import Layout from "$layouts/Layout.astro";
+import { PAGE_SIZE, SITE_TITLE } from "~consts";
+import Pages from "~components/react/Pages.tsx";
+import PostPreviewList from "~components/PostPreviewList.astro";
+import PostPreviewListFooter from "~components/PostPreviewListFooter.astro";
+import Layout from "~layouts/Layout.astro";
 import { type CollectionEntry, getCollection } from "astro:content";
 
 type Props = {

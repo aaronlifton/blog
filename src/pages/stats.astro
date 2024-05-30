@@ -1,6 +1,6 @@
 ---
 import Layout from "../layouts/Layout.astro";
-import { GET } from "$api/blog/views/all.ts";
+import { GET } from "~api/blog/views/all.ts";
 
 const views = await GET(Astro);
 const data = await views.json();

@@ -1,4 +1,3 @@
-import { activeHeading, lastActiveHeading } from "$state";
 import {
   motion,
   useAnimate,
@@ -7,6 +6,7 @@ import {
   // useTransform,
 } from "framer-motion";
 import { type FC, useEffect, useRef } from "react";
+import { activeHeading, lastActiveHeading } from "~state";
 import { useBreakpoint } from "./hooks/useBreakpoint";
 import Styles from "./TOCIndicator.module.css";
 

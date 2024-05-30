@@ -1,19 +1,19 @@
 ---
-import Layout from "$/layouts/Layout.astro";
-import BaseHead from "$components/BaseHead.astro";
-import CodeText from "$components/CodeText.astro";
-import FormattedDate from "$components/FormattedDate.astro";
-import Header from "$components/Header.astro";
-import IconTextLink from "$components/IconTextLink.astro";
-import PostStats from "$components/PostStats.svelte";
-import Prose from "$components/Prose.astro";
-import Tags from "$components/Tags.astro";
-import TOC from "$components/TOC.astro";
+import Layout from "~/layouts/Layout.astro";
+import BaseHead from "~components/BaseHead.astro";
+import CodeText from "~components/CodeText.astro";
+import FormattedDate from "~components/FormattedDate.astro";
+import Header from "~components/Header.astro";
+import IconTextLink from "~components/IconTextLink.astro";
+import PostStats from "~components/react/PostStats.tsx";
+import Prose from "~components/Prose.astro";
+import Tags from "~components/Tags.astro";
+import TOC from "~components/TOC.astro";
 import type { MarkdownHeading } from "astro";
 import type { CollectionEntry } from "astro:content";
 import "@radix-ui/themes/styles.css";
-import { getSlugFromPathname } from "$/util";
-import "$/styles/shaku.css";
+import { getSlugFromPathname } from "~utils";
+import "~styles/shaku.css";
 import { formatISO } from "date-fns";
 
 type Props = CollectionEntry<"blog">["data"] & {

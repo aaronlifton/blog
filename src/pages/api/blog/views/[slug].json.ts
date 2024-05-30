@@ -1,24 +1,31 @@
-import type { MetricModel } from "$prisma/zod/metric";
-import { getViewsBySlug } from "$services/turso";
-import type { Value } from "@libsql/core/api";
 import type { APIRoute } from "astro";
-import { getCollection } from "astro:content";
-// import { getViewsBySlug as inMemoryGetViews } from "$services/memory.ts";
+import { and, count, db, eq, isDbError, Metric } from "astro:db";
 
 export const prerender = false;
 
 export const GET: APIRoute = async ({ params, request }) => {
-  let views: Value | number = 0;
-  let metric: Zod.infer<typeof MetricModel> | null;
-  const { searchParams } = new URL(request.url);
-  const shouldIncrement = searchParams.get("increment") === "true";
-  if (params.slug) {
-    views = await getViewsBySlug(params.slug, shouldIncrement);
+  try {
+    if (!params.slug) {
+      return new Response("Missing slug", { status: 400 });
+    }
+    const res = await db.insert(Metric).values({
+      metricType: "pageview",
+      postSlug: params.slug,
+      value: 1,
+    }).returning();
+    const metrics = await db.select({ count: count() }).from(Metric).where(
+      and(
+        eq(Metric.postSlug, params.slug),
+        eq(Metric.metricType, "pageview"),
+      ),
+    );
+    const numViews = metrics[0]?.count || 0;
+
+    return new Response(JSON.stringify({ numViews }), { status: 200 });
+  } catch (e) {
+    if (isDbError(e)) {
+      return new Response("Cannot insert metric", { status: 400 });
+    }
+    return new Response("An unexpected error occurred", { status: 500 });
   }
-  return new Response(
-    JSON.stringify(
-      { views },
-      (_, value) => (typeof value === "bigint" ? value.toString() : value), // return everything else unchanged
-    ),
-  );
 };

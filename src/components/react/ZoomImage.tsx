@@ -1,4 +1,4 @@
-import closeIcon from "$/icons/tabler/x.svg";
+import closeIcon from "~/icons/tabler/x.svg";
 import { IconZoomIn } from "@tabler/icons-react";
 import type A11yDialogInstance from "a11y-dialog";
 import type LocalImageProps from "astro:assets";
