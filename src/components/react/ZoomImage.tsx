@@ -1,6 +1,8 @@
 import closeIcon from "$/icons/tabler/x.svg";
 import { IconZoomIn } from "@tabler/icons-react";
 import type A11yDialogInstance from "a11y-dialog";
+import type LocalImageProps from "astro:assets";
+import type ImageMetadata from "astro:content";
 import { XIcon } from "lucide-react";
 import { Fragment, useEffect, useRef, useState } from "react";
 import { A11yDialog } from "react-a11y-dialog";
@@ -10,17 +12,34 @@ import Styles from "./ZoomImage.module.css";
 
 interface ZoomImageProps {
   dialogId: string;
-  src: string;
+  src: string | Promise<ImageMetadata>;
   alt?: string;
   caption?: string;
   children: React.ReactElement;
 }
 
-const ZoomImage: React.FC<ZoomImageProps> = ({ dialogId, src, alt, caption, children }) => {
+const ZoomImage: React.FC<ZoomImageProps> = ({ dialogId, src: providedSrc, alt, caption, children }) => {
   const [dialogOpen, setDialogOpen] = useState(false);
+  const isPromise = providedSrc instanceof Promise;
+  const [src, setSrc] = useState<string | null>(isPromise ? null : providedSrc);
   const dialogRef = useRef<HTMLDialogElement>();
   const dialog = useRef<A11yDialogInstance>();
+  const [asyncSrc, setAsyncSrc] = useState<string>();
 
+  useEffect(() => {
+    const getSrc = async () => {
+      if (isPromise) {
+        const data = await providedSrc;
+        setSrc(data.src);
+      }
+    };
+    getSrc();
+  }, [providedSrc, isPromise]);
+
+  const imageProps = {
+    alt,
+    style: { width: "100%", height: "100%" },
+  };
   return (
     <Fragment>
       <button
@@ -55,11 +74,13 @@ const ZoomImage: React.FC<ZoomImageProps> = ({ dialogId, src, alt, caption, chil
             </button>
           </div>
           <div className="p-2">
-            <img
-              src={src}
-              alt={alt}
-              style={{ width: "100%", height: "100%" }}
-            />
+            {src && (
+              <img
+                src={src}
+                alt={alt}
+                style={{ width: "100%", height: "100%" }}
+              />
+            )}
             {(alt || caption) && <p className="pt-4 italic text-center font-sm prose">{caption || alt}</p>}
           </div>
         </div>

@@ -1,0 +1,75 @@
+---
+title: "Using a Neovim command to generate a diff review with GPT-4o"
+description:
+  "Learn how to generate a review of git changes with GPT-4o in order to write
+  detailed commits or to review pull requests."
+pubDate: "May 28 2024"
+cover: "./assets/screenshots/gpt4-commit-review2.png"
+coverAlt: "Screenshot of model.nvim's GPT-4o git review command"
+tags: ["neovim", "openai"]
+featured: true
+---
+
+OpenAI's new GPT-4o has a higher default TPM (_tokens per minute_) than GPT-3.5.
+As of now, it's 30,000. This makes it more useful for prompts requiring larger
+contexts such as a diff of all the changes in a git repository. Having AI review
+changes in a repository is useful because AI's summary of changes makes it
+easier to come up with a thoughtful, detailed git commit message, and it can
+help with reviewing a teammate's PR to make sure you give the most thoughtful
+review possible. Writing detailed Git commits and thoughtful review comments are
+necessary skills to have, and integrating a process in which AI assists you with
+these tasks into your editor seems like the natural evolution of tooling for
+software engineers. Having a Neovim command that opens up a window via with the
+diff, where you can then prompt GPT-4o to review it, is an awesome example of
+integrating AI into your editor in a way that helps you do your job better. The
+more creative you are with integrating AI, the more you can do with it, and this
+article will show how powerful AI integration into Neovim has become.
+
+## model.nvim
+
+A Neovim plugin that I've been enjoying is `model.nvim` -- it provides a
+framework to integrate AIs into your editor and incredibly, it supports
+Huggingface (e.g. Starcoder2), Gemini, OpenAI, Claude, Groq, and more. It
+supports creating chat windows with programatically created content,
+programatically generated prompts, and even multi-step interactions where the AI
+pauses for additional input. It comes with some default prompts meant as
+examples to get you started with further experimentation.
+
+From the source code, below is the prompt for the GPT-4o git review command. The
+`create` function populates the system message for the chat window, so in this
+example the Git diff is generated and used in the system prompt, right below the
+English instructions. Below are screenshots and a video of this command in
+action.
+
+```lua
+{
+    provider = openai,
+    system = "You are an expert programmer that gives constructive feedback. Review the changes in the user's git diff.",
+    params = {
+      model = 'gpt-4o',
+    },
+    create = function()
+      local git_diff = vim.fn.system({ 'git', 'diff', '--staged' })
+      ---@cast git_diff string
+
+      if not git_diff:match('^diff') then
+        error('Git error:\n' .. git_diff)
+      end
+
+      return git_diff
+    end,
+    run = openai_chat.run,
+  }
+```
+
+A bonus is that GPT-4o will compliment you if it feels a feature is a "modern
+approach" or "feels solid". This command will be super useful for reviewing
+large diffs or PRs.
+
+import GenerateGitReviewVideo from "./assets/videos/gpt4o-git-commit-review2.mp4";
+
+## Generate Git diff review video
+
+<video controls="" autoplay="false" loop="true">
+  <source src={GenerateGitReviewVideo} type="video/webm" />
+</video>
