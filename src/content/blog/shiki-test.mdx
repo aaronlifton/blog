@@ -6,6 +6,7 @@ tags: ["neovim"]
 cover: ./assets/screenshots/neovim-notepad.png
 coverAlt: "A Neovim screenshot showing a transparent floating notepad"
 featured: false
+draft: true
 ---
 
 One advanced feature of Neovim is the ability to create your own windows and
@@ -16,10 +17,26 @@ a window with that buffer, and then assign keymaps local to that buffer.
 
 ```ts twoslash
 import { Octokit } from "octokit";
-const token = "blah";
-const octokitService = new Octokit({ auth: token });
 
-console.log("hewwo"); // [!code --]
-console.log("hello"); // [!code ++]
-console.log("goodbye");
+const octokit = new Octokit({ auth: "blah" });
+const body = await octokit.request(
+  "GET /repos/{owner}/{repo}/contents/{path}",
+  {
+    owner: "facebook",
+    repo: "react",
+    path: "packages/shared/shallowEqual.js",
+    headers: {
+      "X-GitHub-Api-Version": "2022-11-28",
+    },
+  },
+);
+if (body.status !== 200) {
+  throw new Error(`Invalid status code: ${body.status}`);
+}
+
+const data = body.data;
+// Here we narrow the type of data to an array
+if (Array.isArray(data)) {
+  throw new Error("No file found");
+}
 ```

@@ -67,13 +67,17 @@ export default defineConfig({
       behavior: "append",
     }]],
     shikiConfig: {
-      theme: "tokyo-night",
+      // @ts-expect-error
+      theme: tokyoNight,
       transformers: [
         transformerTwoslash({
           explicitTrigger: true,
         }),
+        // @ts-ignore
         transformerNotationDiff(),
+        // @ts-ignore
         transformerNotationHighlight(),
+        // @ts-ignore
         transformerNotationWordHighlight(),
       ],
     },

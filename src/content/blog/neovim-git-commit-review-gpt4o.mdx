@@ -1,45 +1,157 @@
 ---
-title: "Using a Neovim command to generate a diff review with GPT-4o"
+title:
+  "Neovim: generating a Convential Commit message with Gemini and a a diff
+  review with GPT-4o"
 description:
-  "Learn how to generate a review of git changes with GPT-4o in order to write
-  detailed commits or to review pull requests."
+  "Learn how to generate a Convential Commit message with Gemini and a a diff
+  review with GPT-4o in Neovim to help you write detailed commits or to review
+  pull requests."
 pubDate: "May 28 2024"
 cover: "./assets/screenshots/gpt4-commit-review2.png"
 coverAlt: "Screenshot of model.nvim's GPT-4o git review command"
-tags: ["neovim", "openai"]
+tags: ["neovim", "openai", "gpt-4o", "gemini"]
 featured: true
 ---
 
+import GenerateGitReviewVideo from "./assets/videos/gpt4o-git-commit-review2.mp4";
+import GeminiCommitVideo from "./assets/videos/rubyfmt-commit2.mov";
+
 OpenAI's new GPT-4o has a higher default TPM (_tokens per minute_) than GPT-3.5.
 As of now, it's 30,000. This makes it more useful for prompts requiring larger
-contexts such as a diff of all the changes in a git repository. Having AI review
-changes in a repository is useful because AI's summary of changes makes it
-easier to come up with a thoughtful, detailed git commit message, and it can
-help with reviewing a teammate's PR to make sure you give the most thoughtful
-review possible. Writing detailed Git commits and thoughtful review comments are
-necessary skills to have, and integrating a process in which AI assists you with
-these tasks into your editor seems like the natural evolution of tooling for
-software engineers. Having a Neovim command that opens up a window via with the
-diff, where you can then prompt GPT-4o to review it, is an awesome example of
-integrating AI into your editor in a way that helps you do your job better. The
-more creative you are with integrating AI, the more you can do with it, and this
-article will show how powerful AI integration into Neovim has become.
+contexts such as a diff of all the changes in a Git repository. Google's Gemini
+Pro offers 32,000 TPM, and Gemini Flash offers a staggering 1 million TPM. These
+high rate limits allow for larger contexts such as a diff of all the changes in
+a Git repository, which can be thousands of lines long, or in Flash's case, an
+entire codebase or research paper.
 
-## model.nvim
+Having AI review changes in a repository is useful because AI's summary of
+changes makes it easier to come up with a thoughtful, detailed Git commit
+message, and it can help with reviewing a teammate's PR when there is a large
+amount of changes or to make sure you give the most thoughtful review possible.
+Writing detailed Git commits and thoughtful review comments are necessary skills
+to have, and I believe integrating a process in which AI assists you with these
+tasks into your editor is the natural evolution of tooling for software
+engineers. In this article, I'll show you both how to setup a Neovim command
+that generates a Conventional Commit message with Gemini and a Neovim command
+that generates a diff review with GPT-4o. These commands use `model.nvim`, which
+is the most powerful AI integration available for Neovim.
 
-A Neovim plugin that I've been enjoying is `model.nvim` -- it provides a
-framework to integrate AIs into your editor and incredibly, it supports
-Huggingface (e.g. Starcoder2), Gemini, OpenAI, Claude, Groq, and more. It
-supports creating chat windows with programatically created content,
-programatically generated prompts, and even multi-step interactions where the AI
-pauses for additional input. It comes with some default prompts meant as
+`model.nvim` provides a framework to integrate AIs into your editor and
+incredibly, it supports Huggingface (e.g. Starcoder2, Nous Research,
+DiscoResearch), Gemini, OpenAI, Llama.cpp, Claude, Groq, and more. It supports
+creating chat windows initialized with programmatically created content,
+programmatically generated prompts, and even multi-step interactions where the
+AI pauses for additional input. It comes with some default prompts meant as
 examples to get you started with further experimentation.
 
-From the source code, below is the prompt for the GPT-4o git review command. The
-`create` function populates the system message for the chat window, so in this
-example the Git diff is generated and used in the system prompt, right below the
-English instructions. Below are screenshots and a video of this command in
-action.
+## Generating a Conventional Commit message with Gemini and model.nvim
+
+Before I get into the implementation, here is a video of this command in action
+to show how smoothly it works. The video also shows me bumping the version of
+`ruby-lsp-rubyfmt`, as I created a pull request to make it compatible with the
+latest `ruby-lsp` version. I was proud to do so, and it made me realize that the
+number of users of that gem might be fewer than I thought. Rubyfmt is the
+fastest Ruby formatter, and it formats Ruby in one way, with no rules.
+
+### Video
+
+<video controls="" autoplay="false" loop="true">
+  <source src={GeminiCommitVideo} type="video/webm" />
+</video>
+
+The possibility of doing novel integrations with Gemini has been super exciting
+for me. Like OpenAI, Gemini also features custom
+[semantic retrieval](https://ai.google.dev/gemini-api/docs/semantic_retrieval#ingest_html_and_chunk_via_htmlchunker),
+which you can set up in Google Cloud. In this section, I'll be showing how to
+replicate the above video and generate a Conventional Commit message with Gemini
+via the `model.nvim` plugin. I found that with Gemini, the prompts have to be
+much more specific than with OpenAI's models. Since Gemini can handle very large
+contexts, and has a higher rate limit, you have room in the system message to
+include several rules the system should follow.
+
+A conventional commit is a standardized format for writing commit messages. It
+follows a specific structure and provides a consistent way to convey information
+about the changes made in a commit. Typical conventional commit scopes include
+feat, fix, docs, style, refactor, test, and chore. I also like to use
+[czg](https://github.com/Zhengqbbb/cz-git) to make writing conventional commits
+easier, but generating commit messages with AI is part of my personal goal of
+integrating AI into every aspect of software development in Neovim, so I've
+decided to create a Neovim command for it.
+
+### model.nvim config
+
+Here is the `model.nvim` configuration for prompting Gemini to generate
+conventional commits. I've set this up in my `prompt_library.lua` file, which
+I've auto-loaded via `require("model.util").module.autoload`.
+
+````lua
+
+---@param system_cmd table|nil
+---@return string
+local get_git_diff = function(system_cmd)
+  system_cmd = system_cmd or { "git", "diff", "--staged" }
+  local git_diff = vim.fn.system(system_cmd)
+
+  if not git_diff:match("^diff") then
+    git_diff = vim.fn.system({ "git", "diff" })
+
+    if not git_diff:match("^diff") then
+      error("diff empty:\n" .. git_diff)
+    end
+  end
+
+  return git_diff
+end
+
+local gemini = require("model.providers.gemini")
+local mode = require("model").mode
+
+return {
+  -- other prompts above...
+  ConventialCommit = {
+    provider = gemini,
+    mode = mode.INSERT,
+    builder = function()
+      local git_diff = get_git_diff()
+      return {
+        contents = {
+          {
+            parts = {
+              {
+                text = "Write a terse commit message according to the conventional commits specification. "
+                  .. "When analyzing the diff, ignore any changes made to code inside markdown files. try to stay below 80 characters total. "
+                  .. "If a version is bumped, the commit category is 'chore'. "
+                  .. "When using a filename as a commit category, take into account the parent folders. For example, ruby/lsp/rubyfmt would be the ruby-lsp-rubyfmt category. "
+                  .. "The subcategory should alawys be in parens after the main category, like chore(subcategory). "
+                  .. "Staged git diff: ```\n"
+                  .. git_diff
+                  .. "\n```",
+              },
+            },
+          },
+        },
+      }
+    end,
+  },
+}
+````
+
+Internally, the response is streamed from Gemini via the SSE protocol, so text
+parts are streamed to the client in chunks via
+[server side events](https://github.com/gsuuon/model.nvim/blob/c1d15b34c35b565828bc30c44b7741f8f69d4a1c/lua/model/providers/gemini.lua).
+I have a feeling I might be adding more hints to this command over time.
+
+## Generating a diff review with OpenAI and model.nvim
+
+Now that I've demonstrated generating conventional commit messages with Google's
+Gemini, I will demonstrate generating Git diff reviews with OpenAI's new GPT-4o.
+Taken from the `model.nvim` source code, below is the prompt for the GPT-4o git
+review command. The `create` function populates the initial system message for
+the chat window, so in this example the Git diff is generated and appended to
+the system prompt below the English instructions. Below is a video of this
+command in action.
+
+### model.nvim config
 
 ```lua
 {
@@ -63,12 +175,10 @@ action.
 ```
 
 A bonus is that GPT-4o will compliment you if it feels a feature is a "modern
-approach" or "feels solid". This command will be super useful for reviewing
-large diffs or PRs.
+approach" or "feels solid". I envision this command will be super useful for
+reviewing large diffs or PRs.
 
-import GenerateGitReviewVideo from "./assets/videos/gpt4o-git-commit-review2.mp4";
-
-## Generate Git diff review video
+### Video
 
 <video controls="" autoplay="false" loop="true">
   <source src={GenerateGitReviewVideo} type="video/webm" />

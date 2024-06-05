@@ -1,3 +1,4 @@
+/* stylelint-disable comment-empty-line-before */
 @import url("https://fonts.googleapis.com/css2?family=Recursive:wght,MONO@385,0.5&display=swap");
 
 :root {
@@ -6,7 +7,7 @@
   --black: 15, 18, 25;
   --gray: 96, 115, 159;
   --gray-dark: 34, 41, 57;
-  --box-shadow: 0 2px 6px rgba(var(--bg-gray), 25%),
+  --box-shadow: 0 2px 6px rgba(var(--bg-gray) / 25%),
     0 8px 24px rgba(#fff, 33%), 0 16px 32px rgba(#fff, 33%);
   --bg-primary: #fff;
   --horizontal-padding: 2rem;
@@ -19,15 +20,15 @@
   --total-footer-height: calc(var(--footer-height) + var(--footer-margin-top));
   --vert-padding: 1rem;
   --surface: var(--gray);
-
-  --primary: rgb(34, 41, 57);
-  --on-primary: oklch(94.72% 0.03 308.97);
-  --background: oklch(0.988281 0.0046875 300);
+  --primary: rgb(34 41 57);
+  /* stylelint-disable number-max-precision */
+  --on-primary: oklch(94.72% 0.03 308.97deg);
+  --background: oklch(98.8281% 0.0046875 300deg);
+  /* stylelint-enable number-max-precision */
   --on-background: var(--primary);
   --disabled: var(--background);
   --shadow: theme(colors.stone.600);
 
-  /**/
   /* --bright-blue: oklch(51.01% .274 263.83); */
   /* --indigo-blue: oklch(51.64% .229 281.65); */
   /* --electric-violet: oklch(53.18% .28 296.97); */
@@ -97,6 +98,25 @@
 
 .prose {
   --tw-prose-headings: var(--primary);
+
+  @apply text-base prose-slate max-w-none lg:prose-lg;
+
+  font-family: Merriweather, serif;
+
+  ol,
+  li {
+    font-size: 1rem;
+  }
+}
+
+.prose p {
+  @apply max-w-prose;
+}
+
+dialog.welcome {
+  p {
+    font-family: Inter, sans-serif;
+  }
 }
 
 @layer components {
@@ -146,7 +166,7 @@
 
 
 @font-face {
-  font-family: "Atkinson";
+  font-family: Atkinson;
   src: url("/fonts/atkinson-bold.woff") format("woff");
   font-weight: 700;
   font-style: normal;
@@ -159,13 +179,8 @@ body {
   word-wrap: break-word;
   overflow-wrap: break-word;
   line-height: 1.7;
-  @apply flex h-full flex-col bg-purple-50 text-left text-text-primary;
-}
 
-dialog.welcome {
-  p {
-    font-family: "Inter", sans-serif;
-  }
+  @apply flex h-full flex-col bg-purple-50 text-left text-text-primary;
 }
 
 @font-face {
@@ -173,9 +188,9 @@ dialog.welcome {
   src: url("fonts/iMWritingMonoNerdFont-Italic.ttf") format("truetype");
 }
 
-nav {
-  /* font-family: Open Sans, sans-serif; */
-}
+/* nav { */
+/* font-family: Open Sans, sans-serif; */
+/* } */
 
 h1,
 h2,
@@ -183,11 +198,13 @@ h3,
 h4,
 h5,
 h6 {
-  font-family: Open Sans, sans-serif;
+  font-family: "Open Sans", sans-serif;
+
   /* font-family: "Raleway", sans-serif; */
   /* font-family: 'Atkinson', sans-serif; */
   @apply subpixel-antialiased;
-  margin: 0 0 0.5rem 0;
+
+  margin: 0 0 0.5rem;
   color: rgb(var(--black));
   line-height: 1.2;
 }
@@ -218,45 +235,19 @@ b {
 }
 
 a {
-  @apply text-fuchsia-300 text-primary underline decoration-dark-primary/0 decoration-2 underline-offset-2 subpixel-antialiased transition-colors duration-100 ease-in-out;
+  @apply text-primary underline decoration-dark-primary/0 decoration-2 underline-offset-2 subpixel-antialiased transition-colors duration-100 ease-in-out;
 }
 
 a:hover {
   @apply text-primary decoration-primary decoration-2;
 }
 
-p {
-  @apply subpixel-antialiased;
-  margin-bottom: 1em;
-}
 
-.prose {
-  font-size: 1rem;
-  font-family: 'Merriweather', serif;
-  @apply text-base prose-slate max-w-none lg:prose-lg;
 
-  ol,
-  li {
-    font-size: 1rem;
-  }
-}
 
-.prose code {
-  &::before {
-    content: "";
-  }
-
-  &::after {
-    content: "";
-  }
-}
-
-.prose p {
-  @apply max-w-prose;
-}
 
 .animate-fill-forwards {
-  -webkit-animation-fill-mode: forwards !important;
+  animation-fill-mode: forwards !important;
 }
 
 /* .prose p.mb-0 { */
@@ -291,8 +282,21 @@ img {
 }
 
 code {
-  @apply rounded-md border  px-1 text-sm;
-  background: #1A1B26 !important;
+  @apply rounded-md border px-1 text-sm;
+}
+
+pre>code {
+  all: unset;
+}
+
+.prose code {
+  &::before {
+    content: "";
+  }
+
+  &::after {
+    content: "";
+  }
 }
 
 pre {
@@ -317,9 +321,6 @@ pre {
   }
 }
 
-pre>code {
-  all: unset;
-}
 
 blockquote {
   border-left: 4px solid var(--accent);
@@ -332,7 +333,7 @@ hr {
   @apply my-4 border border-t border-slate-200 p-0;
 }
 
-@media (max-width: 720px) {
+@media (width <=720px) {
   body {
     font-size: 18px;
   }
