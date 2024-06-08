@@ -1,4 +1,3 @@
-import closeIcon from "~/icons/tabler/x.svg";
 import { IconZoomIn } from "@tabler/icons-react";
 import type A11yDialogInstance from "a11y-dialog";
 import type LocalImageProps from "astro:assets";
@@ -7,6 +6,7 @@ import { XIcon } from "lucide-react";
 import { Fragment, useEffect, useRef, useState } from "react";
 import { A11yDialog } from "react-a11y-dialog";
 import { twMerge } from "tailwind-merge";
+import closeIcon from "~/icons/tabler/x.svg";
 import IconButton from "./IconButton";
 import Styles from "./ZoomImage.module.css";
 
@@ -47,7 +47,7 @@ const ZoomImage: React.FC<ZoomImageProps> = ({ dialogId, src: providedSrc, alt, 
         className="flex relative [&_img]:m-0 group/zoom"
         onClick={() => dialog.current?.show()}
       >
-        <div className="absolute right-0 p-2 rounded-none transition duration-150 bottom-[4px] bg-gray-100/50 group-hover/zoom:bg-gray-200">
+        <div className="absolute right-0 z-10 p-2 rounded-none transition duration-150 bottom-[4px] bg-gray-100/50 group-hover/zoom:bg-gray-200">
           <IconZoomIn />
         </div>
         {children}

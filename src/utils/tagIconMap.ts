@@ -36,6 +36,11 @@ export const tagIconMap: {
   terminal: "tabler/terminal",
   productivity: "tabler/inbox",
   compilers: "tabler/cpp",
+  "gpt-3.5": "openai",
+  "gpt-4": "openai",
+  "gpt-4o": "openai",
+  gemini: "googlegemini",
+  "conventional commits": "conventionalcommits",
 };
 
 const iconCache = new Map<string, string | null>();

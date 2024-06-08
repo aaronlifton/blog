@@ -1,31 +1,35 @@
 import { initTRPC } from "@trpc/server";
 import { Metric } from "astro:db";
-import { createInsertSchema, createSelectSchema } from "drizzle-zod";
 import { z } from "zod";
 import type { Context, NodeContext } from "./context";
 
-export const t = initTRPC.context<NodeContext>().create({
+export const t = initTRPC.context<Context>().create({
   allowOutsideOfServer: true,
 });
 const { createCallerFactory, router } = t;
 export const publicProcedure = t.procedure;
-export const apiProcedure = publicProcedure.use((opts) => {
-  if (!opts.ctx.req || !opts.ctx.resHeaders) {
-    throw new Error("You are missing `req` or `res` in your call.");
-  }
-  return opts.next({
-    ctx: {
-      // We overwrite the context with the truthy `req` & `res`, which will also overwrite the types used in your procedure.
-      req: opts.ctx.req,
-      res: opts.ctx.resHeaders,
-    },
-  });
-});
+// export const apiProcedure = publicProcedure.use((opts) => {
+//   // if (!opts.ctx.req || !opts.ctx.res) {
+//   //   throw new Error("You are missing `req` or `res` in your call.");
+//   // }
+//   return opts.next({
+//     ctx: {
+//       // We overwrite the context with the truthy `req` & `res`, which will also overwrite the types used in your procedure.
+//       req: opts.ctx.req,
+//       res: opts.ctx.res,
+//     },
+//   });
+// });
+//
 
 export const appRouter = t.router({
   incrementMetric: publicProcedure
-    .input(createInsertSchema(Metric).pick({ metricType: true, postSlug: true }))
+    .input(z.object({
+      metricType: z.string(),
+      postSlug: z.string(),
+    }))
     .mutation(async (resolver) => {
+      console.log({ resolver });
       const { db } = resolver.ctx;
       const { metricType, postSlug } = resolver.input;
       const values: typeof Metric.$inferInsert = {
@@ -33,7 +37,7 @@ export const appRouter = t.router({
         postSlug,
         value: 1,
       };
-      const res = await db.insert(Metric).values(values).returning();
+      return await db.insert(Metric).values(values).returning();
     }),
   getCommits: publicProcedure.query((resolver) => {
     const { githubService } = resolver.ctx;

@@ -14,7 +14,7 @@ export const Metric = defineTable({
     { on: ["postSlug", "metricType"], unique: false },
   ],
 });
-export const ErrorTable = defineTable({
+export const ErrorTableConfig = {
   columns: {
     id: column.number({ primaryKey: true }),
     message: column.text(),
@@ -24,7 +24,10 @@ export const ErrorTable = defineTable({
   indexes: [
     { on: ["message"], unique: false },
   ],
-});
+};
+
+// @ts-expect-error
+export const ErrorTable = defineTable(ErrorTableConfig);
 // Comment: defineTable({
 //   columns: {
 //     id: column.number({ primaryKey: true }),
