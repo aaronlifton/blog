@@ -1,5 +1,5 @@
 import type { APIRoute } from "astro";
-import { and, count, db, eq, isDbError, Metric } from "astro:db";
+import { and, db, eq, isDbError, Metric, sum } from "astro:db";
 
 export const prerender = false;
 
@@ -13,13 +13,13 @@ export const GET: APIRoute = async ({ params, request }) => {
       postSlug: params.slug,
       value: 1,
     }).returning();
-    const metrics = await db.select({ count: count() }).from(Metric).where(
+    const metrics = await db.select({ value: sum(Metric.value) }).from(Metric).where(
       and(
         eq(Metric.postSlug, params.slug),
         eq(Metric.metricType, "pageview"),
       ),
     );
-    const numViews = metrics[0]?.count || 0;
+    const numViews = metrics[0]?.value || 0;
 
     return new Response(JSON.stringify({ numViews }), { status: 200 });
   } catch (e) {

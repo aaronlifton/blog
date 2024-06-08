@@ -13,14 +13,14 @@ tags: ["neovim", "quick tips"]
 ---
 
 import { Image } from "astro:assets";
-import ZoomImage from "~components/ZoomImage.svelte";
+import ZoomImage from "~components/react/ZoomImage";
 import image1 from "./assets/screenshots/neovim-spellfile.png";
 import valeDiagnosticsImg from "./assets/vale-diagnostics-sample_qgdcfz_c_pad,h_300,e_sharpen.png";
 import Admonition from "~components/Admonition.astro";
 
 <Admonition type="tip" isQuote={false} title="Note" date={"Apr 11, 2024"}>
   After using the built-in spellchecker for a while, I decided to try one that
-  would throw less false positives and also help improve grammar and writing
+  would throw fewer false positives and also help improve grammar and writing
   style. I've added a new section at the bottom to set up Vale, which checks my
   writing for style and grammar. When I write these articles now, a combination
   of WriteGood and Vale rules help me create better content!
@@ -63,9 +63,9 @@ Here's how you do it:
    The file should now look like this:
 
    <ZoomImage
-     link={image1.src}
-     alt={"Full-size neovim screenshot"}
-     caption="Neovim screenshot showing a custom spelling suggestion file"
+     dialogId="screenshot1"
+     src={image1.src}
+     alt="Neovim screenshot showing a custom spelling suggestion file"
      client:load
    >
      <Image
