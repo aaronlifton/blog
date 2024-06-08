@@ -127,7 +127,6 @@
     "unist-util-visit": "^5.0.0",
     "unthunk": "^0.0.1",
     "vite-plugin-svgr": "^4.2.0",
-    "vite-plugin-top-level-await": "^1.4.1",
     "webdriverio": "^8.35.1",
     "zod": "^3.22.4"
   },

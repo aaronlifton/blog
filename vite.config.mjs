@@ -10,6 +10,8 @@ const __dirname = path.resolve();
 /** @type {import('vite').UserConfig} */
 export default {
   plugins: [
-    svgr(),
+    svgr({
+      include: "**/*.svg?react",
+    }),
   ],
 };
