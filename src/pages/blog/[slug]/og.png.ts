@@ -1,7 +1,7 @@
 import { ImageResponse } from "@vercel/og";
 import { type CollectionEntry, getCollection } from "astro:content";
 import fs from "node:fs";
-import path from "path";
+import path from "node:path";
 
 interface Props {
   params: { slug: string };
@@ -36,7 +36,7 @@ export async function GET({ props }: Props) {
       ? path.resolve(
         post.data.cover.src.replace(/\?.*/, "").replace("/@fs", ""),
       )
-      : path.resolve(post.data.cover.src.replace("/", "dist/server/")),
+      : path.resolve(post.data.cover.src.replace("/", "dist/client/")),
   );
 
   // const __dirname = path.dirname(fileURLToPath(import.meta.url));
