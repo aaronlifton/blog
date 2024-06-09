@@ -1,10 +1,10 @@
 import db from "@astrojs/db";
 import mdx from "@astrojs/mdx";
-import node from "@astrojs/node";
 import react from "@astrojs/react";
 import sitemap from "@astrojs/sitemap";
 import svelte from "@astrojs/svelte";
 import tailwind from "@astrojs/tailwind";
+import vercel from "@astrojs/vercel/serverless";
 import {
   transformerNotationDiff,
   transformerNotationHighlight,
@@ -32,9 +32,7 @@ const __dirname = dirname(fileURLToPath(import.meta.url));
 // https://astro.build/config
 export default defineConfig({
   output: "server",
-  adapter: node({
-    mode: "standalone",
-  }),
+  adapter: vercel(),
   site: "https://www.railsdev.dev",
   // prefetch: true,
   integrations: [
@@ -62,6 +60,8 @@ export default defineConfig({
         // dprint-ignore
         langs: ["bash", "fish", "go", "html", "javascript", "json", "jsonc", "jsx", "lua", "ruby", "sh", "ts", "ts", "tsx", "typescript", "vim", "yaml", "toml", "rb", "yml"],
       }],
+      remarkReadingTime,
+      remarkSummary,
     ],
     rehypePlugins: [[rehypeAutolinkHeadings, {
       behavior: "append",
@@ -111,3 +111,4 @@ export default defineConfig({
     },
   },
 });
+
