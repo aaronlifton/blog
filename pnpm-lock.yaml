@@ -297,7 +297,7 @@ importers:
         specifier: ^11.0.3
         version: 11.0.3
       sharp:
-        specifier: ^0.33.2
+        specifier: ^0.33.4
         version: 0.33.4
       shiki:
         specifier: ^1.6.0

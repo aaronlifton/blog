@@ -116,7 +116,7 @@
     "remark-rehype": "^11.1.0",
     "remark-unwrap-images": "^4.0.0",
     "serialize-error": "^11.0.3",
-    "sharp": "^0.33.2",
+    "sharp": "^0.33.4",
     "shiki": "^1.6.0",
     "squoosh": "^0.0.0",
     "stylelint": "^16.2.1",
