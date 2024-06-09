@@ -11,6 +11,8 @@ import { getTags } from "~services/api";
 // const data = filteredPosts.map((post) => post.data.tags);
 // const allTags = unique(data.flat());
 const allTags = await getTags();
+
+export const prerender = true;
 ---
 
 <Layout>
