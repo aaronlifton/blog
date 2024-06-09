@@ -37,6 +37,7 @@
     "@fontsource/comic-mono": "^5.0.7",
     "@fontsource/source-sans-pro": "^5.0.8",
     "@libsql/client": "^0.4.3",
+    "@libsql/linux-x64-gnu": "^0.4.0-pre.1",
     "@nanostores/react": "^0.7.2",
     "@octokit/graphql": "^8.0.1",
     "@octokit/request": "^9.0.1",
