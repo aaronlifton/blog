@@ -68,9 +68,15 @@ importers:
       '@octokit/graphql':
         specifier: ^8.0.1
         version: 8.1.1
+      '@octokit/plugin-rest-endpoint-methods':
+        specifier: ^13.2.1
+        version: 13.2.1(@octokit/core@5.2.0)
       '@octokit/request':
         specifier: ^9.0.1
         version: 9.1.1
+      '@octokit/types':
+        specifier: ^13.5.0
+        version: 13.5.0
       '@prisma/adapter-libsql':
         specifier: ^5.10.2
         version: 5.14.0(@libsql/client@0.4.3)
@@ -2257,7 +2263,6 @@ packages:
 
   '@libsql/linux-x64-gnu@0.4.0-pre.1':
     resolution: {integrity: sha512-QhRF35AhVf2Aiz0dEt1+tADfsZ09ZqAuCPYeBaoScElmB42D82w/76OXiLIvz3NH9vLqDd5TpCJzbX10rmHyqQ==}
-    cpu: [x64]
     os: [linux]
 
   '@libsql/linux-x64-musl@0.2.0':
@@ -2476,6 +2481,12 @@ packages:
     engines: {node: '>= 18'}
     peerDependencies:
       '@octokit/core': '5'
+
+  '@octokit/plugin-rest-endpoint-methods@13.2.1':
+    resolution: {integrity: sha512-YMWBw6Exh1ZBs5cCE0AnzYxSQDIJS00VlBqISTgNYmu5MBdeM07K/MAJjy/VkNaH5jpJmD/5HFUvIZ+LDB5jSQ==}
+    engines: {node: '>= 18'}
+    peerDependencies:
+      '@octokit/core': '>=6'
 
   '@octokit/plugin-rest-endpoint-methods@13.2.2':
     resolution: {integrity: sha512-EI7kXWidkt3Xlok5uN43suK99VWqc8OaIMktY9d9+RNKl69juoTyxmLoWPIZgJYzi41qj/9zU7G/ljnNOJ5AFA==}
@@ -13225,6 +13236,11 @@ snapshots:
     dependencies:
       '@octokit/core': 5.2.0
       '@octokit/types': 12.6.0
+
+  '@octokit/plugin-rest-endpoint-methods@13.2.1(@octokit/core@5.2.0)':
+    dependencies:
+      '@octokit/core': 5.2.0
+      '@octokit/types': 13.5.0
 
   '@octokit/plugin-rest-endpoint-methods@13.2.2(@octokit/core@5.2.0)':
     dependencies:
