@@ -16,7 +16,7 @@
     "vitest": "vitest run test",
     "test": "npx playwright test --ui",
     "docker-build": "DOCKER_BUILDKIT=1 docker build --secret id=env,src=.env -t blog .",
-    "docker-run": "docker run -p 4321:4321 -it --rm blog",
+    "docker-run": "docker run --env-file .env -p 4321:4321 -it --rm blog",
     "dev:rpc-server": "tsx watch ./rpc-server/router.ts"
   },
   "dependencies": {

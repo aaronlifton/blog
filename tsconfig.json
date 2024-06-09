@@ -21,8 +21,7 @@
       "~utils/*": ["./src/utils/*"],
       "~db/*": ["./db/*"]
     },
-    "types": ["@astrojs/db", "@astrojs/db/dist/core/integration", "vite-plugin-svgr/client"],
-    "allowJs": true
+    "types": ["@astrojs/db", "@astrojs/db/dist/core/integration", "vite-plugin-svgr/client"]
   },
   "include": ["src/**/*", ".astro", "db", "rpc-server", "test", "tests"]
 }

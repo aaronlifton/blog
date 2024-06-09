@@ -13,7 +13,7 @@ import {
 import { transformerTwoslash } from "@shikijs/twoslash";
 import icon from "astro-icon";
 import robotsTxt from "astro-robots-txt";
-import { defineConfig, squooshImageService } from "astro/config";
+import { defineConfig } from "astro/config";
 import path, { dirname } from "node:path";
 import { fileURLToPath } from "node:url";
 import rehypeAutolinkHeadings from "rehype-autolink-headings";
@@ -102,7 +102,6 @@ export default defineConfig({
     })],
   },
   image: {
-    service: squooshImageService(),
     domains: ["cloudinary.com"],
   },
   redirects: {
