@@ -5,6 +5,7 @@ import PostPreviewList from "~components/PostPreviewList.astro";
 import PostPreviewListFooter from "~components/PostPreviewListFooter.astro";
 import Layout from "~layouts/Layout.astro";
 import { type CollectionEntry, getCollection } from "astro:content";
+import { getAllPosts } from "~services/blog"
 
 type Props = {
   page: {
@@ -23,14 +24,10 @@ export async function getStaticPaths({
     options: { pageSize: number },
   ) => string[];
 }) {
-  let posts: CollectionEntry<"blog">[] = await getCollection("blog");
-  posts = posts
-    .filter((post) => !post.data.draft)
-    .sort((a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf());
-
+  const posts = await getAllPosts()
   return paginate(posts, { pageSize: PAGE_SIZE });
 }
-// All paginated data is passed on the "page" prop
+
 export const prerender = true;
 const { page }: Props = Astro.props;
 ---

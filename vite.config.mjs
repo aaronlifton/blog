@@ -9,8 +9,8 @@ loadEnv(process.env.NODE_ENV, process.cwd(), "");
 /** @type {import('vite').UserConfig} */
 export default {
   plugins: [
-    svgr({
-      include: "**/*.svg?react",
-    }),
+    // svgr({
+    //   include: "**/*.svg?react",
+    // }),
   ],
 };

@@ -1,10 +1,10 @@
 import db from "@astrojs/db";
 import mdx from "@astrojs/mdx";
+import node from "@astrojs/node";
 import react from "@astrojs/react";
 import sitemap from "@astrojs/sitemap";
 import svelte from "@astrojs/svelte";
 import tailwind from "@astrojs/tailwind";
-import vercel from "@astrojs/vercel/serverless";
 import {
   transformerNotationDiff,
   transformerNotationHighlight,
@@ -32,7 +32,9 @@ const __dirname = dirname(fileURLToPath(import.meta.url));
 // https://astro.build/config
 export default defineConfig({
   output: "server",
-  adapter: vercel(),
+  adapter: node({
+    mode: "standalone",
+  }),
   site: "https://www.railsdev.dev",
   // prefetch: true,
   integrations: [
@@ -111,4 +113,3 @@ export default defineConfig({
     },
   },
 });
-

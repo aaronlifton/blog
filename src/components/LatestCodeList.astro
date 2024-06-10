@@ -45,9 +45,10 @@ for (const post of livePosts) {
   if (!codes) continue;
 
   const codesWithPost: CodeResults = codes.map((code) => ({ ...code, post }));
-  allCodes = allCodes.concat(codesWithPost).filter(code => !!code.lang).sort(
-    codeSort,
-  );
+  allCodes = allCodes
+    .concat(codesWithPost)
+    .filter((code) => !!code.lang)
+    .sort(codeSort);
 }
 ---
 
@@ -67,20 +68,18 @@ for (const post of livePosts) {
 </div>
 <!-- if mobile needs more performance, use will-change-scroll -->
 <div
-  class="flex overflow-auto w-full h-auto codes-container snap-x snap-mandatory snap-always"
+  class="codes-container flex h-auto w-full snap-x snap-mandatory snap-always overflow-auto"
 >
   {
     allCodes.map((code) => (
       <div class="code">
-        <div class="flex flex-row justify-between code-header">
-          <h2 class="flex pr-3 text-base font-bold grow">{code.lang}</h2>
-          {
-            code.post && (
-              <div class="text-sm truncate">
-                <a href={`/blog/${code.post.slug}`}>{code.post.data.title}</a>
-              </div>
-            )
-          }
+        <div class="code-header flex flex-row justify-between">
+          <h2 class="flex grow pr-3 text-base font-bold">{code.lang}</h2>
+          {code.post && (
+            <div class="truncate text-sm">
+              <a href={`/blog/${code.post.slug}`}>{code.post.data.title}</a>
+            </div>
+          )}
         </div>
         {/* @ts-ignore */}
         <Code
@@ -94,187 +93,202 @@ for (const post of livePosts) {
   }
 </div>
 <script>
-import { isPaused, scrollDone, scrollLeft, currentIndex } from "~state";
+  import { isPaused, scrollDone, scrollLeft, currentIndex } from "~state";
 
-const activeTransitionsEnabled = false
-const initialDelay = 1750;
-const intervalTime = 5000;
-let eventListeners: {target: Element | null, type: string, listener: () => void }[] = []
-let interval: number | null = null;
-let timeout: Timer | null = null;
+  const activeTransitionsEnabled = false;
+  const initialDelay = 1750;
+  const intervalTime = 5000;
+  let eventListeners: {
+    target: Element | null;
+    type: string;
+    listener: () => void;
+  }[] = [];
+  let interval: number | null = null;
+  let timeout: Timer | null = null;
 
-const getCodesContainer  = () => {
-  return document.querySelector(".codes-container") as HTMLDivElement;
-}
-const getCodes = (container: HTMLDivElement): NodeListOf<HTMLDivElement> => {
-  return container.querySelectorAll(".code");
-}
-const getScrollLeft = (codes: NodeListOf<HTMLDivElement>, container: HTMLDivElement) => {
-  return codes[currentIndex.get()].offsetLeft - container.offsetLeft;
-}
+  const getCodesContainer = () => {
+    return document.querySelector(".codes-container") as HTMLDivElement;
+  };
+  const getCodes = (container: HTMLDivElement): NodeListOf<HTMLDivElement> => {
+    return container.querySelectorAll(".code");
+  };
+  const getScrollLeft = (
+    codes: NodeListOf<HTMLDivElement>,
+    container: HTMLDivElement,
+  ) => {
+    return codes[currentIndex.get()].offsetLeft - container.offsetLeft;
+  };
 
-function startInterval(func: Function) {
-  timeout = setTimeout(function() {
-    func();
-    interval = setInterval(func, intervalTime);
-  }, initialDelay);
-}
-
-const onLoad = () => {
-  const codesContainer = getCodesContainer()
-  const codes = getCodes(codesContainer)
-
-  if (activeTransitionsEnabled) {
-    scrollDone.subscribe((sd) => {
-      if (sd == true) {
-        codes.forEach((code) => code.classList.remove("active"));
-        codes[currentIndex.get() % codes.length].classList.add("active");
-      }
-    })
+  function startInterval(func: Function) {
+    timeout = setTimeout(function () {
+      func();
+      interval = setInterval(func, intervalTime);
+    }, initialDelay);
   }
 
-  const scrollNext = () => {
-    if (!codesContainer) return;
+  const onLoad = () => {
+    const codesContainer = getCodesContainer();
+    const codes = getCodes(codesContainer);
 
-    if (!isPaused.get()) {
-      if (currentIndex.get() >= codes.length) {
-        currentIndex.set(0)
+    if (activeTransitionsEnabled) {
+      scrollDone.subscribe((sd) => {
+        if (sd == true) {
+          codes.forEach((code) => code.classList.remove("active"));
+          codes[currentIndex.get() % codes.length].classList.add("active");
+        }
+      });
+    }
+
+    const scrollNext = () => {
+      if (!codesContainer) return;
+
+      if (!isPaused.get()) {
+        if (currentIndex.get() >= codes.length) {
+          currentIndex.set(0);
+        }
+
+        const newScrollLeft = getScrollLeft(codes, codesContainer);
+        scrollLeft.set(newScrollLeft);
+        currentIndex.set(currentIndex.get() + 1);
       }
+    };
 
+    if (!interval) {
+      startInterval(scrollNext);
+    }
+
+    function onManualScroll() {
+      if (!isPaused.get() || !codesContainer) return;
+      let minDiff = Infinity;
+      let closestIndex: number | undefined;
+
+      const containerRect = codesContainer.getBoundingClientRect();
+      codes.forEach((code, index) => {
+        const rect = code.getBoundingClientRect();
+        const diff = Math.abs(rect.left - containerRect.left);
+
+        if (diff < minDiff) {
+          minDiff = diff;
+          closestIndex = index;
+        }
+      });
+      if (closestIndex !== undefined) currentIndex.set(closestIndex);
+      if (
+        codes[codes.length - 1].getBoundingClientRect().right <=
+        containerRect.left + codesContainer.clientWidth
+      ) {
+        currentIndex.set(0);
+      }
+      if (currentIndex.get() >= codes.length - 1) {
+        currentIndex.set(0);
+      }
+    }
+
+    codesContainer?.addEventListener(
+      "touchstart",
+      function () {
+        isPaused.set(true);
+      },
+      { passive: true },
+    );
+
+    const onTouchEnd = function () {
+      if (!codesContainer) return;
+
+      isPaused.set(false);
+      onManualScroll();
+    };
+    const onTouchStart = function () {
+      isPaused.set(true);
+    };
+    const iconContainer = document.querySelector("div[class*=_iconContainer]");
+
+    eventListeners = [
+      { target: codesContainer, type: "touchstart", listener: onTouchStart },
+      { target: codesContainer, type: "touchend", listener: onTouchEnd },
+      { target: codesContainer, type: "touchcancel", listener: onTouchEnd },
+      {
+        target: codesContainer,
+        type: "mouseleave",
+        listener: function () {
+          if (!codesContainer) return;
+          isPaused.set(false);
+        },
+      },
+      { target: codesContainer, type: "mouseenter", listener: onTouchStart },
+      { target: codesContainer, type: "scroll", listener: onManualScroll },
+      {
+        target: iconContainer,
+        type: "click",
+        listener: function () {
+          const isPausedVal = isPaused.get();
+          isPaused.set(!isPausedVal);
+        },
+      },
+    ];
+
+    eventListeners.forEach(({ target, type, listener }) => {
+      target?.addEventListener(type, listener);
+    });
+  };
+
+  document.addEventListener("astro:page-load", onLoad, { once: true });
+  document.addEventListener("astro:before-swap", (props) => {
+    const { to } = props;
+
+    if (interval) {
+      clearInterval(interval);
+      interval = null;
+    }
+    if (timeout) {
+      clearTimeout(timeout);
+      timeout = null;
+    }
+    if (to.pathname !== "/") {
+      eventListeners.forEach(({ target, type, listener }) => {
+        target?.removeEventListener(type, listener);
+      });
+    }
+    if (to.pathname === "/") {
+      document.addEventListener("astro:page-load", onLoad, { once: true });
+    }
+  });
+  document.addEventListener("astro:after-swap", (event) => {
+    // @ts-expect-error
+    const pathname = event.target?.location?.pathname;
+    if (pathname === "/") {
+      const codesContainer = getCodesContainer();
+      const codes = getCodes(codesContainer);
       const newScrollLeft = getScrollLeft(codes, codesContainer);
       scrollLeft.set(newScrollLeft);
-      currentIndex.set(currentIndex.get() + 1);
+      codesContainer.scrollTo({ left: newScrollLeft, behavior: "instant" });
     }
-  };
-
-  if (!interval) {
-    startInterval(scrollNext);
-  }
-
-  function onManualScroll() {
-    if (!isPaused.get() || !codesContainer) return;
-    let minDiff = Infinity;
-    let closestIndex: number | undefined;
-
-    const containerRect = codesContainer.getBoundingClientRect();
-    codes.forEach((code, index) => {
-      const rect = code.getBoundingClientRect();
-      const diff = Math.abs(rect.left - containerRect.left);
-
-      if (diff < minDiff) {
-        minDiff = diff;
-        closestIndex = index;
-      }
-    });
-    if (closestIndex !== undefined) currentIndex.set(closestIndex);
-    if (
-      codes[codes.length - 1].getBoundingClientRect().right
-        <= containerRect.left + codesContainer.clientWidth
-    ) {
-      currentIndex.set(0)
-    }
-    if (currentIndex.get() >= codes.length - 1) {
-      currentIndex.set(0)
-    }
-  }
-
-  codesContainer?.addEventListener(
-    "touchstart",
-    function() {
-      isPaused.set(true);
-    },
-    { passive: true },
-  );
-
-  const onTouchEnd = function() {
-    if (!codesContainer) return;
-
-    isPaused.set(false);
-    onManualScroll();
-  }
-  const onTouchStart = function() {
-    isPaused.set(true);
-  }
-  const iconContainer = document.querySelector("div[class*=_iconContainer]");
-
-  eventListeners = [
-    { target: codesContainer, type: "touchstart", listener: onTouchStart },
-    { target: codesContainer, type: "touchend", listener: onTouchEnd },
-    { target: codesContainer, type: "touchcancel", listener: onTouchEnd },
-    { target: codesContainer, type: "mouseleave", listener: function() {
-      if (!codesContainer) return;
-      isPaused.set(false);
-    }},
-    { target: codesContainer, type: "mouseenter", listener: onTouchStart },
-    { target: codesContainer, type: "scroll", listener: onManualScroll },
-    { target: iconContainer, type: "click", listener: function() {
-      const isPausedVal = isPaused.get();
-      isPaused.set(!isPausedVal);
-    }},
-  ]
-
-  eventListeners.forEach(({ target, type, listener }) => {
-    target?.addEventListener(type, listener)
-  })
-};
-
-document.addEventListener("astro:page-load", onLoad, { once: true});
-document.addEventListener("astro:before-swap", (props) => {
-  const { to } = props;
-
-  if (interval) {
-    clearInterval(interval);
-    interval = null
-  }
-  if (timeout) {
-    clearTimeout(timeout)
-    timeout = null
-  };
-  if (to.pathname !== "/") {
-    eventListeners.forEach(({ target, type, listener }) => {
-      target?.removeEventListener(type, listener)
-    })
-  }
-  if (to.pathname === "/") {
-    document.addEventListener("astro:page-load", onLoad, { once: true});
-  }
-})
-document.addEventListener("astro:after-swap", (event) => {
-  // @ts-expect-error
-  const pathname = event.target?.location?.pathname;
-  if (pathname === "/") {
-    const codesContainer = getCodesContainer()
-    const codes = getCodes(codesContainer)
-    const newScrollLeft = getScrollLeft(codes, codesContainer);
-    scrollLeft.set(newScrollLeft);
-    codesContainer.scrollTo({ left: newScrollLeft, behavior: "instant" });
-  }
-})
+  });
 </script>
 
 <style>
-h5 {
-  @apply mb-0;
-}
-.codes-container {
-  @apply overflow-scroll scroll-smooth scrollbar-thin scrollbar-track-card-bg/0
+  h5 {
+    @apply mb-0;
+  }
+  .codes-container {
+    @apply overflow-scroll scroll-smooth scrollbar-thin scrollbar-track-card-bg/0
   scrollbar-thumb-amethyst-300;
-  scroll-behavior: smooth;
-}
-.codes-container > div {
-  font-size: 0.7rem;
-}
-.codes-container pre.astro-code {
-  @apply scrollbar-thumb-amethyst-300;
-}
-.code {
-  @apply mx-4 min-w-[433px] max-w-[80ch] snap-start border border-gray-200 p-4
+    scroll-behavior: smooth;
+  }
+  .codes-container > div {
+    font-size: 0.7rem;
+  }
+  .codes-container pre.astro-code {
+    @apply scrollbar-thumb-amethyst-300;
+  }
+  .code {
+    @apply mx-4 min-w-[433px] max-w-[80ch] snap-start border border-gray-200 p-4
   transition-colors duration-300 ease-in-out scrollbar-thin lg:min-w-min;
-}
-.code-container {
-  @apply scrollbar-track-card-bg/0 scrollbar-thumb-amethyst-300;
-}
-.code.active {
-  @apply border-amethyst-400;
-}
+  }
+  .code-container {
+    @apply scrollbar-track-card-bg/0 scrollbar-thumb-amethyst-300;
+  }
+  .code.active {
+    @apply border-amethyst-400;
+  }
 </style>
