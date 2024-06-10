@@ -36,7 +36,7 @@ export async function GET({ props }: Props) {
       ? path.resolve(
         post.data.cover.src.replace(/\?.*/, "").replace("/@fs", ""),
       )
-      : path.resolve(post.data.cover.src.replace("/", "dist/client/")),
+      : path.resolve(post.data.cover.src.replace("/", "dist/server/")),
   );
 
   // const __dirname = path.dirname(fileURLToPath(import.meta.url));
