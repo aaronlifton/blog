@@ -1,6 +1,6 @@
 # syntax = docker/dockerfile:1.2
 
-FROM node:21.6.1-alpine AS runtime
+FROM node:bookworm AS runtime
 WORKDIR /app
 
 ARG TURSO_DB_URL
@@ -8,8 +8,6 @@ ARG TURSO_DB_AUTH_TOKEN
 
 COPY . .
 
-SHELL ["/bin/ash", "-o", "pipefail", "-c"]
-RUN apk --no-cache add gcompat
 RUN --mount=type=secret,id=env,dst=/etc/secrets/.env \
       ASTRO_STUDIO_APP_TOKEN=$(grep ASTRO_STUDIO_APP_TOKEN /etc/secrets/.env | cut -d '=' -f 2) \
       export RENDER_TOKEN && export ASTRO_STUDIO_APP_TOKEN \

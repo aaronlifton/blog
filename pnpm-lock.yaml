@@ -56,9 +56,6 @@ importers:
       '@libsql/client':
         specifier: ^0.4.3
         version: 0.4.3
-      '@libsql/linux-x64-musl':
-        specifier: 0.4.0-pre.4
-        version: 0.4.0-pre.4
       '@nanostores/react':
         specifier: ^0.7.2
         version: 0.7.2(nanostores@0.10.3)(react@18.3.1)
@@ -2260,11 +2257,6 @@ packages:
 
   '@libsql/linux-x64-musl@0.3.18':
     resolution: {integrity: sha512-5SXwTlaLCUPzxYyq+P0c7Ko7tcEjpd1X6RZKe1DuRFmJPg6f7j2+LrPEhMSIbqKcrl5ACUUAyoKmGZqNYwz23w==}
-    cpu: [x64]
-    os: [linux]
-
-  '@libsql/linux-x64-musl@0.4.0-pre.4':
-    resolution: {integrity: sha512-7j9f3Pqd2uz8fbEQuqKo3cIRfF8fhaZ8E5ZHjlNlej6yRBYEX1snGbcrds7gb3NjZtGKxp+q+DfJOePYHhOz/A==}
     cpu: [x64]
     os: [linux]
 
@@ -12855,8 +12847,6 @@ snapshots:
 
   '@libsql/linux-x64-musl@0.3.18':
     optional: true
-
-  '@libsql/linux-x64-musl@0.4.0-pre.4': {}
 
   '@libsql/win32-x64-msvc@0.2.0':
     optional: true
