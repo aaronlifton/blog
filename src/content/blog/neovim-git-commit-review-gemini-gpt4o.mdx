@@ -123,6 +123,9 @@ return {
                   .. "If a version is bumped, the commit category is 'chore'. "
                   .. "When using a filename as a commit category, take into account the parent folders. For example, ruby/lsp/rubyfmt would be the ruby-lsp-rubyfmt category. "
                   .. "The subcategory should alawys be in parens after the main category, like chore(subcategory). "
+                  .. "Focus on changes in the src folder."
+                  .. "When encountering svg files, only consider the filename. "
+                  .. "For each line in the longer description, start it with a *."
                   .. "Staged git diff: ```\n"
                   .. git_diff
                   .. "\n```",
